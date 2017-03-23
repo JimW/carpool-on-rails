@@ -1,0 +1,8 @@
+// alert("<%= params[:route_id] %>");
+var selectedRoute = ".route-" + <%= params[:route_id] %>;
+$('.fc-scroller').scrollTo(selectedRoute, 200, function() {
+  $(selectedRoute).effect( 'highlight', {color:'white'}, 100 );
+});
+
+$(selectedRoute).effect( 'shake', {color:'white'}, 600 );
+$(selectedRoute).effect( 'highlight', {color:'white'}, 300 );

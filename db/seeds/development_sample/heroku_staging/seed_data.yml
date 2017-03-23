@@ -1,0 +1,48 @@
+---
+orgs:
+- title_short: MyOrg
+  title: My Org Title
+  description: Blah Blah
+  carpools:
+  - title_short: Lobby
+    title: Lobby
+    locations:
+    # - {}
+    member_roles:
+    # - {}
+  - title_short: CityCarpool
+    title: City CarPool
+    locations:
+    - short_name: dTech
+      title: dTech Campus
+      city: Burlingame
+      street: 1 School St.
+    - short_name: CityPO
+      title: City Post Office
+      city: Some City
+      street: 1 Main St.
+    member_roles:
+    - role: admin
+      users:
+      - email: admin@xxx.com
+        password: asdf
+        can_drive: true
+        first_name: Admin
+        last_name: LastName
+        mobile_phone: "(555) 555-3333"
+    - role: manager
+      users:
+      - email: x@x.com
+        password: asdf
+        can_drive: true
+        first_name: XDriver
+        last_name: LastName
+        mobile_phone: "(555) 555-2222"
+    - role: peon
+      users:
+      - email: y@y.com
+        password: asdf
+        can_drive: false
+        first_name: YDriver
+        last_name: Lastname
+        mobile_phone: "(555) 555-1111"

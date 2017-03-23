@@ -1,0 +1,23 @@
+<!-- /app/views/admin/users/new_invitiations.html.erb -->
+
+<h2>Send invitation</h2>
+
+<%= form_for @user, :url => send_invitation_admin_users_path do |f| %>
+
+   <table style='width: 50%'>
+     <tr>
+   		<td><%= f.label :first_name %></td>
+   		<td><%= f.text_field :first_name %></td>
+   	</tr>
+   	<tr>
+   		<td><%= f.label :last_name %></td>
+   		<td><%= f.text_field :last_name %></td>
+   	</tr>
+   	<tr>
+   		<td><%= f.label :email %></td>
+   		<td><%= f.text_field :email, :required => true %></td>
+   	</tr>
+   </table>
+
+  <%= f.submit  "Send an Invitation" %>
+<% end %>

@@ -1,0 +1,77 @@
+<%= semantic_form_for @route ||= ActiveAdmin::Route.new, :builder => ActiveAdmin::FormBuilder, :url => '#' do |f|  %>
+
+  <%=f.inputs "" do %>
+
+  <!-- <%= f.input :category, :as => :radio, :collection => Route.categories.map{|u| [u[0].capitalize, u[0]]} %> -->
+  <%= f.input :starts_at, :as => :hidden %>
+  <%= f.input :ends_at, :as => :hidden %>
+    <%= f.input :locations, :label => "Stops",
+        :as => 'select',
+        :multiple => true,
+        :input_html => { :class => "chosen-select"},
+        :collection => current_user.current_carpool.locations.all
+    %>
+  <%end %>
+  <%=f.inputs "Assignments:" do %>
+    <%= f.input :drivers,
+                :as => 'select',
+                :multiple => true,
+                :input_html => { :class => "chosen-select"},
+                :hint => "",
+                :collection => current_user.current_carpool.drivers.map {|u| [u.short_name,u.id]}
+    %>
+    <%= f.input :passengers,
+                :as => 'select',
+                :multiple => true,
+                :input_html => { :class => "chosen-select"},
+                :collection => current_user.current_carpool.passengers.map {|u| [u.short_name,u.id]}
+    %>
+  <%end %>
+<p>
+  <%= f.submit %> <span id = "creating_events" class="spinner" style = "display:none;">Creating, Please wait...</span>
+</p>
+<%end %>
+
+<script type="text/javascript">
+$(document).ready(function(){
+
+  $(".chosen-select").chosen({
+      no_results_text: "Oops, nothing found!",
+      placeholder_text_multiple: "Select Stuff",
+      width: "95%"
+  });
+
+  if (($._data($('#create_event_dialog')[0], 'events') == undefined ) || ($._data($('#create_event_dialog')[0], 'events').submit.length == 0))  {
+
+      $('#create_event_dialog, #event_desc_dialog').on('submit', "#new_route", function(event) {
+        var $spinner = $('.spinner');
+        event.preventDefault();
+        $.ajax({
+          type: "POST",
+          data: $(this).serialize(),
+          url: $(this).attr('action'),
+          beforeSend: show_spinner,
+          complete: hide_spinner,
+          success: function(data) {
+            // Cookies.set('last_working_date', event.start.format());
+            window.location.reload(true)
+          },
+          // success: window.location.reload(true),
+                    // $('.calendar').fullCalendar('refetchEvents')
+          error: handle_error
+        });
+        function show_spinner() {
+          $spinner.show();
+        }
+        function hide_spinner() {
+          $spinner.hide();
+        }
+        function handle_error(xhr) {
+          // not sure why this gets trigerred when everything is OK..
+          if (xhr.responseText != "")
+            alert(xhr.responseText);
+        }
+      })
+  }
+});
+</script>

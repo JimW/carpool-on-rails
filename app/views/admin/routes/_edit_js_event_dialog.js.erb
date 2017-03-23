@@ -1,0 +1,46 @@
+<script type="text/javascript">
+$(document).ready(function(){
+
+  $(".chosen-select").chosen({
+      no_results_text: "Oops, nothing found!",
+      placeholder_text_multiple: "Select Stuff",
+      width: "95%"
+  });
+
+  if (($._data($('#create_event_dialog')[0], 'events') == undefined ) || ($._data($('#create_event_dialog')[0], 'events').submit.length == 0))  {
+
+      $('#create_event_dialog, #event_desc_dialog').on('submit', "#new_route", function(event) {
+        var $spinner = $('.spinner');
+        event.preventDefault();
+        $.ajax({
+          type: "POST",
+          data: $(this).serialize(),
+          url: $(this).attr('action'),
+          beforeSend: show_spinner,
+          complete: hide_spinner,
+          success: window.location.reload(true),
+                    // $('.calendar').fullCalendar('refetchEvents')
+          error: handle_error
+        });
+        function show_spinner() {
+          $spinner.show();
+        }
+        function hide_spinner() {
+          $spinner.hide();
+        }
+        function handle_error(xhr) {
+          // not sure why this gets trigerred when everything is OK..
+          if (xhr.responseText != "")
+            alert(xhr.responseText);
+        }
+      })
+  }
+});
+
+var contentWindow = $('.calendar');
+$( "#event_desc_dialog" ).dialog({
+    position: { my: "center top", at: "center top", of: contentWindow },
+    height: $(contentWindow).height()
+});
+
+</script>

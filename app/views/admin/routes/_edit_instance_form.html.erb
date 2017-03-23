@@ -1,0 +1,37 @@
+<%= semantic_form_for @route ||= ActiveAdmin::Route.new, :builder => ActiveAdmin::FormBuilder, url: { controller: 'routes', action: 'update', id: @id} do |f|  %>
+  <%=f.inputs "" do %>
+    <%= f.input :starts_at, :as => :hidden %>
+    <%= f.input :ends_at, :as => :hidden %>
+    <%= f.input :locations, :label => "Stops",
+        :as => 'select',
+        :multiple => true,
+        :input_html => { :class => "chosen-select"},
+        :collection => current_user.current_carpool.locations.all
+    %>
+  <%end %>
+  <%=f.inputs "" do %>
+    <%= f.input :drivers,
+                :as => 'select',
+                :multiple => true,
+                :input_html => { :class => "chosen-select"},
+                :hint => "",
+                :collection => current_user.current_carpool.drivers.map {|u| [u.short_name,u.id]}
+                # :collection => current_user.current_carpool.driver_memberships.map{|u| [u.short_name,u.id]}
+                # :collection => User.all_can_drive.all.map{|u| [u.short_name,u.id]}
+    %>
+    <%= f.input :passengers,
+                :as => 'select',
+                :multiple => true,
+                :input_html => { :class => "chosen-select"},
+                :collection => current_user.current_carpool.passengers.map {|u| [u.short_name,u.id]}
+                # :collection => current_user.current_carpool.passenger_memberships.map{|u| [u.short_name,u.id]}
+                # :collection => User.all_can_not_drive.all.map{|u| [u.short_name,u.id]}
+    %>
+  <%end %>
+
+<p>
+  <%= f.submit %> <span id = "creating_events" class="spinner" style = "display:none;">Creating, Please wait...</span>
+</p>
+<%end %>
+
+<%= render 'edit_js_event_dialog.js' %>

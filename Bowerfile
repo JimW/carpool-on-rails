@@ -1,0 +1,26 @@
+# Check out https://github.com/42dev/bower-rails#ruby-dsl-configuration for more options
+# https://github.com/rharriso/bower-rails
+
+#assets_path "assets"
+
+asset 'jQuery-contextMenu'
+#asset "jQuery-contextMenu", do
+#  main_files [
+#    "./locale/en-gb.js",
+#    "./locale/fr.js",
+#    "./locale/lv.js"
+#  ]
+#end
+
+#http://guides.rubyonrails.org/asset_pipeline.html#coding-links-to-assets
+asset 'js-cookie'
+asset 'jquery-ui'
+asset 'moment'
+asset 'fullcalendar', "2.9.1"
+asset 'jquery.scrollTo'
+asset 'jquery.ui.touch'
+asset 'jqueryui-touch-punch'
+asset 'spin.js'
+
+# asset 'chosen' # Don't use until chosen deals with scss sprite reference issues which affect rails asset pipeline
+# asset "jqueryui-timepicker-addon", "1.5.4"

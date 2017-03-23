@@ -1,0 +1,14 @@
+$("#event_desc_dialog").html("<%=
+
+  case @route.category.to_sym
+    when :instance
+      escape_javascript( render partial: 'edit_instance_form')
+    when :modified_instance
+      escape_javascript( render partial: 'edit_modified_instance_form')
+    when :special
+      escape_javascript( render partial: 'edit_special_form')
+    when :template
+      escape_javascript( render partial: 'edit_routine_form')
+  end
+
+%>")

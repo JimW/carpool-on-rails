@@ -1,0 +1,19 @@
+mount_path: "/calendar"
+# layout: 'custom'
+defaultView: 'agendaWeek'
+weekends: false
+
+# displayEventEnd:
+#   month: false
+#   agendaWeek: false
+#   "default": false
+
+# Not working here.?
+# minTime: "06:00:00"
+# maxTime: "23:00:00"
+# businessHours:
+# {
+#     start: '6:30', // a start time (10am in this example)
+#     end: '23:00', // an end time (6pm in this example)
+#     dow: [ 1, 2, 3, 4 ]
+# }

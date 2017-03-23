@@ -1,0 +1,84 @@
+  <div>
+    <div class='calendar'></div>
+  </div>
+<div>
+  <a class="w-inline-block" href=<%="https://calendar.google.com/calendar/syncselect" %> target="_blank">
+    <img src=<%=image_url( "googlecal.jpg") %>
+    <div>Google Sync Select (for making shared calendars available to devices)</div>
+  </a>
+</div>
+<br>
+ <script>
+   $(document).ready(function(){
+     var spinner;
+     var opts = {
+       lines: 17 // The number of lines to draw
+     , length: 13 // The length of each line
+     , width: 5 // The line thickness
+     , radius: 23 // The radius of the inner circle
+     , scale: 0.5 // Scales overall size of the spinner
+     , corners: 1 // Corner roundness (0..1)
+     , color: '#000' // #rgb or #rrggbb or array of colors
+     , opacity: 0.05 // Opacity of the lines
+     , rotate: 0 // The rotation offset
+     , direction: 1 // 1: clockwise, -1: counterclockwise
+     , speed: 0.9 // Rounds per second
+     , trail: 48 // Afterglow percentage
+     , fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
+     , zIndex: 2e9 // The z-index (defaults to 2000000000)
+     , className: 'spinner' // The CSS class to assign to the spinner
+     , top: '50%' // Top position relative to parent
+     , left: '50%' // Left position relative to parent
+     , shadow: true // Whether to render a shadow
+     , hwaccel: false // Whether to use hardware acceleration
+     , position: 'absolute' // Element positioning
+     }
+     full_calendar_options.loading = function(isLoading, view) {
+       // var target = document.getElementById('foo')
+       var calendarElement = document.getElementsByClassName("calendar")[0];
+       if (isLoading == true) {
+         spinner = new Spinner(opts).spin(calendarElement);
+       } else {
+         spinner.stop();
+       }
+     }
+
+     full_calendar_options.defaultView = "month";
+     full_calendar_options.selectable = false;
+     full_calendar_options.editable = false;
+     full_calendar_options.slotDuration = '00:10:00';
+     full_calendar_options.scrollTime = '07:00:00';
+     full_calendar_options.height = 650;
+    //  full_calendar_options.width = 400;
+     full_calendar_options.minTime = "06:30:00";
+     full_calendar_options.maxTime = "23:00:00";
+     full_calendar_options.timezone = "local";
+     full_calendar_options.displayEventEnd = false;
+     full_calendar_options.displayEventTime = false;
+     full_calendar_options.allDaySlot = true;
+    //  full_calendar_options.allDayText = "Special Events";
+     full_calendar_options.events = "";// Need to mute this because somewhere within the fc engine, it's setting it
+
+     full_calendar_options.eventSources = [
+       {
+         url: '<%= Rails.application.routes.url_helpers.routes_path %>' + "?request_type=instance",
+         color: '#D4FFD7',
+         borderColor: '#93CC97',
+         textColor: '#524B3E',
+       },
+       {
+         url: '<%= Rails.application.routes.url_helpers.routes_path %>' + "?request_type=modified_instance",
+         color: '#F0FFB6',
+         textColor: '#35352E',
+         borderColor: '#50DA59',
+       },
+       {
+         url: '<%= Rails.application.routes.url_helpers.routes_path %>' + "?request_type=special",
+         color: '#F9E0CA',
+         textColor: '#503A0D',
+         borderColor: '#E4AFAF',
+       }
+     ];
+     $('.calendar').fullCalendar(full_calendar_options);
+   });
+ </script>

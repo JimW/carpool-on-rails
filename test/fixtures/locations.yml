@@ -1,0 +1,23 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  desc: MyText
+  latitude: MyString
+  longitude: MyString
+  intersectStreet1: MyString
+  intersectStreet2: MyString
+  street: MyString
+  city: MyString
+  state: MyString
+
+two:
+  title: MyString
+  desc: MyText
+  latitude: MyString
+  longitude: MyString
+  intersectStreet1: MyString
+  intersectStreet2: MyString
+  street: MyString
+  city: MyString
+  state: MyString

@@ -1,0 +1,50 @@
+# config/application.yml (Add to .gitignore)
+
+development:
+  secret_key_base: ''
+  DEVISE_SECRET_KEY: ''
+
+  # Postgresql
+  DATABASE_NAME: ''
+  DATABASE_USERNAME: ''
+  DATABASE_PASSWORD: ''
+
+  GOOGLE_CLIENT_ID: ''
+  GOOGLE_CLIENT_SECRET: ''
+  MY_SERVICE_ACCOUNT_JSON: ''
+
+  AWS_ACCESS_KEY_ID: ''
+  AWS_SECRET_ACCESS_KEY: ''
+
+  AWS_S3_BUCKET: ''
+  AWS_S3_SEED_DIR_PATH: 'seeds/heroku_staging'  # source path on S3 for retrieving seed data.  Comment this out to use default local path of: seeds/development/seed_data.yml
+  # AWS_S3_SEED_DIR_PATH is populated with a json seed file by the aws:plant_seeds task and used for a seed source by seeds.rb
+  # This enables the local machine to set seed data from S3 (for use in staging/production), keeping this private data out of git, but still accessible by Heroku during seeding.
+
+test:
+  secret_key_base: ''
+
+production:
+  secret_key_base: ''
+  DEVISE_SECRET_KEY: ''
+
+  # DATABASE_URL: AUTO SET IN HEROKU
+  GOOGLE_CLIENT_ID: ''
+  GOOGLE_CLIENT_SECRET: ''
+  MY_SERVICE_ACCOUNT_JSON: ''
+
+  AWS_ACCESS_KEY_ID: ''
+  AWS_SECRET_ACCESS_KEY: ''
+
+  AWS_S3_BUCKET: ''
+  AWS_S3_SEED_DIR_PATH: 'seeds/heroku_staging'  # source path on S3 for retrieving seed data.  Comment this out to use default local path of: seeds/development/seed_data.yml
+  # AWS_S3_SEED_DIR_PATH is populated with a json seed file by the aws:plant_seeds task and used for a seed source by seeds.rb
+  # This enables the local machine to set seed data from S3 (for use in staging/production), keeping this private data out of git, but still accessible by Heroku during seeding.
+
+  RACK_ENV: 'production'
+  RAILS_ENV: 'production'
+
+  RAILS_SERVE_STATIC_FILES: 'enabled'
+
+  PORT: 80
+  LANG: "en_US.UTF-8"

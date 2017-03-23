@@ -1,0 +1,19 @@
+<%= semantic_form_for @user, :builder => ActiveAdmin::FormBuilder, url: { controller: 'users', action: 'update', id: @id} do |f|  %>
+   <%=f.inputs "" do %>
+   <% end %>
+<p>
+  <%= f.submit %>
+</p>
+<% end %>
+
+<script type="text/javascript">
+$(document).ready(function(){
+
+  $(".chosen-select").chosen({
+      no_results_text: "Oops, nothing found!",
+      placeholder_text_multiple: "Select Stuff",
+      width: "95%"
+  });
+
+});
+</script>
