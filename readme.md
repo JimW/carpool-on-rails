@@ -212,9 +212,8 @@ To actually have the system manage any Google Calendars, you need to enable the 
 
 So if user is a member of 2 carpools within an organization, "Commute Carpool" and "Basketball Carpool" for "dTechOrg", they will have 3 read-only shared calendars made available to them by the system, if both these google sync options are turned on.  Turning off the sync, will remove any of these calendars from their google account.
 
-## Production Setup
 
-### Amazon S3 Setup
+## Amazon S3 Setup
 
 1. Setup an [Amazon S3 Bucket](https://console.aws.amazon.com/s3/home) and associate within a user's credentials that you want to use for the carpool via [IAM](https://console.aws.amazon.com/iam/home#/home), the following policy for that bucket:
 ```json
@@ -240,8 +239,9 @@ So if user is a member of 2 carpools within an organization, "Commute Carpool" a
 
 You'll need to set the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY for this user within ENVs mentioned below.
 
+## Heroku Setup
 
-### [Heroko](https://id.heroku.com/login) Server
+### [Heroko](https://id.heroku.com/login) Staging Server
 
 1. [Install Heroku Command Line Interface](https://devcenter.heroku.com/articles/heroku-command-line)
 
@@ -249,15 +249,15 @@ You'll need to set the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY for this user
 
 1. cd into project directory
 
-1. Create Heroku Project *(This adds a Heroku remote for you in git)*
+1. Create Heroku Project *(This create a project on Heroku and adds a branch named staging for you in git)*
 
     ```bash
-    heroku create YOUR_UNIQUE_PROJECT_NAME
+    heroku create YOUR_UNIQUE_PROJECT_NAME --remote staging
     ```
 
 1. Provision a hobby-dev plan database:
     ```bash
-    heroku addons:create heroku-postgresql:hobby-dev
+    heroku addons:create heroku-postgresql:hobby-dev --remote staging
     ```
     or
 
@@ -265,7 +265,7 @@ You'll need to set the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY for this user
 
 1. Enable Ruby and Node on your Heroku project by specifying buildpacks:
     ```bash
-    heroku buildpacks:set https://github.com/heroku/heroku-buildpack-multi.git
+    heroku buildpacks:set  https://github.com/heroku/heroku-buildpack-multi.git --remote staging
     ```
 
 1. Push Production secrets from your application.yml to your Heroku app's environment variables (untested as this won't work in Windows WSL)
@@ -298,18 +298,19 @@ You'll need to set the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY for this user
         DB_POOL: 4
         LANG: "en_US.UTF-8"
     ```
+    You could also potentially use the Heroku API to push these all up at once using curl..
 
 1. Push the project to Heroku
     ```bash
-    git push heroku master
+    git push staging master
     ```
 1. Reset Production Database (be careful..)
     ```bash
-    heroku pg:reset DATABASE
+    heroku pg:reset DATABASE --remote staging
     ```
 1. Update Production DB
     ```bash
-    heroku run rake db:migrate
+    heroku run rake db:migrate --remote staging
     ```
 1. Be sure your local db/seeds/development/heroku_staging/seed_data.yml contains the seed data you want.
 
@@ -321,9 +322,16 @@ Look inside this task for altering source seed file paths
 
 1. Seed the Heroku DB (be careful..) If ENV['AWS_S3_SEED_DIR_PATH'] is set within Heroku, seeds.rb will look for seed data you previously planted on AWS.
     ```bash
-    heroku run rake db:seed
+    heroku run rake db:seed --remote staging
     ```
 1. Should be good when you navigate to your heroku project's url
+
+### [Heroko](https://devcenter.heroku.com/articles/fork-app) Forking a Production Server
+
+1. Either fork your existing staging app on Heroku (useful if you want to copy a Postgresql db without upgrading) or go through the prior steps again for --remote Production
+
+1. Ensure your ENVs are unique for production
+*warning: once a service account is used in production, stick with a credential associated with that same account.  Otherwise you'll need to toggle all the calendars to regenerate any events and calendars*
 
 ## System Details
 
