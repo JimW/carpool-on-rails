@@ -69,10 +69,10 @@ gem "rolify"
 
 gem "pundit"
 # gem 'activeadmin', github: 'activeadmin'
-# gem 'activeadmin', '~> 1.0.0.pre4'
+gem 'activeadmin', '~> 1.0.0.pre5'
 # gem 'activeadmin', '~> 1.0.0.pre2'
 # gem 'activeadmin', '0.6.6'
-gem 'activeadmin', git: 'https://github.com/activeadmin/activeadmin'
+# gem 'activeadmin', git: 'https://github.com/activeadmin/activeadmin'
 # They need to add another pre...
 
 gem 'seed_dump'
