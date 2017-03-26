@@ -184,7 +184,7 @@ controller do
     super do |success,failure|
       success.html {
         session[:last_route_id_edited] = @route.id
-        # redirect_to collection_path
+        redirect_to collection_path
       }
       failure.html { render :edit }
     end

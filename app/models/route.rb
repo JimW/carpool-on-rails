@@ -260,9 +260,8 @@ class Route < ActiveRecord::Base
     end  end
 
   def passenger_list
-    # This is used in the Calendar page, so keep everything condensed so it'll fit on one line
     if self.passengers.any?
-      "w/ " + self.passengers.map{|p| p.short_name}.to_sentence(:last_word_connector => ' ')
+      "w/ " + self.passengers.map{|p| p.short_name}.to_sentence(:last_word_connector => ' ', :words_connector => ' ')
     else
       "PASSENGERS ?"
     end
