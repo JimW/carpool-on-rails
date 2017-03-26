@@ -4,7 +4,7 @@
     "jQuery-contextMenu": "latest",
     "js-cookie": "latest",
     "jquery-ui": "latest",
-    "moment": "latest",
+    "moment": "2.17.1",
     "fullcalendar": "2.9.1",
     "jquery.scrollTo": "latest",
     "jquery.ui.touch": "latest",
