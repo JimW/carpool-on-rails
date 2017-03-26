@@ -140,7 +140,7 @@ Follow the setup for the following sections to complete Installation of the Carp
 
 1. Git carpool project
     ```bash
-    git clone https://github.com/blah23423876
+    git clone https://github.com/JimW/carpool-on-rails.git
     ```
 1. cd into the carpool's project folder
 1. Copy config\application.yml.sample to config\application.yml
