@@ -74,7 +74,7 @@ class Route < ActiveRecord::Base
   # "Note that :dependent option is ignored for has_one :through associations."
 
   accepts_nested_attributes_for :event_route, allow_destroy: true
-  accepts_nested_attributes_for :event, allow_destroy: true 
+  accepts_nested_attributes_for :event, allow_destroy: true
 
   has_many :location_routes,  -> { order 'position' }, inverse_of: :route, :dependent => :destroy
   has_many :locations, through: :location_routes, :after_remove => :make_dirty, :after_add => :make_dirty
@@ -215,7 +215,7 @@ class Route < ActiveRecord::Base
   end
 
   def title_for_calendar_page
-    self.event.starttime.strftime("%-I:%M") + " " + self.first_location + " " + driver_list + " " + passenger_list_first_name
+    driver_list + " " + self.event.starttime.strftime("%-I:%M") + " @" + self.first_location + " " + passenger_list_first_name
   end
 
   def title_for_admin_ui
@@ -243,26 +243,26 @@ class Route < ActiveRecord::Base
     when self.locations.count == 1
       self.locations.first.short_name + " -> ?"
     when self.locations.count == 0
-      "ROUTE ?"
+      "LOCATION ?"
     end
   end
 
   def first_location
-    self.locations.any? ?  self.locations.first.short_name : "ROUTE ?"
+    self.locations.any? ?  self.locations.first.short_name : "LOCATION ?"
   end
 
   def passenger_list_first_name
     if self.passengers.any?
       "w/ " + self.passengers.map{|p| p.first_name}.to_sentence(:last_word_connector => ', ')
     else
-      "No Passengers"
+      "PASSENGERS ?"
     end  end
 
   def passenger_list
     if self.passengers.any?
       "w/ " + self.passengers.map{|p| p.short_name}.to_sentence(:last_word_connector => ', ')
     else
-      "No Passengers"
+      "PASSENGERS ?"
     end
   end
 
