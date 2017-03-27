@@ -38,6 +38,10 @@ This system helps carpool members stay up to date on their assignments by mainta
 
 - Detailed Setup Instructions
 
+
+## Video Walkthrough
+[Video Video on Vimeo](https://vimeo.com/210178901)
+
 ## Background
 
 The system grew out of the need for a group of parents to orchestrate rides for their children to a distant school. The group initially decided that a volunteer carpool "Manager" should deal with all the scheduling and issues that come up via email and then send out a weekly schedule.   As changes would occur throughout the week, the emails would fly..  Having more than 30 people on an email list and having to sift through all the special requests, and changes like "I can't drive Tuesday because...", "I'll pick up here instead", etc., became somewhat of a waste of time.  Most would not just email the manager first to see if it could be resolved quietly.  So lots of unnecessary communications were happening and the initial manual spreadsheet type of documentation would quickly get out of sync with reality, besides being tedious to maintain.  
