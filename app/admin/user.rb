@@ -90,8 +90,8 @@ index do
   column "Name", sortable: :last_name do |user|
     link_to user.full_name, admin_user_path(user)
   end
-  column :email, sortable: false
-	column "Mobile #", :mobile_phone, sortable: false
+  column :email, sortable: false if (ENV['DEMO_MODE'].nil?) 
+	column "Mobile #", :mobile_phone, sortable: false  if (ENV['DEMO_MODE'].nil?)
   column "Type", sortable: :can_drive do |user|
       user.can_drive? ? status_tag( "Driver", :ok ) : status_tag( "Passenger" )
   end
@@ -120,7 +120,7 @@ end
 show do
   attributes_table do
     row :email do |user|
-      best_in_place user, :email, :as => :input,:url =>[:admin,user]
+      best_in_place user, :email, :as => :input,:url =>[:admin,user] if (ENV['DEMO_MODE'].nil?)
     end
     row :first_name do |user|
       best_in_place user, :first_name, :as => :input,:url =>[:admin,user]
@@ -129,10 +129,10 @@ show do
       best_in_place user, :last_name, :as => :input,:url =>[:admin,user]
     end
     row :home_phone do |user|
-      best_in_place user, :home_phone, :as => :input,:url =>[:admin,user]
+      best_in_place user, :home_phone, :as => :input,:url =>[:admin,user] if (ENV['DEMO_MODE'].nil?)
     end
     row :mobile_phone do |user|
-      best_in_place user, :mobile_phone, :as => :input,:url =>[:admin,user]
+      best_in_place user, :mobile_phone, :as => :input,:url =>[:admin,user] if (ENV['DEMO_MODE'].nil?)
     end
     # row :mobile_phone_messaging do |user|
     #   best_in_place user, :mobile_phone_messaging, :as => :checkbox,:url =>[:admin,user]
@@ -226,11 +226,11 @@ end
 
 form do |f|
   f.inputs "Details" do
-    f.input :email
+    f.input :email if (ENV['DEMO_MODE'].nil?)
     f.input :first_name
     f.input :last_name
-    f.input :home_phone
-    f.input :mobile_phone
+    f.input :home_phone if (ENV['DEMO_MODE'].nil?)
+    f.input :mobile_phone if (ENV['DEMO_MODE'].nil?)
     # f.input :mobile_phone_messaging, :value => true
     f.input :password
     f.input :password_confirmation
