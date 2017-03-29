@@ -24,7 +24,12 @@ Rails.application.routes.draw do
   # devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }
   ActiveAdmin.routes(self)
   get 'welcome/index'
-  resources :routes
+
+  resources :routes do  
+      collection do
+        get :get_missing_persons
+      end
+    end
 
   namespace :admin do
       resources :users

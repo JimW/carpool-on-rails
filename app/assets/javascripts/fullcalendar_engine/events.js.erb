@@ -20,18 +20,20 @@ $.extend(full_calendar_options, {
       $('#loading').hide();
   },
 
-  // viewRender: function( view, element ) {
-  //   // http://stackoverflow.com/questions/5617194/callback-for-month-week-day-title-bar-button-clicks
-  //   if (lastView === undefined) { lastView = 'firstRun';  }
-  //
-  //   if (lastView != 'firstRun') {
-  //     if(view.name === "agendaWeek") { // || view.name === "agendaDay"){
-  //       working_week = $('.calendar').fullCalendar('getView').start
-  //     };
-  //   }
-  //   lastView = view.name;
-  //   Cookies.set('last_calendar_type', view.name);
-  // },
+  viewRender: function( view, element ) {
+    // http://stackoverflow.com/questions/5617194/callback-for-month-week-day-title-bar-button-clicks
+    // if (lastView === undefined) { lastView = 'firstRun';  }
+
+    // if (lastView != 'firstRun') {
+      if(view.name === "agendaWeek") { // || view.name === "agendaDay"){
+        working_week = $('.calendar').fullCalendar('getView').start
+        // Cookies.set('working_week', working_week);
+
+      };
+    // }
+    // lastView = view.name;
+    // Cookies.set('last_calendar_type', view.name);
+  },
 
   // viewRender: function( view, element ) {
   //

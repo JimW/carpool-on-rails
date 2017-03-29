@@ -3,12 +3,12 @@
   <div class='calendar'></div>
   <div id="event_desc_dialog" class="dialog" style="display:none;"></div>
   <div id="create_event_dialog" class="dialog" style ="display:none;"></div>
-  <div class='calendar_zoom_controls'>
-  <div class='route_util_controls'>
 </div>
 
 <script>
 $(document).ready(function(){
+
+  routes_path     = "<%= Rails.application.routes.url_helpers.routes_path %>"
 
   var dragging = false;
 
@@ -117,7 +117,6 @@ $(document).ready(function(){
   }
 
   full_calendar_options.loading = function(isLoading, view) {
-    // var target = document.getElementById('foo')
     var calendarElement = document.getElementsByClassName("calendar")[0];
     if (isLoading == true) {
       spinner = new Spinner(opts).spin(calendarElement);
@@ -189,10 +188,16 @@ $(document).ready(function(){
     var viewing_moment = $.fullCalendar.moment.utc(view.intervalStart)
     Cookies.set('last_viewing_moment', viewing_moment.format());
     if (view.name == "month") {
-      $('.calendar_zoom_controls').hide()
+      $('.fc-button_5-button').hide();
+      $('.fc-button_10-button').hide();
+      $('.fc-button_30-button').hide();
+      $('.fc-button_verify-button').hide();
     }
     else {
-      $('.calendar_zoom_controls').show()
+      $('.fc-button_5-button').show();
+      $('.fc-button_10-button').show();
+      $('.fc-button_30-button').show();
+      $('.fc-button_verify-button').show();
     }
   };
 
@@ -204,6 +209,64 @@ $(document).ready(function(){
     // };
     // $('.fc-today').siblings().addClass('week-highlight');
   };
+
+  full_calendar_options.customButtons  = {
+      button_5: {
+        text: '5',
+        click: function() {
+            $('.calendar').fullCalendar('destroy');
+            Cookies.set('last_calendar_zoom_level', '00:05:00');
+            full_calendar_options.slotDuration = last_calendar_zoom_level();
+            full_calendar_options.defaultView = last_calendar_type();
+            $('.calendar').fullCalendar(full_calendar_options);
+        }
+    },
+        button_10: {
+        text: '10',
+        click: function() {
+            $('.calendar').fullCalendar('destroy');
+            Cookies.set('last_calendar_zoom_level', '00:10:00');
+            full_calendar_options.slotDuration = last_calendar_zoom_level();
+            full_calendar_options.defaultView = last_calendar_type();
+            $('.calendar').fullCalendar(full_calendar_options);
+        }
+    },
+        button_30: {
+        text: '30',
+        click: function() {
+            $('.calendar').fullCalendar('destroy');
+            Cookies.set('last_calendar_zoom_level', '00:30:00'); // hardcode 30 ???
+            full_calendar_options.slotDuration = last_calendar_zoom_level();
+            full_calendar_options.defaultView = last_calendar_type();
+            // http://fullcalendar.io/docs/utilities/Duration/ Add this in !!!
+            // full_calendar_options.slotLabelInterval = moment({ minutes:30 })
+            $('.calendar').fullCalendar(full_calendar_options);
+        }
+    },
+        button_verify: {
+        text: 'verify',
+        click: function() {
+          $.ajax({
+            data: '', //event_id=' + event.id, //+ '&day_delta=' + event.end.format() + '&minute_delta=' + delta.minutes + '&authenticity_token=' + FullcalendarEngine.Form.authenticity_token(),
+            dataType: 'script',
+            type: 'get',
+            url: routes_path + "/get_missing_persons",
+            error: function(xhr){
+              alert(JSON.parse(xhr.responseText)["message"])
+            },
+            success: function(data) {
+              alert(data);
+            }
+          });
+        }
+    },
+  };
+  full_calendar_options.header = {
+      left: 'prev,next today button_5, button_10, button_30, button_verify',
+      center: 'title',
+      right: 'month,agendaWeek,agendaDay'
+  };
+
   // full_calendar_options.dayClick =  function(event, jsEvent, view) {
   //   alert("dayClick hi");
   //   if (view.name == 'month') {
@@ -227,46 +290,7 @@ $(document).ready(function(){
   $('.calendar').fullCalendar(full_calendar_options);
   $('.calendar').addClass('noselect');
 
-  $('.calendar').fullCalendar( 'gotoDate', last_viewing_moment() )
-
-  // Hidden unless agendaView
-  $('.calendar_zoom_controls').append(
-      $('<button type="button" class="fc-button fc-state-default fc-corner-left fc-corner-right">30 min</button>')
-          .on('click', function() {
-            $('.calendar').fullCalendar('destroy');
-            Cookies.set('last_calendar_zoom_level', '00:30:00'); // hardcode 30 ???
-            full_calendar_options.slotDuration = last_calendar_zoom_level();
-            full_calendar_options.defaultView = last_calendar_type();
-            // http://fullcalendar.io/docs/utilities/Duration/ Add this in !!!
-            // full_calendar_options.slotLabelInterval = moment({ minutes:30 })
-            $('.calendar').fullCalendar(full_calendar_options);
-      }),
-      $('<button type="button" class="fc-button fc-state-default fc-corner-left fc-corner-right">10 min</button>')
-          .on('click', function() {
-            $('.calendar').fullCalendar('destroy');
-            Cookies.set('last_calendar_zoom_level', '00:10:00');
-            full_calendar_options.slotDuration = last_calendar_zoom_level();
-            full_calendar_options.defaultView = last_calendar_type();
-            $('.calendar').fullCalendar(full_calendar_options);
-      }),
-      $('<button type="button" class="fc-button fc-state-default fc-corner-left fc-corner-right">5 min</button>')
-          .on('click', function() {
-            $('.calendar').fullCalendar('destroy');
-            Cookies.set('last_calendar_zoom_level', '00:05:00');
-            full_calendar_options.slotDuration = last_calendar_zoom_level();
-            full_calendar_options.defaultView = last_calendar_type();
-            $('.calendar').fullCalendar(full_calendar_options);
-      })
-  );
-
-  $('.route_util_controls').append(
-      $('<button type="button" class="fc-button fc-state-default fc-corner-left fc-corner-right">Missing Passenger Report</button>')
-          .on('click', function() {
-
-              alert("TO BE IMPLEMENTED, list of Passenger without 2 routes for each day within currently selected week");
-
-      })
-  );
+  $('.calendar').fullCalendar( 'gotoDate', last_viewing_moment() );
 
 })
 // http://www.creativedev.in/2014/10/colordots-highlight-event-fullcalendar/

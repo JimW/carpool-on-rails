@@ -64,6 +64,7 @@ end
 collection_action :jump_to_calendar_event, method: [:get] do
 end
 
+
 # this sets up the route so keep it in, I think..
 collection_action :refresh_calendar, method: [:get] do
   # if request.get?
