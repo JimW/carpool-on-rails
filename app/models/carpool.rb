@@ -11,6 +11,8 @@ class Carpool < ActiveRecord::Base
   accepts_nested_attributes_for :carpool_locations, allow_destroy: true
   accepts_nested_attributes_for :locations, allow_destroy: true 
 
+  # has_many :active_members, -> {is_active}, :class_name => 'CarpoolUser', inverse_of: :carpool, :dependent => :destroy
+
   has_many :driving_members, -> {is_driver}, :class_name => 'CarpoolUser', inverse_of: :carpool, :dependent => :destroy
   has_many :drivers, -> { all_can_drive }, :class_name => 'User', :through => :driving_members, :source => :user#, :after_add => :make_dirty, :after_remove => :make_dirty
   accepts_nested_attributes_for :driving_members, allow_destroy: true
@@ -60,6 +62,44 @@ class Carpool < ActiveRecord::Base
     }
     email_str
   end
+
+
+ def get_missing_persons(working_week)
+      # Grab the week their looking at
+      # @working_week = cookies[:last_viewing_moment] ? cookies[:last_viewing_moment] : "2015 09 12" #YYYY MM DD
+      # This will be a Sunday, even if the cal is Mon-Fri
+
+      missing_persons = {}
+      start_date = Date.iso8601(working_week)
+      end_date = start_date + 6.days
+      all_passengers = passengers
+      routes_within_range = routes.select {|r| r.starts_at.to_date.between?(start_date, end_date)}
+
+      start_date.upto(end_date) do |date|
+
+        missing_persons[date] = {}
+        passengers_for_day = Array.new()
+        routes_on_date = routes_within_range.select {|r| r.starts_at.to_date == date}
+
+        routes_on_date.each do |rte|
+          rte.passengers.pluck(:first_name).each do |item|
+            passengers_for_day << item
+          end
+        end
+
+        passenger_ride_cnts = passengers_for_day.each_with_object(Hash.new(0)) { |p, counts| counts[p] += 1 }
+        # passenger_ride_cnts.each_pair {|key,value| p " ************** #{key} = #{value}"}
+
+        all_passengers.each do |p|
+          if (passenger_ride_cnts[p.first_name] < 2)
+            missing_persons[date][p.first_name] = passenger_ride_cnts[p.first_name]
+          end
+        end
+
+      end
+
+      return missing_persons
+    end
 
   # TBD !!!
   def missing_routes(date_range)

@@ -356,42 +356,74 @@ controller do
 
   def get_events # _____________________________________________________________
 
-    # Use the Ransack query from Activeadmin
-    params[:q] = session[:search]
-    @q = current_user.current_carpool.routes.ransack(params[:q])#.include(:)
-    # refine by whatever calendar data sources the fullCalendar wants via :request_type (and now it wants the id..)
-    # modifiedType = if params[:request_type]
-    routes = @q.result.where(:category => Route.categories[params[:request_type]])
+    @calendar_all_day_mode = cookies[:calendar_all_day_mode] ? cookies[:calendar_all_day_mode] : 'routines'
+    # p "@calendar_all_day_mode = " + @calendar_all_day_mode
+    @working_week = cookies[:last_viewing_moment] ? cookies[:last_viewing_moment] : "2015 09 12" #YYYY MM DD
     events = []
-    # p "session[:last_route_id_edited] = " + session[:last_route_id_edited].to_s
-    routes.each do |route|
-      if route.event
-        @classNames = []
-        @classNames << "CurrentEvent" if (route.id == session[:last_route_id_edited].to_i)
 
-        # if route.is_template?
-        #   start_date = route.event.starttime.wday # Need to translate this into current selected week's actual date
-        #   end_date = route.event.endtime.wday
-        # else
-        #   start_date = route.event.starttime.iso8601
-        #   end_date = route.event.endtime.iso8601
-        # end
+    if (params[:request_type] == "template") && (@calendar_all_day_mode == 'missing_persons')
+      # We're hijacking the request for template data here, because now we're overloading the ALLDAY spot in the calendar to also show missing passengers
+      # So lets feed it one big fat fake event that contains all the names of the missing passengers for the day!
+      missing_persons_by_date = current_user.current_carpool.get_missing_persons(@working_week)
 
-        events << { id: route.event.id,
-                    title: route.event.title,
-                    description: route.event.description || '',
-                    start: route.event.starttime.iso8601,
-                    end: route.event.endtime.iso8601,
-                    allDay: route.event.all_day,
-                    recurring: (route.event.event_series_id) ? true : false,
-                    category: route.category.to_s,
-                    className: @classNames.join(","),
-                    has_children: route.scheduled_instances.any?,
-                    route_id: route.id,
-                    child_id: (route.scheduled_instances.any?) ?  route.scheduled_instances.first.event.id : ''
-                  }
+      missing_persons_by_date.each_pair do |date, missing_who_cnt|
+
+        missing_who_cnt.keys.each do |passenger| 
+          events << { id: -1,
+              title: passenger,
+              description: '',
+              start: date.iso8601,
+              end: date.iso8601,
+              allDay: true,
+              recurring: false,
+              category: 'missing_person',
+              className: '',
+              has_children: false,
+              route_id: 0,
+              child_id: ''
+            } if !passenger.nil?
+        end
+
       end
-    end
+
+    else    
+        # Use the Ransack query from Activeadmin
+      params[:q] = session[:search]
+      @q = current_user.current_carpool.routes.ransack(params[:q])#.include(:)
+      # refine by whatever calendar data sources the fullCalendar wants via :request_type (and now it wants the id..)
+      # modifiedType = if params[:request_type]
+      routes = @q.result.where(:category => Route.categories[params[:request_type]])
+      # p "session[:last_route_id_edited] = " + session[:last_route_id_edited].to_s
+      routes.each do |route|
+        if route.event
+          @classNames = []
+          @classNames << "CurrentEvent" if (route.id == session[:last_route_id_edited].to_i)
+
+          # if route.is_template?
+          #   start_date = route.event.starttime.wday # Need to translate this into current selected week's actual date
+          #   end_date = route.event.endtime.wday
+          # else
+          #   start_date = route.event.starttime.iso8601
+          #   end_date = route.event.endtime.iso8601
+          # end
+
+          events << { id: route.event.id,
+                      title: route.event.title,
+                      description: route.event.description || '',
+                      start: route.event.starttime.iso8601,
+                      end: route.event.endtime.iso8601,
+                      allDay: route.event.all_day,
+                      recurring: (route.event.event_series_id) ? true : false,
+                      category: route.category.to_s,
+                      className: @classNames.join(","),
+                      has_children: route.scheduled_instances.any?,
+                      route_id: route.id,
+                      child_id: (route.scheduled_instances.any?) ?  route.scheduled_instances.first.event.id : ''
+                    }
+        end # if
+      end # do
+    end # else
+
     render json: events.to_json
   end
   # ____________________________________________________________________________

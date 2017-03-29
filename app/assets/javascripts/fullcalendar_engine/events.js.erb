@@ -73,7 +73,7 @@ $.extend(full_calendar_options, {
         $(class_child_id).effect( "highlight", {color:"white"}, 300 );
       });
     }
-    if (event.category != "template")
+    if ((event.category != "template") && (event.id > -1))
     {
       FullcalendarEngine.displayEditScreen(event.id);
     }

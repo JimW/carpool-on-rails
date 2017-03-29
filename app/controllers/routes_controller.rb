@@ -4,43 +4,6 @@ class RoutesController < ApplicationController
       params.permit(:id, :_method, :authenticity_token)
     end
 
-    def get_missing_persons
-      # Grab the week their looking at
-      @working_week = cookies[:last_viewing_moment] ? cookies[:last_viewing_moment] : "2015 09 12" #YYYY MM DD
-      # This will be a Sunday, even if the cal is Mon-Fri
-
-      passenger_anomolies = {}
-      start_date = Date.iso8601(@working_week)
-      end_date = start_date + 6.days
-      all_passengers = current_user.current_carpool.passengers
-      routes_within_range = current_user.current_carpool.routes.select {|r| r.starts_at.to_date.between?(start_date, end_date)}
-
-      start_date.upto(end_date) do |date|
-
-        passenger_anomolies[date] = {}
-        passengers_for_day = Array.new()
-        routes_on_date = routes_within_range.select {|r| r.starts_at.to_date == date}
-
-        routes_on_date.each do |rte|
-          rte.passengers.pluck(:first_name).each do |item|
-            passengers_for_day << item
-          end
-        end
-
-        passenger_ride_cnts = passengers_for_day.each_with_object(Hash.new(0)) { |p, counts| counts[p] += 1 }
-        # passenger_ride_cnts.each_pair {|key,value| p " ************** #{key} = #{value}"}
-
-        all_passengers.each do |p|
-          if (passenger_ride_cnts[p.first_name] < 2)
-            passenger_anomolies[date][p.first_name] = passenger_ride_cnts[p.first_name]
-          end
-        end
-
-      end
-
-      render json: passenger_anomolies.to_json
-    end
-
     def index
       routes = current_user.current_carpool.routes.where(:category => Route.categories[params[:request_type]])
 

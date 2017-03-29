@@ -50,6 +50,7 @@ $(document).ready(function(){
   full_calendar_options.defaultView = last_calendar_type();
   full_calendar_options.defaultDate = last_viewing_moment();
   full_calendar_options.slotDuration = last_calendar_zoom_level();
+
   full_calendar_options.height = 800;
   full_calendar_options.minTime = "06:30:00";
   full_calendar_options.maxTime = "23:00:00";
@@ -192,12 +193,24 @@ $(document).ready(function(){
       $('.fc-button_10-button').hide();
       $('.fc-button_30-button').hide();
       $('.fc-button_verify-button').hide();
+      $('.fc-button_template-button').hide();
     }
-    else {
+    else 
+    {
       $('.fc-button_5-button').show();
       $('.fc-button_10-button').show();
       $('.fc-button_30-button').show();
-      $('.fc-button_verify-button').show();
+
+      var calendar_all_day_mode = Cookies.get('calendar_all_day_mode');
+      if (calendar_all_day_mode == 'template') { 
+        $('.fc-button_verify-button').show();
+        $('.fc-button_template-button').hide();
+      } 
+      else
+      {
+        $('.fc-button_verify-button').hide();
+        $('.fc-button_template-button').show();
+      }
     }
   };
 
@@ -235,7 +248,7 @@ $(document).ready(function(){
         text: '30',
         click: function() {
             $('.calendar').fullCalendar('destroy');
-            Cookies.set('last_calendar_zoom_level', '00:30:00'); // hardcode 30 ???
+            Cookies.set('last_calendar_zoom_level', '00:30:00'); 
             full_calendar_options.slotDuration = last_calendar_zoom_level();
             full_calendar_options.defaultView = last_calendar_type();
             // http://fullcalendar.io/docs/utilities/Duration/ Add this in !!!
@@ -246,23 +259,24 @@ $(document).ready(function(){
         button_verify: {
         text: 'verify',
         click: function() {
-          $.ajax({
-            data: '', //event_id=' + event.id, //+ '&day_delta=' + event.end.format() + '&minute_delta=' + delta.minutes + '&authenticity_token=' + FullcalendarEngine.Form.authenticity_token(),
-            dataType: 'script',
-            type: 'get',
-            url: routes_path + "/get_missing_persons",
-            error: function(xhr){
-              alert(JSON.parse(xhr.responseText)["message"])
-            },
-            success: function(data) {
-              alert(data);
-            }
-          });
+          $('.calendar').fullCalendar('destroy');
+          Cookies.set('calendar_all_day_mode', 'missing_persons'); 
+          full_calendar_options.allDayText = " missing ?";          
+          $('.calendar').fullCalendar(full_calendar_options);
+        }
+    },
+        button_template: {
+        text: 'templates',
+        click: function() {
+          $('.calendar').fullCalendar('destroy');
+          Cookies.set('calendar_all_day_mode', 'template'); 
+          full_calendar_options.allDayText = "Routines";          
+          $('.calendar').fullCalendar(full_calendar_options);
         }
     },
   };
   full_calendar_options.header = {
-      left: 'prev,next today button_5, button_10, button_30, button_verify',
+      left: 'prev,next today button_5, button_10, button_30, button_verify, button_template',
       center: 'title',
       right: 'month,agendaWeek,agendaDay'
   };
