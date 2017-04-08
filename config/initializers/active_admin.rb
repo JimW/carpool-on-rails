@@ -23,19 +23,36 @@ ActiveAdmin.setup do |config|
       title = ""
       if !current_user.nil?
         if current_user.has_role?(:admin)
-          title = current_user.current_carpool.organization.title_short + " Carpool: Admin"
+          title = current_user.current_carpool.organization.title_short + " Carpools: Admin"
         elsif current_user.has_role?(:manager, current_user.current_carpool)
-            title = current_user.current_carpool.organization.title_short + " Carpool: Manager"
+            title = current_user.current_carpool.organization.title_short + " Carpools: Manager"
         else
-          title = current_user.current_carpool.organization.title_short + " Carpool"
+          title = current_user.current_carpool.organization.title_short + " Carpools"
         end
       else
-        title = "Carpool"
+        title = "Carpools"
       end
 
       title += " DEV" if Rails.env.development?
       title
   }
+
+# Show list (or dropdown of) carpools available, clicking makes it the current and reloads XXX
+  config.namespace :admin do |admin|
+    admin.build_menu :utility_navigation do |menu|
+      menu.add  :label  => proc{ display_name current_user.current_carpool.title_short }, # email of the current admin user logged
+        :url            => proc { 'carpools#set-current/1' },
+        # :html_options   => {:style => 'float:left;'},
+        :id             => 'current_user',
+        :if  => proc{ current_user.is_admin? } do  |submenu|
+
+            submenu.add :label => 'Custom Link', 
+                        :url => proc { 'carpools#set-current/1' },
+                        :html_options   => {:display => 'table;'} 
+        end
+    end
+  end
+
 # https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md JW
   # config.namespace :admin do |admin|
   #   admin.build_menu do |menu|
@@ -254,11 +271,7 @@ ActiveAdmin.setup do |config|
   #
   # If you wanted to add a static menu item to the default menu provided:
   #
-  #   config.namespace :admin do |admin|
-  #     admin.build_menu :default do |menu|
-  #       menu.add label: "My Great Website", url: "http://www.mygreatwebsite.com", html_options: { target: :blank }
-  #     end
-  #   end
+
 
   # == Download Links
   #

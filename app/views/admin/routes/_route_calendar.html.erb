@@ -257,16 +257,16 @@ $(document).ready(function(){
         }
     },
         button_verify: {
-        text: 'verify',
+        text: 'missing',
         click: function() {
           $('.calendar').fullCalendar('destroy');
           Cookies.set('calendar_all_day_mode', 'missing_persons'); 
-          full_calendar_options.allDayText = " missing ?";          
+          full_calendar_options.allDayText = " Missing:";          
           $('.calendar').fullCalendar(full_calendar_options);
         }
     },
         button_template: {
-        text: 'templates',
+        text: 'routines',
         click: function() {
           $('.calendar').fullCalendar('destroy');
           Cookies.set('calendar_all_day_mode', 'template'); 

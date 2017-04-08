@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151028222655) do
+ActiveRecord::Schema.define(version: 20170329053442) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -43,6 +43,7 @@ ActiveRecord::Schema.define(version: 20151028222655) do
     t.integer "carpool_id"
     t.boolean "is_driver"
     t.boolean "is_passenger"
+    t.boolean "is_active",    default: true
   end
 
   add_index "carpool_users", ["carpool_id", "user_id"], name: "by_carpool_and_user", unique: true, using: :btree

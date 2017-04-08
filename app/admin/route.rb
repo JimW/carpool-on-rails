@@ -182,6 +182,16 @@ controller do
 
     cookies.permanent[:last_working_date] = @route.starts_at.iso8601
 
+    #  remove a user as passenger, when they are also the driver
+    if (params[:route][:passenger_ids] & params[:route][:driver_ids]).reject(&:empty?).any?
+      params[:route][:passenger_ids] -= params[:route][:driver_ids]
+      flash[:alert] = "Driver who was also set as Passenger, was automatically removed."
+    end
+
+    # Need to remove any assignments before I can add them, due to db constraints and how super.do does things..
+    # becareful that all the callbacks still work if I hace to manually process route stuff...
+    # XXX
+
     super do |success,failure|
       success.html {
         session[:last_route_id_edited] = @route.id

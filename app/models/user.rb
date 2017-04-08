@@ -1,3 +1,5 @@
+require 'json'
+
 class User < ActiveRecord::Base
 
   # include DirtyAssociations
@@ -5,23 +7,19 @@ class User < ActiveRecord::Base
   String.include CoreExtensions::String::NameFormatting
   validates :first_name, :last_name, presence: true
 
-  rolify :before_add => :before_add_method#, strict: true
-  def before_add_method(role)
-    # do something before it gets added
-  end
-  # acts_as_token_authenticatable
+  rolify strict: true
 
-  # __________________________ Relations: Locations
-
-  # The below can be found for now through carpool.organization
-  # belongs_to :organization, foreign_key: 'default_organization_id' # someday I'll use this as more of a setting, but for now, it's the one and only
   belongs_to :current_carpool, :class_name => :Carpool, foreign_key: 'current_carpool_id'
-  # belongs_to :lobby, :class_name => :Carpool, foreign_key: 'carpool_lobby_id'
+
+  # attr_accessor :is_active_in_carpool 
+  # is acessed within carpool associations via extend: UserIsActiveInCarpool 
+  # to allow for easy access to join model attributes
+  # http://stackoverflow.com/questions/25235025/rails-4-accessing-join-table-attributes
 
   has_many :carpool_users, :class_name => 'CarpoolUser', inverse_of: :user, :dependent => :destroy
   has_many :carpools, :class_name => 'Carpool', :through => :carpool_users, :source => :carpool
-  accepts_nested_attributes_for :carpool_users
-  accepts_nested_attributes_for :carpools
+  accepts_nested_attributes_for :carpool_users, allow_destroy: true
+  accepts_nested_attributes_for :carpools, allow_destroy: true
 
   has_many :is_home_locations,  -> {is_home}, :class_name => 'LocationUser', inverse_of: :user, :dependent => :destroy
   has_many :homes, :class_name => 'Location', :through => :is_home_locations, :source => :location
@@ -60,15 +58,20 @@ class User < ActiveRecord::Base
   accepts_nested_attributes_for :passenger_routes, allow_destroy: true
   accepts_nested_attributes_for :passenger_routine_routes, allow_destroy: true
 
-  has_many :memberships_as_driver,  -> {is_driver}, :class_name => 'CarpoolUser', inverse_of: :user, :dependent => :destroy
-  has_many :driver_memberships, -> { uniq }, :class_name => 'Carpool', :through => :memberships_as_driver, :source => :carpool
-  accepts_nested_attributes_for :memberships_as_driver, allow_destroy: true
-  accepts_nested_attributes_for :driver_memberships, allow_destroy: true
+  has_many :memberships_as_active, -> {is_active}, :class_name => 'CarpoolUser', inverse_of: :user#, :dependent => :destroy
+  has_many :active_carpools, -> { uniq }, :class_name => 'Carpool', :through => :memberships_as_active, :source => :carpool
+  accepts_nested_attributes_for :active_carpools, allow_destroy: true
+  accepts_nested_attributes_for :memberships_as_active, allow_destroy: true
 
-  has_many :memberships_as_passenger,  -> {is_passenger}, :class_name => 'CarpoolUser', inverse_of: :user, :dependent => :destroy
+  has_many :memberships_as_driver,  -> {is_driver}, :class_name => 'CarpoolUser', inverse_of: :user#, :dependent => :destroy
+  has_many :driver_memberships, -> { uniq }, :class_name => 'Carpool', :through => :memberships_as_driver, :source => :carpool
+  accepts_nested_attributes_for :memberships_as_driver
+  accepts_nested_attributes_for :driver_memberships
+
+  has_many :memberships_as_passenger,  -> {is_passenger}, :class_name => 'CarpoolUser', inverse_of: :user#, :dependent => :destroy
   has_many :passenger_memberships, -> { uniq }, :class_name => 'Carpool', :through => :memberships_as_passenger, :source => :carpool
-  accepts_nested_attributes_for :memberships_as_passenger, allow_destroy: true
-  accepts_nested_attributes_for :passenger_memberships, allow_destroy: true
+  accepts_nested_attributes_for :memberships_as_passenger
+  accepts_nested_attributes_for :passenger_memberships
 
   has_many :organization_users, :dependent => :destroy
   has_many :organizations, :through => :organization_users
@@ -77,35 +80,43 @@ class User < ActiveRecord::Base
 
   belongs_to :current_organization, :class_name => :Organization, foreign_key: 'current_organization_id'
 
+  scope :in_lobby, -> { joins(:carpools).merge(Carpool.lobbies) }
   scope :all_can_drive, -> {where :can_drive => true}
-  scope :all_can_not_drive, -> { where :can_drive => false}
   scope :all_google_calendar_subscribers, -> { where :subscribe_to_gcal => true}
 
-  # TODO: Verify need for all these allow_destroys
 # __________________________
 
-  # if can_drive is changing to false, remove any driving assiciations
-  before_save :reset_carpool_associations, :if => Proc.new {|user| user.can_drive_changed? }
-    def reset_carpool_associations
-      # p "reset_carpool_associations  _________________________________"
-      existing_carpool_ids = []
-      existing_carpool_ids = carpools.collect(&:id)
-      carpool_users.destroy_all if carpool_users.any?
-      save_route_ids # to use them to dirtify routes after_commit which is looking at can_drive_changed
-      route_users.destroy_all if route_users.any?
-
-      # recreate new membership associations with proper type
-      if can_drive # could a member be a driver in one and a passenger in another.. ???
-        # Better way to do this ???
-        existing_carpool_ids.each { |id|
-          driver_memberships << Carpool.find(id)
-        }
-      else
-        existing_carpool_ids.each { |id|
-          passenger_memberships << Carpool.find(id)
-        }
-      end
+  # if can_drive_changed to FALSE
+  before_save :remove_as_driver_in_all_carpools, :if => Proc.new {|user| user.can_drive_changed? && user.can_drive_change[NEWVAL]==false }
+  def remove_as_driver_in_all_carpools
+    p "remove_as_driver_in_all_carpools  _________________________________"      
+    driver_memberships.each do |carpool|
+      detail = carpool.driving_members.includes(:user).where(user_id: id).first # no better way?
+      detail.is_driver = false # triggers call to remove_from_routes_as_driver via carpool_user's before_update
+      detail.save
     end
+  end
+
+  def remove_from_routes_as_driver(carpool)
+      rts = driver_routes.where(carpool_id: carpool.id).all
+      rts.each { |r| 
+        r.remember_gcal_subscribers
+        r.drivers.destroy(self) 
+        r.save # triggers after_commit that updates google
+      }
+      update_calendars_for_dirty_routes(rts.pluck(:id)) # forces google calendars to update
+  end
+
+  def remove_from_all_routes(carpool)
+      rts = routes.where(carpool_id: carpool.id).all
+      rts.each { |r| 
+        r.remember_gcal_subscribers
+        r.drivers.destroy(self) 
+        r.passengers.destroy(self) 
+        r.save # triggers after_commit that updates google
+      }
+      update_calendars_for_dirty_routes(rts.pluck(:id)) # forces google calendars to update
+  end
 
     # untested !!!
     # before_save :reset_current_carpool_on_org_change, :if => Proc.new {|user| user.current_organization.changed? }
@@ -134,71 +145,91 @@ class User < ActiveRecord::Base
   #   end
 
   # ____________ For Proper Calendar Event Sync__________
-  before_destroy :save_route_ids, prepend: true # need the prepend when
-    def save_route_ids
-      @route_ids_affected = self.routes.collect(&:id)
+  before_destroy :remember_any_dirty_route_ids, prepend: true # need the prepend when
+  # WHY do this ????? XXX
+    def remember_any_dirty_route_ids(dirty_routes_ids = self.routes.collect(&:id))
+      @route_ids_affected = dirty_routes_ids
     end
 
-  after_commit :dirtify_associated_route_events, on: [:destroy, :update]
+  after_commit :dirtify_associated_route_events, on: [:update] 
     def dirtify_associated_route_events # so calendar get's updated
       # login causes unimportant updates, so we filter update events here
       # Only if a change will affect a google calendar, we force that entry to update
       #  WHat about the routes that got disassociated during the change
       # should just ignore the last_sign_in_at, current_sign_in_ip, sign_in_count, etc
-      if (transaction_include_any_action?([:destroy]) ||
-         (transaction_include_any_action?([:update]) &&
-            ( !previous_changes['email'].nil? ||
-              !previous_changes['first_name'].nil? ||
-              !previous_changes['last_name'].nil? ||
-              !previous_changes['home_phone'].nil? ||
-              !previous_changes['mobile_phone'].nil? ||
-              !previous_changes['can_drive'].nil?
-             )
-          )
-       )
-      #  Upon update of a route's times, how can I ensure that the _record_changes contains a value !!!
-        if previous_changes['can_drive']
-          # p "can_drive_changed_-------> and we already saved the old routes: " + @route_ids_affected.to_s
-        else
-          @route_ids_affected = self.routes.collect(&:id) if self.routes.any? # otherwise it's done before_destroy
-        end
-        p "dirtify_associated_route_events -------> route.make_dirty for: " + @route_ids_affected.to_s
-        @route_ids_affected.each do |route_id|
-          route = Route.find(route_id)
-          route.make_dirty(route.google_calendar_subscribers.pluck(:id))
-          # Should flag as modified via an automated change tracking system, already partially implemented via templates !!!
-          route.save
-        end unless @route_ids_affected.nil?
+
+      if (  !previous_changes['email'].nil? ||
+            !previous_changes['first_name'].nil? ||       
+            !previous_changes['last_name'].nil? ||
+            !previous_changes['home_phone'].nil? ||
+            !previous_changes['mobile_phone'].nil?  
+         )
+            route_ids_affected = self.routes.collect(&:id) if self.routes.any? # otherwise it's done before_destroy
+            p "route_ids_affected = " + route_ids_affected.to_s
+            update_calendars_for_dirty_routes(route_ids_affected) # THIS is where the 2nd time after the initial 
       end
     end
+
+    # This should be consolidated within routes
+    def update_calendars_for_dirty_routes(route_ids)
+      p "update_calendars_for_dirty_routes: " + route_ids.to_s
+      # TODO: pile all the data gcal needs here into a hash and do a mass assign via gcal API !!!
+      route_ids.each do |id|
+        route = Route.find(id)
+        route.make_dirty(route.google_calendar_subscribers.pluck(:id))
+        # Should flag as modified via an automated change tracking system, already partially implemented via templates !!!
+        route.save
+      end unless route_ids.nil?
+    end
+    
     # __________________________________________________________________________
 
-  # def manages
-  #     Carpool.with_role(:manager, self)
-  # end
-
   after_commit :create_destroy_personal_google_calendar, on: [:update], :if => Proc.new { |record| record.previous_changes.key?(:subscribe_to_gcal) }
-                                                                        # Only if the subscribe_to_gcal changed
-    def create_destroy_personal_google_calendar
-      GcalUserCreateDestroyCalendarsJob. perform_later self
-    end
+      def create_destroy_personal_google_calendar
+        if self.subscribe_to_gcal?
+          #create/populate all org calendars - blocking
+          GcalUserCreatePopulateOrgCalendarsJob.perform_now self # this needs to be blocking the calendars will be needed
+          # share carpool calendars
+          self.carpools.each do |carpool|
+            GcalUserSubscribeCarpoolCalendarJob.perform_later(self, carpool.google_calendar_id) unless (!carpool.publish_to_gcal? || carpool.google_calendar_id.blank?)
+          end
+        else
+          delete_unshare_all_google_calendars
+        end
+      end
+
+  before_destroy :delete_unshare_all_google_calendars, :if => Proc.new { |record| !record.subscribe_to_gcal? }
+      def delete_unshare_all_google_calendars
+        self.organization_users.each do |orguser|
+          GcalDeleteCalendarJob.perform_now(orguser.personal_gcal_id) unless orguser.personal_gcal_id.blank?
+          orguser.personal_gcal_id = nil
+          orguser.save
+        end
+        self.carpools.each do |carpool|
+          GcalUserUnsubscribeCarpoolCalendarJob.perform_now(self, carpool.google_calendar_id) unless carpool.google_calendar_id.blank?
+        end
+      end
+
+  def subscribe_carpool_calendar (carpool)
+  end
 
   def personal_gcal_id_for(org_id)
     self.organization_users.where(organization_id: org_id).first.personal_gcal_id
   end
 
   # Called from Carpool upon a Carpool deletion, in case it was referenced as a current_carpool
+  # this whole idea is dangerous once people start logging in, having people's current_carpools shift from underneath them
   def reset_current_carpool
-    if carpools.any? && (carpools.count > 1)
-      p "self.current_carpool = carpools.first"
-      self.current_carpool = carpools.first # or maybe smarter to attach to last updated or something !!!
+    if carpools.exists? && (carpools.count > 1)
+      self.current_carpool = carpools.where.not(:title => LOBBY).first # Add self.carpool_history !!!
+      p "self.current_carpool = " + self.current_carpool.title
     else
-      default_carpool = Carpool.find(title_short: "Lobby").first
+      default_carpool = Carpool.find_by(title_short: LOBBY)
       self.current_carpool = default_carpool
       p "self.current_carpool = default_carpool"
     end
     save
-    # lobby = Carpool.where(:title => "Lobby").first # change to org.lobby !!!
+    # lobby = Carpool.where(:title => LOBBY).first # change to org.lobby !!!
   end
 
   def full_name
@@ -259,7 +290,5 @@ class User < ActiveRecord::Base
   #
   #   super && account_active?
   # end
-
-  # ____________________________________________________________________________
 
 end

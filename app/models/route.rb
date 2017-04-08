@@ -84,11 +84,11 @@ class Route < ActiveRecord::Base
   accepts_nested_attributes_for :locations, allow_destroy: true
 
   has_many :is_driver_users, -> {is_driver}, :class_name => 'RouteUser', inverse_of: :route, :dependent => :destroy
-  has_many :drivers, -> { uniq }, :class_name => 'User', :through => :is_driver_users, :source => :user#, :after_add => :after_driver_add, :after_remove => :after_driver_remove
+  has_many :drivers, -> { all_can_drive }, :class_name => 'User', :through => :is_driver_users, :source => :user#, :after_add => :after_driver_add, :after_remove => :after_driver_remove
   # monitor_association_changes :drivers
 
   has_many :is_passenger_users, -> {is_passenger}, :class_name => 'RouteUser', inverse_of: :route, :dependent => :destroy
-  has_many :passengers, -> { all_can_not_drive }, :class_name => 'User', :through => :is_passenger_users, :source => :user#, :before_add => :remember_previous_subscribers, :before_remove => :remember_previous_subscribers
+  has_many :passengers, -> { uniq }, :class_name => 'User', :through => :is_passenger_users, :source => :user#, :before_add => :remember_previous_subscribers, :before_remove => :remember_previous_subscribers
   # monitor_association_changes :passengers
 
   has_many :is_routine_driver_users, -> {is_driver}, :class_name => 'RouteUser', inverse_of: :route, :dependent => :destroy
@@ -96,11 +96,12 @@ class Route < ActiveRecord::Base
   # monitor_association_changes :routine_drivers
 
   has_many :is_routine_passenger_users,  -> {is_passenger}, :class_name => 'RouteUser', inverse_of: :route, :dependent => :destroy
-  has_many :routine_passengers, -> {all_can_not_drive}, :class_name => 'User', :through => :is_routine_passenger_users, :source => :user, :dependent => :destroy#, :after_add => :make_dirty, :after_remove => :make_dirty
+  has_many :routine_passengers, -> {uniq}, :class_name => 'User', :through => :is_routine_passenger_users, :source => :user, :dependent => :destroy#, :after_add => :make_dirty, :after_remove => :make_dirty
   # monitor_association_changes :routine_passengers
 
-  has_many :route_users, inverse_of: :route
+  has_many :route_users, :class_name => 'RouteUser', inverse_of: :route
   has_many :google_calendar_subscribers, -> { all_google_calendar_subscribers }, :class_name => 'User', :through => :route_users, :source => :user, :after_remove => :make_dirty, :after_add => :make_dirty
+  accepts_nested_attributes_for :route_users
 
   # before_validation
   before_save :set_as_modified_instance#, :set_as_special_if_start_changes
@@ -139,6 +140,7 @@ class Route < ActiveRecord::Base
       # Should use a status flag here !!! because maybe the API will fail and need a way to know that things are out of sync
 
       if (category.to_sym != :template)
+        # Move some of this into Event class  !!!
         event_data = {
           location: first_stop_street_city,
           start_iso8601: event.starttime.iso8601,
@@ -164,12 +166,12 @@ class Route < ActiveRecord::Base
 
   after_commit :create_google_event, on: [:create]
     def create_google_event
-      GcalRouteCreateEventsJob.perform_later self
+      GcalRouteCreateEventsJob.perform_later self # the job will figure out if calendars are even enabled
     end
 
   after_commit :update_google_event, on: [:update]
     def update_google_event
-      GcalRouteUpdateEventsJob.perform_later self, self.subscriber_ids_previous
+      GcalRouteUpdateEventsJob.perform_later self, self.subscriber_ids_previous 
     end
 
   def first_stop_street_city

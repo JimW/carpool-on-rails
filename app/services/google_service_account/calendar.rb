@@ -131,13 +131,24 @@ class GoogleServiceAccount::Calendar
     cal
   end
 
-  def add_all_personal_events_to_gcal(user, org)
-    org.carpools.collect(&:id).each do |carpool_id|
-      user_carpool_routes = user.routes.where(carpool_id: carpool_id)
-      user_carpool_routes.each do |route|
-        cid = user.personal_gcal_id_for(org.id) # Move up out of loop !!!
-        event_add(cid, route.to_google_event)
+  def add_all_events_to_personal_org_calendar(user, org)
+    p "____________________________________ ADDING ALL PERSONAL EVENTS ---- > WHY ADDING EVENT TWICE ???"
+    #TODO https://developers.google.com/api-client-library/ruby/guide/batch
+    if user.present? && org.present?
+      cid = user.personal_gcal_id_for(org.id) 
+      if cid.present?
+        # insert events into personal calendar for each assigned route in every carpool
+        org.carpools.collect(&:id).each do |carpool_id|
+          user_carpool_routes = user.routes.where(carpool_id: carpool_id)
+          user_carpool_routes.each do |route|
+            p "add_all_events_to_personal_org_calendar: adding route"
+            event_add(cid, route.to_google_event)
+          end
+        end
+      else
+        p "add_all_events_to_personal_org_calendar: ++++++++++++++++++++++++++ no personal_gcal_id"
       end
+      
     end
   end
 
@@ -158,12 +169,8 @@ class GoogleServiceAccount::Calendar
   # end
 
   def unshare(cal_id, share_email)
-    #  p "About top UNshare: " + share_email + " with cal_id: " + cal_id
     acls = cservice.list_acls(cal_id)
     acl_rule = acls.items.select { |acl| acl.scope.value.eql? share_email}
-    # p "HIYA acl_rule.id = " + acl_rule[0].id
-    # or just construct?
-    # rule_id = "user:" + share_email
     cservice.delete_acl(cal_id, acl_rule[0].id) { |result, err|
       # TODO
     } unless acl_rule[0].nil?
@@ -242,13 +249,14 @@ class GoogleServiceAccount::Calendar
   end
 
   def event_add(cal_id, google_event)
-    if !google_event.nil?
-      p "About to insert_event $$$: " + google_event.summary + " with " + google_event.id.to_s + " into " + cal_id
+    puts "____ event_add CALLER = " + caller[0]
+    if !google_event.nil? && !cal_id.nil?
+      #  p "About to insert_event $$$: " #+ google_event.summary + " with " + google_event.id.to_s + " into " + cal_id
       cservice.insert_event(cal_id, google_event) { |res, err|
         case err.to_s
       when 'duplicate: The requested identifier already exists.' 
           # watch out, they change this text ... must find some static codes I can use from somewhere, just use delete_all_calendars task and you're safe
-          p "insert_event found duplicate ________________, assuming it's really marked as cancelled"
+          p "insert_event found duplicate ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++, assuming it's really marked as cancelled"
           event_undelete(cal_id, google_event)
         when 'forbidden'
           p "forbidden ________________"
@@ -259,7 +267,7 @@ class GoogleServiceAccount::Calendar
         #  p "calendar.insert_event RESPONSE = " + res.to_s if !res.nil?
       }
     else
-      p "event_add:  google_event is NULL +++++++++++++++++++++++++++++++++++++++++"
+      p "event_add:  google_event or cal_id is NULL +++++++++++++++++++++++++++++++++++++++++"
     end
   end
 

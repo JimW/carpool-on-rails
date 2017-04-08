@@ -368,7 +368,7 @@ The following are some of the components used in this project:
 
 - You can look at the Error events within the Google API Dashboard.
 
-- Google does not really delete calendar events, but marks it as cancelled (because google remembers everything you give it..), keep that in mind if you reuse an id which will happen if you refresh the development or staging databases but don't delete and recreate any generated google calendars.  The event_ids that are sent to google will restart at 1 and when you try and insert it will fail with an "already exhists" error (although it's been marked as deleted).  I'm not really passing in a guaranteed to be unique universal resource ID right now, but it's not really necessary if you run the rake task, rebuild_dev, that will reset the db AND also delete all the google calendars.  A work around was to retry as an update for that particular type of failed insert.. The code for doing this is remmed out.  Instead of deleting the event, it moves them to a trash calendar.  Not really important now if you use the rebuild_dev task while developing, just saying..
+- Google does not really delete calendar events, but marks it as cancelled (because google remembers everything you give it..), keep that in mind if you reuse an id which will happen if you refresh the development or staging databases but don't delete and recreate any generated google calendars.  The event_ids that are sent to google will restart at 1 and when you try and insert it will fail with an "already exists" error (although it's been marked as deleted).  I'm not really passing in a guaranteed to be unique universal resource ID right now, but it's not really necessary if you run the rake task, rebuild_dev, that will reset the db AND also delete all the google calendars.  A work around was to retry as an update for that particular type of failed insert.. The code for doing this is remmed out.  Instead of deleting the event, it moves them to a trash calendar.  Not really important now if you use the rebuild_dev task while developing, just saying..
 
     - ```bundle exec rake gs:delete_all_calendars``` can be used to wipe out all the calendars within an environment's service account. It is called within rebuild_dev and should be done whenever you reset the db.
 
@@ -428,7 +428,7 @@ Batch actions (for Delete) should work on heroku, but not locally for some JSy r
 
 - Add Google Analytics config just for fun
 
-- If already logged in, being sent to invisible read-only calendar page instead of Routes page
+- If already logged in, being sent to read-only calendar page instead of Routes page
 
 - Bundler warning when pushing to heroku, version mismatch
 
@@ -451,13 +451,9 @@ Batch actions (for Delete) should work on heroku, but not locally for some JSy r
 - Carpool Page
   - Add a has_one lobby to Carpool instead of all this "Lobby" stuff in the code, but make sure that association is a carpool with "Lobby" as the name, fix up all the Lobby code accordingly
   - upon deletion of Carpool, need to disable google sync first.
-  - Renaming Carpool does not makedirty the routes and update google calendars
   - Carpool model -> short_name, title_short (pick one..)
-  - Upon new Carpool, must create it first, then go back and add drivers,passengers,locations.  That's a bug
-  - Upon adding a carpool member, check to see if that member has any carpools beyond Lobby, and if not set their current_carpool to that carpool.
   - Give more resolution into Access rights, allow for manger for specific carpool
   - Renaming Carpool will not rename associated google calendars' titles
-  - Allow Carpools to be moved across organizations.  Untested what would happen right now so don't change the Org for a carpool..
   - Renaming carpool won't propagate to calendars, also it's using title vs title_short in calendars
 
 
@@ -466,11 +462,10 @@ Batch actions (for Delete) should work on heroku, but not locally for some JSy r
 
 
 - Members Page
-  - Deleting members should only delete them if you are looking at the Lobby (which only an admin can do), should just disassociate them from carpool.
 
 
 - UI
-  - Should probably add some kind of "are you sure" when deleting events, especially in batch
+  - Should add some kind of "are you sure" when deleting events, especially in batch
   - Set_current_carpool should be available as dropdown at highlevel in UI
   - Route Templates is only partially implemented. Need to think this through more
     - Have Routine must be associated with day of the week and it's instances behave in a way that makes sense relative to their actual date instance. There can be multiple instances with varying states. get_events
@@ -501,7 +496,6 @@ Batch actions (for Delete) should work on heroku, but not locally for some JSy r
 
 
 - Tests and Rakes
-  - Implement carpool_routes_missing to ensure each active passenger has 2 rides each day.  Implement concept of "active" within carpool_user
   - GCal services
 
 

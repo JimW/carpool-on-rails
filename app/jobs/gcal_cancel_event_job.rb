@@ -9,6 +9,4 @@ class GcalCancelEventJob < ActiveJob::Base
       gs.event_delete(gcal_id, evt)
   end
 
-  # after_perform !!! update DB
-
 end

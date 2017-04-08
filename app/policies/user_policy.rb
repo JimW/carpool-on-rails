@@ -38,7 +38,11 @@ class UserPolicy < ApplicationPolicy
       # if user.is_admin?
       #   scope.all
       # else
-        user.current_carpool.users.all
+      # ordered_by_active
+      # Users.all_attributes_with_current_carpool(user.id).all
+      user.current_carpool.users.all
+
+        # User.all_attributes_with_current_carpool(user)
       # else
       # combine all members for all carpools or (as yet to be defined relationship to kids of a parent) that user manages?
         # user.manages

@@ -10,9 +10,9 @@ class GcalRouteUpdateEventsJob < ActiveJob::Base
     # So here we have to deal with cases where google subscribers are added/removed and update their calendars accordingly
     # subscriber_ids_previous set within the controller and also within the
     # make_dirty triggerred by the fullcalendar_engine model override
+    subscriber_ids_previous = [] if subscriber_ids_previous.nil?  
 
     subscriber_ids_current = rte.google_calendar_subscribers.pluck(:id)
-
     added_user_ids = Array(subscriber_ids_current) - Array(subscriber_ids_previous)
     deleted_user_ids = Array(subscriber_ids_previous) - Array(subscriber_ids_current)
     updated_user_ids = (Array(subscriber_ids_current) - Array(deleted_user_ids)) - Array(added_user_ids)
@@ -37,21 +37,23 @@ class GcalRouteUpdateEventsJob < ActiveJob::Base
       else
         # Say something nice, but not !!!
       end
+      
+      # Careful with this when adding a user because if the job creating the personal_cal is not finished, it will crap out !!!
 
       goo_event = rte.to_google_event
 
       deleted_user_ids.each do |user_id|
-        google_cal_id = User.find_by(id: user_id).personal_gcal_id_for(rte.carpool.organization.id)
+        google_cal_id = User.find(user_id).personal_gcal_id_for(rte.carpool.organization.id)
         gs.event_delete(google_cal_id, goo_event) if !google_cal_id.blank?
       end unless (deleted_user_ids.empty?)
 
       added_user_ids.each do |user_id|
-        google_cal_id = User.find_by(id: user_id).personal_gcal_id_for(rte.carpool.organization.id)
+        google_cal_id = User.find(user_id).personal_gcal_id_for(rte.carpool.organization.id)
         gs.event_add(google_cal_id, goo_event) # think this is getting called during an update !!!  (the event is already there for user) . why is event null? Calendars Seems OK thogh...
       end unless (added_user_ids.empty?)
 
       updated_user_ids.each do |user_id|
-        google_cal_id = User.find_by(id: user_id).personal_gcal_id_for(rte.carpool.organization.id)
+        google_cal_id = User.find(user_id).personal_gcal_id_for(rte.carpool.organization.id)
         gs.event_update(google_cal_id, goo_event)
       end unless (updated_user_ids.empty?)
 

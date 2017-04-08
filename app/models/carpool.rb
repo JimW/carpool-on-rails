@@ -9,24 +9,35 @@ class Carpool < ActiveRecord::Base
   has_many :carpool_locations, inverse_of: :carpool, :dependent => :destroy
   has_many :locations, :through => :carpool_locations
   accepts_nested_attributes_for :carpool_locations, allow_destroy: true
-  accepts_nested_attributes_for :locations, allow_destroy: true 
+  accepts_nested_attributes_for :locations, allow_destroy: true
 
-  # has_many :active_members, -> {is_active}, :class_name => 'CarpoolUser', inverse_of: :carpool, :dependent => :destroy
+  has_many :active_passenger_members, -> {is_active.is_passenger}, :class_name => 'CarpoolUser', inverse_of: :carpool
+  has_many :active_passengers, :class_name => 'User', :through => :active_passenger_members, :source => :user
 
-  has_many :driving_members, -> {is_driver}, :class_name => 'CarpoolUser', inverse_of: :carpool, :dependent => :destroy
-  has_many :drivers, -> { all_can_drive }, :class_name => 'User', :through => :driving_members, :source => :user#, :after_add => :make_dirty, :after_remove => :make_dirty
-  accepts_nested_attributes_for :driving_members, allow_destroy: true
-  accepts_nested_attributes_for :drivers, allow_destroy: true
+  has_many :active_driving_members, -> {is_active.is_driver}, :class_name => 'CarpoolUser', inverse_of: :carpool
+  has_many :active_drivers, -> { all_can_drive }, :class_name => 'User', :through => :active_driving_members, :source => :user
 
-  has_many :passenger_members, -> {is_passenger}, :class_name => 'CarpoolUser', inverse_of: :carpool, :dependent => :destroy
-  has_many :passengers, -> { all_can_not_drive }, :class_name => 'User', :through => :passenger_members, :source => :user#, :after_add => :make_dirty, :after_remove => :make_dirty
-  accepts_nested_attributes_for :passenger_members, allow_destroy: true
-  accepts_nested_attributes_for :passengers, allow_destroy: true
+  has_many :active_members, -> {is_active}, :class_name => 'CarpoolUser', inverse_of: :carpool
+  has_many :active_users, -> {uniq}, :class_name => 'User', :through => :active_members, :source => :user
+  accepts_nested_attributes_for :active_members
+  accepts_nested_attributes_for :active_users
+
+  has_many :driving_members, -> {is_driver}, :class_name => 'CarpoolUser', inverse_of: :carpool
+  has_many :drivers, -> {all_can_drive}, :class_name => 'User', :through => :driving_members, :source => :user#, :after_add => :make_dirty, :after_remove => :make_dirty
+  accepts_nested_attributes_for :driving_members
+  accepts_nested_attributes_for :drivers
+
+  has_many :passenger_members, -> {is_passenger}, :class_name => 'CarpoolUser', inverse_of: :carpool
+  has_many :passengers, :class_name => 'User', :through => :passenger_members, :source => :user#, :after_add => :make_dirty, :after_remove => :make_dirty
+  accepts_nested_attributes_for :passenger_members
+  accepts_nested_attributes_for :passengers
 
   has_many :unique_members, -> {uniq}, :class_name => 'CarpoolUser', inverse_of: :carpool, :dependent => :destroy
-  has_many :users, :class_name => 'User', :through => :unique_members, :source => :user
+  has_many :users, -> {uniq}, :through => :unique_members, :class_name => 'User'
   has_many :google_calendar_subscribers, -> {all_google_calendar_subscribers}, :class_name => 'User', :through => :unique_members, :source => :user
-
+  accepts_nested_attributes_for :unique_members, allow_destroy: true
+  accepts_nested_attributes_for :google_calendar_subscribers
+  accepts_nested_attributes_for :users, allow_destroy: true
   # before_destroy :create_destroy_carpool_google_calendar
   #   def destroy_carpool_google_calendar
   #     # Need to isolate parameters from (should really move all this out of destroy and place into some kind of CANCEL state !!!)
@@ -42,7 +53,7 @@ class Carpool < ActiveRecord::Base
   # before_destroy :reset_users_current_carpools
     def reset_users_current_carpools
       users.each do |user|
-        user.reset_current_carpool
+        user.reset_current_carpool #if user.current_carpool == self
       end unless users.empty?
     end
 
@@ -62,9 +73,11 @@ class Carpool < ActiveRecord::Base
     }
     email_str
   end
+# ________________________________________
 
+  scope :lobbies, -> {where title: LOBBY}
 
- def get_missing_persons(working_week)
+  def get_missing_persons(working_week)
       # Grab the week their looking at
       # @working_week = cookies[:last_viewing_moment] ? cookies[:last_viewing_moment] : "2015 09 12" #YYYY MM DD
       # This will be a Sunday, even if the cal is Mon-Fri
@@ -117,4 +130,8 @@ class Carpool < ActiveRecord::Base
     return routes
   end
 
+  def is_lobby?
+    (title_short == LOBBY)
+  end
+  
 end

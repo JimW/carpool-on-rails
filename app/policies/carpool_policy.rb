@@ -10,11 +10,11 @@ class CarpoolPolicy < ApplicationPolicy
   end
 
   def create?
-    (user.has_role? :admin) && (record.title_short != "Lobby")
+    (user.has_role? :admin) && (!record.is_lobby?)
   end
 
   def update?
-    (user.has_role? :admin) || (user.has_role?(:manager, user.current_carpool) && record.title_short != "Lobby")
+    (user.has_role? :admin) || (user.has_role?(:manager, user.current_carpool) && !record.is_lobby?)
   end
 
   def destroy?
@@ -38,10 +38,10 @@ class CarpoolPolicy < ApplicationPolicy
     end
     def resolve
       if user.is_admin?
-        scope.all   # this won't work if an admin is editing on behalf of the user... !!! ??? What was I thinking here?
+        scope.all   
       else
         # scope.where(:published => true)
-        user.carpools.where.not(title_short: "Lobby")# needs to actually belong to a carpool, as a driver or passenger..
+        user.carpools.where.not(title_short: LOBBY)
       end
     end
   end
