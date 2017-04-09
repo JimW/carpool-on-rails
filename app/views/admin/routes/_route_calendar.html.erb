@@ -202,14 +202,14 @@ $(document).ready(function(){
       $('.fc-button_30-button').show();
 
       var calendar_all_day_mode = Cookies.get('calendar_all_day_mode');
-      if (calendar_all_day_mode == 'template') { 
-        $('.fc-button_verify-button').show();
-        $('.fc-button_template-button').hide();
+      if (calendar_all_day_mode == 'missing_persons') { 
+        $('.fc-button_verify-button').hide();
+        $('.fc-button_template-button').show();
       } 
       else
       {
-        $('.fc-button_verify-button').hide();
-        $('.fc-button_template-button').show();
+        $('.fc-button_verify-button').show();
+        $('.fc-button_template-button').hide();
       }
     }
   };

@@ -20,7 +20,7 @@ class GcalCarpoolCreateDestroyCalendarsJob < ActiveJob::Base
       end
 
       cp.routes.each do |route|
-        p "GcalCarpoolCreateDestroyCalendarsJob"
+        # p "GcalCarpoolCreateDestroyCalendarsJob"
         gs.event_add(new_cal_id, route.to_google_event)
       end # add error handling !!!
 

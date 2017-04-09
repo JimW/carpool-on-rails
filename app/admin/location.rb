@@ -3,7 +3,6 @@ ActiveAdmin.register Location do
 menu label: "Locations", priority: 4
 
 config.filters = false
-# filter :city
 
 permit_params do
   permitted = [

@@ -171,8 +171,20 @@ class Route < ActiveRecord::Base
 
   after_commit :update_google_event, on: [:update]
     def update_google_event
-      GcalRouteUpdateEventsJob.perform_later self, self.subscriber_ids_previous 
+      if (self.category.to_sym != :template)
+        GcalRouteUpdateEventsJob.perform_later(self, self.subscriber_ids_previous) 
+      end
     end
+
+  def self.batch_update_calendars_for(route_ids)
+    # makes this a batch request !!! (it's called from User when it's meta changes)
+    route_ids.each do |id|
+      route = Route.find(id)
+      route.remember_gcal_subscribers # yuck !!! this whole mechanism.. 
+      route.make_dirty(route.google_calendar_subscribers.pluck(:id))
+      route.save
+    end unless route_ids.nil?
+  end
 
   def first_stop_street_city
     result = ""
@@ -189,7 +201,7 @@ class Route < ActiveRecord::Base
   end
 
   def self.get_events(cat)
-    p "self.get_events(cat) ____________________________________________________________________________________________"
+    # p "self.get_events(cat) ____________________________________________________________________________________________"
     @routes = Route.where(:category => Route.categories[cat])
     events = []
     @routes.each do |route|
@@ -274,8 +286,8 @@ class Route < ActiveRecord::Base
     passenger_txt = ""
     if self.passengers.any?
       passenger_txt = "_________ " + self.passengers.count.to_s + " Passengers: _________\n" + self.passengers.map { |p| p.full_name_with_mobile_phone }.join("\n")
-    # else
-    #   passenger_txt = "No Passengers!\n"
+    else
+      passenger_txt = "No Passengers!\n"
     end
     passenger_txt
   end
@@ -284,8 +296,8 @@ class Route < ActiveRecord::Base
     driver_txt = ""
     if self.drivers.any?
       driver_txt = "Driver(s):\n" + self.drivers.map { |d| d.full_name_with_mobile_phone }.join("\n")
-    # else
-    #   driver_txt = "No Driver!\n"
+    else
+      driver_txt = "No Driver!\n"
     end
     driver_txt
   end

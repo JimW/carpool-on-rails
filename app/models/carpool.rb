@@ -85,7 +85,6 @@ class Carpool < ActiveRecord::Base
       missing_persons = {}
       start_date = Date.iso8601(working_week)
       end_date = start_date + 6.days
-      all_passengers = passengers
       routes_within_range = routes.select {|r| r.starts_at.to_date.between?(start_date, end_date)}
 
       start_date.upto(end_date) do |date|
@@ -101,9 +100,8 @@ class Carpool < ActiveRecord::Base
         end
 
         passenger_ride_cnts = passengers_for_day.each_with_object(Hash.new(0)) { |p, counts| counts[p] += 1 }
-        # passenger_ride_cnts.each_pair {|key,value| p " ************** #{key} = #{value}"}
 
-        all_passengers.each do |p|
+        active_passengers.each do |p|
           if (passenger_ride_cnts[p.first_name] < 2)
             missing_persons[date][p.first_name] = passenger_ride_cnts[p.first_name]
           end
@@ -113,22 +111,6 @@ class Carpool < ActiveRecord::Base
 
       return missing_persons
     end
-
-  # TBD !!!
-  def missing_routes(date_range)
-    missing_routes = []
-    passengers.each do |p|
-      # get dates for current week
-      # check that each date has 2 routes for passenger
-      p "user.full_name = " + full_name
-    end unless passengers.empty?
-    return missing_routes
-  end
-
-  def routes_for_day(user, date)
-    routes = []
-    return routes
-  end
 
   def is_lobby?
     (title_short == LOBBY)

@@ -72,19 +72,16 @@ class GoogleServiceAccount::Calendar
     end
   end
 
-  def remove_all_secondary
-    # show_hidden: true, show_deleted: true, max_results: 249
-    # cservice.batch do |cservice|
-      cservice.list_calendar_lists.items.each do |list_entry|
-        if !list_entry.primary
-          cservice.delete_calendar(list_entry.id) { |result, err|
-          }
-        end
+  def remove_all_secondary(cservice = self.cservice)
+    calendars_to_delete = cservice.list_calendar_lists.items
+    cservice.batch do |cservice|
+      calendars_to_delete.each do |list_entry|
+        cservice.delete_calendar(list_entry.id) { |result, err| } if !list_entry.primary
       end
-    # end
+    end if calendars_to_delete.any?
   end
 
-  def remove_calendars(cal_name)
+  def remove_calendars(cal_name, cservice = self.cservice) # Not used
     cservice.list_calendar_lists.items.each do |list_entry|
       if list_entry.summary == cal_name
         cservice.delete_calendar(list_entry.id) { |result, err|
@@ -116,7 +113,7 @@ class GoogleServiceAccount::Calendar
     # cannotChangeOrganizer error catch
   end
 
-  def find_or_create_calendar(cal_name)
+  def find_or_create_calendar(cal_name, cservice = self.cservice)
     cal = nil
     cservice.list_calendar_lists.items.each do |list_entry|
       if list_entry.summary == cal_name
@@ -131,8 +128,7 @@ class GoogleServiceAccount::Calendar
     cal
   end
 
-  def add_all_events_to_personal_org_calendar(user, org)
-    p "____________________________________ ADDING ALL PERSONAL EVENTS ---- > WHY ADDING EVENT TWICE ???"
+  def add_all_events_to_personal_org_calendar(user, org, cservice = self.cservice)
     #TODO https://developers.google.com/api-client-library/ruby/guide/batch
     if user.present? && org.present?
       cid = user.personal_gcal_id_for(org.id) 
@@ -140,15 +136,16 @@ class GoogleServiceAccount::Calendar
         # insert events into personal calendar for each assigned route in every carpool
         org.carpools.collect(&:id).each do |carpool_id|
           user_carpool_routes = user.routes.where(carpool_id: carpool_id)
-          user_carpool_routes.each do |route|
-            p "add_all_events_to_personal_org_calendar: adding route"
-            event_add(cid, route.to_google_event)
-          end
+          cservice.batch do |cservice|
+            user_carpool_routes.each do |route|
+              p "_______________ add_all_events_to_personal_org_calendar: adding route"
+              event_add(cid, route.to_google_event, cservice)
+            end
+          end if user_carpool_routes.any?
         end
       else
         p "add_all_events_to_personal_org_calendar: ++++++++++++++++++++++++++ no personal_gcal_id"
       end
-      
     end
   end
 
@@ -158,7 +155,7 @@ class GoogleServiceAccount::Calendar
     new_cal
   end
 
-  def delete(cal_id)
+  def delete(cal_id, cservice = self.cservice)
     cservice.delete_calendar(cal_id) do |result, err|
     end
   end
@@ -168,7 +165,7 @@ class GoogleServiceAccount::Calendar
   #   end
   # end
 
-  def unshare(cal_id, share_email)
+  def unshare(cal_id, share_email, cservice = self.cservice)
     acls = cservice.list_acls(cal_id)
     acl_rule = acls.items.select { |acl| acl.scope.value.eql? share_email}
     cservice.delete_acl(cal_id, acl_rule[0].id) { |result, err|
@@ -180,7 +177,7 @@ class GoogleServiceAccount::Calendar
     share(cal_id, share_email, "reader")
   end
 
-  def share(cal_id, share_email, role)
+  def share(cal_id, share_email, role, cservice = self.cservice)
     # p "About top share: " + share_email + " with cal_id: " + cal_id
     acl_scope = Google::Apis::CalendarV3::AclRule::Scope.new
     acl_scope.type = :user
@@ -193,14 +190,14 @@ class GoogleServiceAccount::Calendar
     }
   end
 
-  def add_secondary_calendar(cal_name)
+  def add_secondary_calendar(cal_name, cservice = self.cservice)
     new_cal = Google::Apis::CalendarV3::Calendar.new(summary: cal_name)
     new_cal = cservice.insert_calendar(new_cal) do |result, err|
     end
     new_cal
   end
 
-  def event_undelete(cal_id, google_event)
+  def event_undelete(cal_id, google_event, cservice = self.cservice)
     # check valids params !!!
     # p "calendar: event_undelete for HEY summary = " + google_event.summary
     # Clean this up !!!
@@ -218,7 +215,7 @@ class GoogleServiceAccount::Calendar
     }
   end
 
-  def event_delete(cal_id, google_event)
+  def event_delete(cal_id, google_event, cservice = self.cservice)
     # Passing google_event in case the delete fails due to the status marked as cancelled
     event_id_hex = !google_event.nil? ? google_event.id : nil
     # p "+++++++++++++++++++++++++++++++++++++++++++++++++ calendar: event_delete for " + google_event.summary
@@ -248,7 +245,7 @@ class GoogleServiceAccount::Calendar
     end
   end
 
-  def event_add(cal_id, google_event)
+  def event_add(cal_id, google_event, cservice = self.cservice) # pass cservice so it can be passed in by batching callers
     puts "____ event_add CALLER = " + caller[0]
     if !google_event.nil? && !cal_id.nil?
       #  p "About to insert_event $$$: " #+ google_event.summary + " with " + google_event.id.to_s + " into " + cal_id
@@ -271,7 +268,7 @@ class GoogleServiceAccount::Calendar
     end
   end
 
-  def event_update(cal_id, google_event)
+  def event_update(cal_id, google_event, cservice = self.cservice)
     if google_event
       cservice.update_event(cal_id, google_event.id, google_event) { |res, err|
         # case err
@@ -280,7 +277,7 @@ class GoogleServiceAccount::Calendar
         # end
         if err
           # possible errors 'duplicate'
-          p "calendar.event_update ERROR = " + err.to_s
+          p "++++++++++++++++++++++++++++++++++++++++++++++++++ calendar.event_update ERROR = " + err.to_s
         #else
           #p "calendar.event_update RESPONSE = " + res.to_s
         end

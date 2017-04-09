@@ -38,20 +38,20 @@ ActiveAdmin.setup do |config|
   }
 
 # Show list (or dropdown of) carpools available, clicking makes it the current and reloads XXX
-  config.namespace :admin do |admin|
-    admin.build_menu :utility_navigation do |menu|
-      menu.add  :label  => proc{ display_name current_user.current_carpool.title_short }, # email of the current admin user logged
-        :url            => proc { 'carpools#set-current/1' },
-        # :html_options   => {:style => 'float:left;'},
-        :id             => 'current_user',
-        :if  => proc{ current_user.is_admin? } do  |submenu|
+  # config.namespace :admin do |admin|
+  #   admin.build_menu :utility_navigation do |menu|
+  #     menu.add  :label  => proc{ display_name current_user.current_carpool.title_short }, # email of the current admin user logged
+  #       :url            => proc { 'carpools#set-current' },
+  #       :html_options   => {:style => 'float:left;'},
+  #       :id             => 'current_user',
+  #       :if  => proc{ current_user.is_admin? } do  |submenu|
 
-            submenu.add :label => 'Custom Link', 
-                        :url => proc { 'carpools#set-current/1' },
-                        :html_options   => {:display => 'table;'} 
-        end
-    end
-  end
+  #           submenu.add :label => 'Custom Link', 
+  #                       :url => proc { 'carpools#set-current' },
+  #                       :html_options   => {:display => 'table;'} 
+  #       end
+  #   end
+  # end
 
 # https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md JW
   # config.namespace :admin do |admin|
