@@ -18,5 +18,25 @@ namespace :users do
     puts " All done now!"
   end
 
+ desc "Add user if not already"
+  task :add_all_to, [:carpool_title_short] => :environment do |t, args|
+    p args[:carpool_title_short] 
+
+    mycarpool = Carpool.where(:title_short => args[:carpool_title_short]).first 
+    p args['carpool_title_short'] + " does NOT exist !!! " if mycarpool.nil?
+    ActiveRecord::Base.transaction do
+      User.all.each do |user|
+        if !user.carpools.exists?(mycarpool.id)
+          if (user.can_drive)
+            mycarpool.drivers << user
+          else
+            mycarpool.passengers << user
+          end
+          p "ADDED " + user.full_name + " to " + mycarpool.title_short
+        end 
+      end
+    end
+    puts " All done now!"
+  end
 
 end
