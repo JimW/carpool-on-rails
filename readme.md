@@ -30,6 +30,10 @@ This system helps carpool members stay up to date on their assignments by mainta
     Julian LastName (555) 555-5555
     ~~~~
 
+- Within week view, "Missing" button toggles a display showing "active" passengers without at least 2 rides within a day.
+
+- Members can now be set to "Resting" to temporarily disable them from participating in a carpool, but still allowing them to see the calendar.
+
 - All updates propagate almost instantaneously to all members.
 
 - Host for free on Heroku.
@@ -40,7 +44,7 @@ This system helps carpool members stay up to date on their assignments by mainta
 
 
 ## Video Walkthrough
-[Video Video on Vimeo](https://vimeo.com/210178901)
+[Video Video on Vimeo](https://vimeo.com/212628156)
 
 ## Background
 
@@ -490,10 +494,8 @@ Batch actions (for Delete) should work on heroku, but not locally for some JSy r
     - ListAllCalendars
     - DelAllCalendars
     - DelAllEvents(Cal), I think there was a way to actually delete them for real? Maybe not, it's google...
-  - Access Service Utils from rake tasks
-  - In the case of removing a driver from a carpool entirely, when removing that driver from an assigned route, the calendar entry title display in the calendar route view is not getting updated (clicking on event shows reality though). Not sure of actual calendar on google is updated.
   - Be sure no throttling is enforced with Google APIs (important maybe during batch deletes)
-
+  - Add google batch to more Jobs, constraint is that each must all work on single calnedar
 
 - Tests and Rakes
   - GCal services
