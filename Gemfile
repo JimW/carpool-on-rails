@@ -31,7 +31,7 @@ gem "bower-rails", "~> 0.11.0"
 gem 'sucker_punch', '~> 2.0'
 # gem 'aws-sdk', '~> 2.3'
 gem 'aws-sdk', '~> 2'
-
+gem 'phony_rails'
 # gem 'aws-sdk-s3', '-> 1.0.0.rc1'
 
 # useful for a approval/draft process (needed when we start updating users of changes automatically)

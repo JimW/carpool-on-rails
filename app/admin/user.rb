@@ -91,19 +91,23 @@ ActiveAdmin.register User do
       link_to user.full_name, admin_user_path(user)
     end
     column :email, sortable: false if (ENV['DEMO_MODE'].nil?)
-    column "Mobile #", :mobile_phone, sortable: false  if (ENV['DEMO_MODE'].nil?)
+
+    column "Mobile #" do |user|
+      user.mobile_phone.phony_formatted
+    end if (ENV['DEMO_MODE'].nil?)
+
     column "gCal", sortable: :subscribe_to_gcal do |user|
         user.subscribe_to_gcal? ? status_tag( "Yes", :ok ) : status_tag( "No" )
     end
     column "Status", sortable: :active do |user|
-      user_details = user.carpool_users.includes(:carpool).where(carpool_id: current_user.current_carpool.id).first 
+      user_details = user.carpool_users.includes(:carpool).where(carpool_id: current_user.current_carpool.id).first
       user_details.is_active ? status_tag( "Active", :ok ) : status_tag( "Resting" )
     end
     column "Can Drive?", sortable: :can_drive do |user|
         user.can_drive? ? status_tag( "Yes", :ok ) : status_tag( "No" )
     end
     column "Participation" do |user|
-      user_details = user.carpool_users.includes(:carpool).where(carpool_id: current_user.current_carpool.id).first 
+      user_details = user.carpool_users.includes(:carpool).where(carpool_id: current_user.current_carpool.id).first
       status_tag( "Driver", :ok ) if user_details.is_driver
       status_tag( "Passenger", :ok ) if user_details.is_passenger
       status_tag( "Observer", :ok ) if !user_details.is_passenger && !user_details.is_driver
@@ -139,10 +143,10 @@ ActiveAdmin.register User do
         best_in_place user, :last_name, :as => :input,:url =>[:admin,user]
       end
       row :home_phone do |user|
-        best_in_place user, :home_phone, :as => :input,:url =>[:admin,user] if (ENV['DEMO_MODE'].nil?)
+        best_in_place user, :home_phone, :as => :input,:url =>[:admin,user], :display_with => lambda { |v| v.phony_formatted } if (ENV['DEMO_MODE'].nil?)
       end
       row :mobile_phone do |user|
-        best_in_place user, :mobile_phone, :as => :input,:url =>[:admin,user] if (ENV['DEMO_MODE'].nil?)
+        best_in_place user, :mobile_phone, :as => :input,:url =>[:admin,user], :display_with => lambda { |v| v.phony_formatted } if (ENV['DEMO_MODE'].nil?)
       end
       # row :mobile_phone_messaging do |user|
       #   best_in_place user, :mobile_phone_messaging, :as => :checkbox,:url =>[:admin,user]
@@ -152,7 +156,7 @@ ActiveAdmin.register User do
       # end
       row :can_drive
       row :current_carpool
-      # row :current_organization 
+      # row :current_organization
 
     # Taking these out for 1st phase, for simplicity.. plus the relationships aren't right, Routine passengers showing up within special
       if user.homes.any?
@@ -194,9 +198,9 @@ ActiveAdmin.register User do
       user_carpools_details = user.carpool_users.includes(:carpool)#.where(carpool_id: user.current_carpool.id)
       table_for user_carpools_details do
         column "Carpool Name" do |user_detail|
-          span user_detail.carpool.title 
+          span user_detail.carpool.title
         end
-        column "Available as" do |user_detail| 
+        column "Available as" do |user_detail|
           span user_detail.is_driver ? status_tag( "Driver", :ok ) : status_tag(nil) if user_detail.is_driver
           span user_detail.is_passenger ? status_tag( "Passenger", :ok ) : status_tag( "" ) if user_detail.is_passenger
           span status_tag( "Observer", :ok ) if !user_detail.is_passenger && !user_detail.is_driver
@@ -204,7 +208,7 @@ ActiveAdmin.register User do
         column "Status" do |user_detail|
           span user_detail.is_active ? status_tag( "Active", :ok ) : status_tag( "Resting" )
         end
-      end 
+      end
     end
 
       panel "Routes" do
@@ -232,7 +236,7 @@ ActiveAdmin.register User do
         end
       end if user.passenger_routes.any?
     end
-    
+
   end
   # _____________________ form ___________________________________________________
 
@@ -243,8 +247,8 @@ ActiveAdmin.register User do
       f.input :email if (ENV['DEMO_MODE'].nil?)
       f.input :first_name
       f.input :last_name
-      f.input :home_phone if (ENV['DEMO_MODE'].nil?)
-      f.input :mobile_phone if (ENV['DEMO_MODE'].nil?)
+      f.input :home_phone, :display_with => lambda { |v| v.phony_formatted }  if (ENV['DEMO_MODE'].nil?)
+      f.input :mobile_phone, :display_with => lambda { |v| v.phony_formatted }  if (ENV['DEMO_MODE'].nil?)
       # f.input :mobile_phone_messaging, :value => true
       f.input :password
       f.input :password_confirmation
@@ -261,15 +265,15 @@ ActiveAdmin.register User do
       # user_details = user.carpool_users.includes(:carpool).where(carpool_id: user.current_carpool.id).first
       # f.inputs "Participation in #{user_details.carpool.title}" do
       #   f.fields_for user_details do |user_detail|
-      #     user_detail.input  :is_active, :label => "Active", 
-      #                                     :hint => "disabling prevents adding to new routes" 
-      #     user_detail.input  :is_driver, :label => "Available as Driver" 
-      #                                     # :hint => "changing willSHOULD remove all " + current_user.first_name+ "'s driver assignments" 
-      #     user_detail.input :is_passenger, :label => "Available as Passenger" 
-      #                                       # :hint => "changing willSHOULD remove all " + current_user.first_name+ "'s passenger assignments" 
+      #     user_detail.input  :is_active, :label => "Active",
+      #                                     :hint => "disabling prevents adding to new routes"
+      #     user_detail.input  :is_driver, :label => "Available as Driver"
+      #                                     # :hint => "changing willSHOULD remove all " + current_user.first_name+ "'s driver assignments"
+      #     user_detail.input :is_passenger, :label => "Available as Passenger"
+      #                                       # :hint => "changing willSHOULD remove all " + current_user.first_name+ "'s passenger assignments"
       #   end if current_user.is_admin? || resource == current_user
       # end
-  
+
     end
 
     f.inputs "Access Rights" do
@@ -348,7 +352,7 @@ ActiveAdmin.register User do
       if current_user.current_carpool.is_lobby?
         @user.destroy
         flash[:notice] = "Member removed from system"
-      else 
+      else
         @user.reset_current_carpool if (@user.current_carpool.title == current_user.current_carpool.title)
         flash[:notice] = @user.full_name + " removed from " + current_user.current_carpool.title
       end

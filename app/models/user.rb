@@ -7,12 +7,14 @@ class User < ActiveRecord::Base
   String.include CoreExtensions::String::NameFormatting
   validates :first_name, :last_name, presence: true
 
+  phony_normalize :mobile_phone, default_country_code: 'US'
+
   rolify strict: true
 
   belongs_to :current_carpool, :class_name => :Carpool, foreign_key: 'current_carpool_id'
 
-  # attr_accessor :is_active_in_carpool 
-  # is acessed within carpool associations via extend: UserIsActiveInCarpool 
+  # attr_accessor :is_active_in_carpool
+  # is acessed within carpool associations via extend: UserIsActiveInCarpool
   # to allow for easy access to join model attributes
   # http://stackoverflow.com/questions/25235025/rails-4-accessing-join-table-attributes
 
@@ -86,7 +88,7 @@ class User < ActiveRecord::Base
 
 # __________________________
 
-  before_save :remove_as_driver_in_all_carpools, 
+  before_save :remove_as_driver_in_all_carpools,
       :if => Proc.new {|user| user.can_drive_changed? && user.can_drive_change[NEWVAL]==false }
   def remove_as_driver_in_all_carpools
     # driver_memberships.destroy_all() # except lobby
@@ -99,28 +101,28 @@ class User < ActiveRecord::Base
 
   def remove_from_routes_as_driver(carpool)
     rts = driver_routes.where(carpool_id: carpool.id).all
-    rts.each { |r| 
+    rts.each { |r|
       r.remember_gcal_subscribers
-      r.drivers.destroy(self) 
+      r.drivers.destroy(self)
       r.save # after_commit updates gcals
     }
   end
 
   def remove_from_routes_as_passenger(carpool)
     rts = passenger_routes.where(carpool_id: carpool.id).all
-    rts.each { |r| 
-      r.remember_gcal_subscribers 
-      r.passengers.destroy(self) 
+    rts.each { |r|
+      r.remember_gcal_subscribers
+      r.passengers.destroy(self)
       r.save # after_commit updates gcals
     }
   end
 
   def remove_from_all_routes(carpool)
     rts = routes.where(carpool_id: carpool.id).all
-    rts.each { |r| 
+    rts.each { |r|
       r.remember_gcal_subscribers
-      r.drivers.destroy(self) 
-      r.passengers.destroy(self) 
+      r.drivers.destroy(self)
+      r.passengers.destroy(self)
       r.save # after_commit updates gcals
     }
   end
@@ -151,21 +153,21 @@ class User < ActiveRecord::Base
   #     end
   #   end
 
-  after_commit  :dirtify_associated_route_events, on: [:update], 
-      :if => Proc.new { |record|  [ :email, 
-                                    :first_name, 
-                                    :last_name, 
-                                    :home_phone, 
+  after_commit  :dirtify_associated_route_events, on: [:update],
+      :if => Proc.new { |record|  [ :email,
+                                    :first_name,
+                                    :last_name,
+                                    :home_phone,
                                     :mobile_phone
                                   ].any? {|k| record.previous_changes.key?(k)} }
-    def dirtify_associated_route_events 
-      if self.routes.any? 
-        route_ids_affected = self.routes.collect(&:id) if self.routes.any? 
+    def dirtify_associated_route_events
+      if self.routes.any?
+        route_ids_affected = self.routes.collect(&:id) if self.routes.any?
         Route.batch_update_calendars_for(route_ids_affected) if route_ids_affected.any?
       end
     end
- 
-  after_commit  :create_destroy_personal_google_calendar, on: [:update], 
+
+  after_commit  :create_destroy_personal_google_calendar, on: [:update],
       :if => Proc.new { |record| record.previous_changes.key?(:subscribe_to_gcal) }
     def create_destroy_personal_google_calendar
       if self.subscribe_to_gcal?
@@ -180,7 +182,7 @@ class User < ActiveRecord::Base
       end
     end
 
-  before_destroy  :delete_unshare_all_google_calendars, 
+  before_destroy  :delete_unshare_all_google_calendars,
         :if => Proc.new { |record| !record.subscribe_to_gcal? }
     def delete_unshare_all_google_calendars
       organization_users.each do |orguser|
@@ -219,11 +221,11 @@ class User < ActiveRecord::Base
   end
 
   def short_name_with_mobile_phone
-     "#{short_name} #{mobile_phone}"
+     "#{short_name} #{mobile_phone.phony_formatted}"
   end
 
   def full_name_with_mobile_phone
-     "#{full_name} #{mobile_phone}"
+     "#{full_name} #{mobile_phone.phony_formatted}"
   end
 
   def is_admin?
