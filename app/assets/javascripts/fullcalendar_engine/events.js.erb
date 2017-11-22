@@ -401,7 +401,7 @@ jQuery.fn.extend({
     case 'template':
       if (hasChildren)
         eventItems = {
-              "edit": {name: "Edit", icon: "edit"},
+              // "edit": {name: "Edit", icon: "edit"}, // caused "undefined method `reject' for false:FalseClass"
               "delete": {name: "Delete", icon: "delete"},
               // "reset_instance_event": {name: "Overwrite Instance", icon: "paste"},
               // "sep1": "---------",
@@ -409,7 +409,7 @@ jQuery.fn.extend({
         }
       else
         eventItems = {
-            "edit": {name: "Edit", icon: "edit"},
+            // "edit": {name: "Edit", icon: "edit"}, // caused "undefined method `reject' for false:FalseClass"
             "delete": {name: "Delete", icon: "delete"},
             "make_instance": {name: "Create Instance", icon: "copy"},
             // "sep1": "---------",
