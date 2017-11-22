@@ -3,7 +3,7 @@
 
 #assets_path "assets"
 
-asset 'jQuery-contextMenu'
+asset 'jQuery-contextMenu', "2.6.3"
 #asset "jQuery-contextMenu", do
 #  main_files [
 #    "./locale/en-gb.js",
@@ -14,13 +14,12 @@ asset 'jQuery-contextMenu'
 
 #http://guides.rubyonrails.org/asset_pipeline.html#coding-links-to-assets
 asset 'js-cookie'
-asset 'jquery-ui'
-asset 'moment', "2.17.1"
-asset 'fullcalendar', "2.9.1"
+asset 'moment', "2.19.2"
+asset 'fullcalendar', "3.4.0" # after 3.1, some increased Jquery dependency is screwing things up? XXX
 asset 'jquery.scrollTo'
 asset 'jquery.ui.touch'
 asset 'jqueryui-touch-punch'
-asset 'spin.js'
+asset 'spin.js', "2.3.2"
 
 # asset 'chosen' # Don't use until chosen deals with scss sprite reference issues which affect rails asset pipeline
 # asset "jqueryui-timepicker-addon", "1.5.4"

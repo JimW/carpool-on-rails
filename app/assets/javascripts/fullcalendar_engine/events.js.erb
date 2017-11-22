@@ -358,23 +358,24 @@ FullcalendarEngine = {
 $(document).ready(function(){
   $.contextMenu({
       selector: '.context-class',
-      //  trigger: 'none',
-      // callback: function(key, options) {
-      //  var m = "global: " + key;
-      //  alert(m);
-      // },
-
       position: function(opt, x, y){opt.$menu.position({my: "center top", at: "center bottom", of: this})},
 
       build: function($trigger, e) {
           // this callback is executed every time the menu is to be shown
           // its results are destroyed every time the menu is hidden
           // e is the original contextmenu event, containing e.pageX and e.pageY (amongst other data)
+          // https://swisnl.github.io/jQuery-contextMenu/demo/dynamic-create.html
+
+          // https://github.com/fullcalendar/fullcalendar/issues/3892
+          // https://github.com/fullcalendar/fullcalendar/issues/3920
+          // Trying to figure out why data event cannot be retrieved..??? Timing issue?
+          // Also, sometimes the moment dates are screwed up when creating an entry and it spans acoss years...
+          // so that's why I'm using fullcalendar 3.4.0
+
           return {
               callback: function(key, options) {
                 var fcEventData = $trigger.data('fc-seg').event;
                 // var m = "clicked: " + key;
-                // alert(m);
                 if (key == "edit") {
                   FullcalendarEngine.displayEditScreen(fcEventData.id);
                 } else {

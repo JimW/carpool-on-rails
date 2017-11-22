@@ -1,11 +1,9 @@
-# Via the jquery-ujs gem
-# = require jquery
-# = require jquery_ujs
+
 #= require active_admin/base
 
 #= require jquery-ui
 #= require jquery.scrollTo/jquery.scrollTo
-#= require jQuery-contextMenu/dist/jquery.contextMenu.min
+#= require jQuery-contextMenu/dist/jquery.contextMenu
 #= require js-cookie/src/js.cookie
 #= require best_in_place
 #= require best_in_place.purr
@@ -16,7 +14,7 @@
 #= require_tree ./active_admin
 #= require jqueryui-touch-punch/jquery.ui.touch-punch.min
 #= require jquery.ui.touch/jquery.ui.touch
-#= require spin.js/spin.min
+#= require spin.js/spin
 
 #  require jquery-ui/position
 # require jqueryui-timepicker-addon/dist/jquery-ui-timepicker-addon

@@ -1,14 +1,13 @@
 {
   "name": "dsl-generated-dependencies",
   "dependencies": {
-    "jQuery-contextMenu": "latest",
+    "jQuery-contextMenu": "2.6.3",
     "js-cookie": "latest",
-    "jquery-ui": "latest",
-    "moment": "2.17.1",
-    "fullcalendar": "2.9.1",
+    "moment": "2.19.2",
+    "fullcalendar": "3.4.0",
     "jquery.scrollTo": "latest",
     "jquery.ui.touch": "latest",
     "jqueryui-touch-punch": "latest",
-    "spin.js": "latest"
+    "spin.js": "2.3.2"
   }
 }
