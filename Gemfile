@@ -27,12 +27,8 @@ gem 'sucker_punch', '~> 2.0'
 gem 'aws-sdk', '~> 2'
 gem 'phony_rails'
 
-gem 'omniauth-oauth2', '~> 1.3.1' #don't use 1.4.0 broken
-# https://github.com/intridea/omniauth-oauth2/issues/81
-# crazy..
-
 gem "omniauth-google-oauth2"
-gem 'devise', '4.3.0'
+gem 'devise', '4.3.0' 
 
 gem "rolify"
 gem "pundit"

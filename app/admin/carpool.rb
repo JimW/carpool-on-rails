@@ -61,14 +61,13 @@ show do
       column :full_name
       column "status" do |u|
         user_detail = u.carpool_users.where(carpool_id: carpool.id).first
-        user_detail.is_active ? status_tag( "Active", :ok ) : status_tag( "Resting" )
-        # user.carpool_users.first.is_active ? status_tag( "Active", :ok ) : status_tag( "Resting" )
+        user_detail.is_active ? status_tag( "Active", class: "ok" ) : status_tag( "Resting" )
       end
       column "participation" do |u|
         user_detail = u.carpool_users.where(carpool_id: carpool.id).first
-        status_tag( "Driver", :ok ) if user_detail.is_driver
-        status_tag( "Passenger", :ok ) if user_detail.is_passenger
-        status_tag( "?", :ok ) if (!user_detail.is_passenger && !user_detail.is_driver)
+        status_tag( "Driver", class: "ok" ) if user_detail.is_driver
+        status_tag( "Passenger", class: "ok" ) if user_detail.is_passenger
+        status_tag( "?", class: "ok" ) if (!user_detail.is_passenger && !user_detail.is_driver)
       end
     end
 

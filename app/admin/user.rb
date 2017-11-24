@@ -97,20 +97,20 @@ ActiveAdmin.register User do
     end if (ENV['DEMO_MODE'].nil?)
 
     column "gCal", sortable: :subscribe_to_gcal do |user|
-        user.subscribe_to_gcal? ? status_tag( "Yes", :ok ) : status_tag( "No" )
+        user.subscribe_to_gcal? ? status_tag( "Yes", class: "ok" ) : status_tag( "No" )
     end
     column "Status", sortable: :active do |user|
       user_details = user.carpool_users.includes(:carpool).where(carpool_id: current_user.current_carpool.id).first
-      user_details.is_active ? status_tag( "Active", :ok ) : status_tag( "Resting" )
+      user_details.is_active ? status_tag( "Active", class: "ok" ) : status_tag( "Resting" )
     end
     column "Can Drive?", sortable: :can_drive do |user|
-        user.can_drive? ? status_tag( "Yes", :ok ) : status_tag( "No" )
+        user.can_drive? ? status_tag( "Yes", class: "ok" ) : status_tag( "No" )
     end
     column "Participation" do |user|
       user_details = user.carpool_users.includes(:carpool).where(carpool_id: current_user.current_carpool.id).first
-      status_tag( "Driver", :ok ) if user_details.is_driver
-      status_tag( "Passenger", :ok ) if user_details.is_passenger
-      status_tag( "Observer", :ok ) if !user_details.is_passenger && !user_details.is_driver
+      status_tag( "Driver", class: "ok" ) if user_details.is_driver
+      status_tag( "Passenger", class: "ok" ) if user_details.is_passenger
+      status_tag( "Observer", class: "ok") if !user_details.is_passenger && !user_details.is_driver
     end
 
     column :actions do |resource|
@@ -201,12 +201,12 @@ ActiveAdmin.register User do
           span user_detail.carpool.title
         end
         column "Available as" do |user_detail|
-          span user_detail.is_driver ? status_tag( "Driver", :ok ) : status_tag(nil) if user_detail.is_driver
+          span user_detail.is_driver ? status_tag( "Driver", class: "ok" ) : status_tag(nil) if user_detail.is_driver
           span user_detail.is_passenger ? status_tag( "Passenger", :ok ) : status_tag( "" ) if user_detail.is_passenger
-          span status_tag( "Observer", :ok ) if !user_detail.is_passenger && !user_detail.is_driver
+          span status_tag( "Observer", class: "ok" ) if !user_detail.is_passenger && !user_detail.is_driver
         end
         column "Status" do |user_detail|
-          span user_detail.is_active ? status_tag( "Active", :ok ) : status_tag( "Resting" )
+          span user_detail.is_active ? status_tag( "Active", class: "ok" ) : status_tag( "Resting" )
         end
       end
     end
