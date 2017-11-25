@@ -305,6 +305,7 @@ You'll need to set the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY for this user
         MAX_THREADS: 2
         DB_POOL: 4
         LANG: "en_US.UTF-8"
+        SITE_ROOT_URL:"https://WHATEVER" (Added this for any future issue, see zquestz/omniauth-google-oauth2)
     ```
     You could also potentially use the Heroku API to push these all up at once using curl..
 
@@ -429,6 +430,8 @@ But once the concept of a Routine is in place, scheduling for following weeks wi
 Batch actions (for Delete) should work on heroku, but not locally for some JSy reason.
 
 ## TODO
+
+- "We're sorry, but something went wrong." when trying to log into app with a google account not in the carpool system
 
 - Add Google Analytics config just for fun
 

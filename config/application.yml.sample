@@ -1,6 +1,9 @@
 # config/application.yml (Add to .gitignore)
 
 development:
+  
+  SITE_ROOT_URL: 'http://localhost:3000'
+
   secret_key_base: ''
   DEVISE_SECRET_KEY: ''
 
@@ -24,7 +27,11 @@ development:
 test:
   secret_key_base: ''
 
+# Production stuff uses ENVs on Heroku, so the following are really just for reference but needed for seed related rake tasks that are run locally.
 production:
+
+  SITE_ROOT_URL: ''
+
   secret_key_base: ''
   DEVISE_SECRET_KEY: ''
 
