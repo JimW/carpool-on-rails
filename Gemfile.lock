@@ -236,7 +236,7 @@ GEM
     orm_adapter (0.5.0)
     os (0.9.6)
     pg (0.21.0)
-    phony (2.15.48)
+    phony (2.15.49)
     phony_rails (0.14.6)
       activesupport (>= 3.0)
       phony (> 2.15)
