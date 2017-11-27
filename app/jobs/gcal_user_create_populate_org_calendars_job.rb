@@ -1,4 +1,4 @@
-class GcalUserCreatePopulateOrgCalendarsJob < ActiveJob::Base
+class GcalUserCreatePopulateOrgCalendarsJob < ApplicationJob
   queue_as :default
 
   # Create personal google calendars for this user for this organization

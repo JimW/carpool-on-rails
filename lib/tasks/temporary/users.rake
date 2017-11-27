@@ -6,7 +6,7 @@ namespace :users do
 
     puts "Going to update #{User.all.count} users across #{Carpool.all.count} carpools (#{User.all.count * Carpool.all.count} records)"
 
-    ActiveRecord::Base.transaction do
+    ApplicationRecord.transaction do
       User.all.each do |user|
         Carpool.all.each do |carpool|
           user_detail = user.carpool_users.where(carpool_id: carpool.id).first
@@ -24,7 +24,7 @@ namespace :users do
 
     mycarpool = Carpool.where(:title_short => args[:carpool_title_short]).first 
     p args['carpool_title_short'] + " does NOT exist !!! " if mycarpool.nil?
-    ActiveRecord::Base.transaction do
+    ApplicationRecord.transaction do
       User.all.each do |user|
         if !user.carpools.exists?(mycarpool.id)
           if (user.can_drive)

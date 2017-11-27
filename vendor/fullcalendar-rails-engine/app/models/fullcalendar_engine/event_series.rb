@@ -1,5 +1,5 @@
 module FullcalendarEngine
-  class EventSeries < ActiveRecord::Base
+  class EventSeries < ApplicationRecord
     
     attr_accessor :title, :description, :commit_button
 

@@ -1,5 +1,5 @@
 module FullcalendarEngine
-  class Event < ActiveRecord::Base
+  class Event < ApplicationRecord
 
     attr_accessor :period, :frequency, :commit_button
 

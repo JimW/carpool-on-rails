@@ -12,6 +12,20 @@ module CarPool
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
 
+    # _______ Rails 5 stuff:
+    # http://edgeguides.rubyonrails.org/upgrading_ruby_on_rails.html#upgrading-from-rails-4-2-to-rails-5-0
+    # config.active_record.belongs_to_required_by_default = true
+    # config.action_controller.per_form_csrf_tokens = true
+    # config.action_controller.forgery_protection_origin_check = true
+    # config.action_mailer.deliver_later_queue_name = :new_queue_name
+    # config.action_mailer.perform_caching = true
+    # config.active_record.dump_schemas = :all
+    # config.ssl_options = { hsts: { subdomains: true } }
+    # ActiveSupport.to_time_preserves_timezone = false
+
+
+
+
     # https://hackhands.com/rails-nameerror-uninitialized-constant-class-solution/
     config.autoload_paths += %W(#{config.root}/lib)
 

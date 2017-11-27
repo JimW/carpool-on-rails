@@ -1,4 +1,4 @@
-class GcalUserSubscribeCarpoolCalendarJob < ActiveJob::Base
+class GcalUserSubscribeCarpoolCalendarJob < ApplicationJob
   queue_as :default
 
   # Remove single calendar subscription for Carpool master calendar

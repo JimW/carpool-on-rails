@@ -1,4 +1,4 @@
-class GcalRouteUpdateEventsJob < ActiveJob::Base
+class GcalRouteUpdateEventsJob < ApplicationJob
   queue_as :default
 
   def perform(rte, subscriber_ids_previous)

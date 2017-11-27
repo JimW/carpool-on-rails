@@ -1,6 +1,6 @@
 require 'json'
 
-class User < ActiveRecord::Base
+class User < ApplicationRecord 
 
   # include DirtyAssociations
 

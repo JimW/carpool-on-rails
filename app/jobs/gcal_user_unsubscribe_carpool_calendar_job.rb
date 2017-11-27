@@ -1,4 +1,4 @@
-class GcalUserUnsubscribeCarpoolCalendarJob < ActiveJob::Base
+class GcalUserUnsubscribeCarpoolCalendarJob < ApplicationJob
   queue_as :default
   # Remove single calendar subscription for Carpool master calendar
   def perform(usr, google_calendar_id)

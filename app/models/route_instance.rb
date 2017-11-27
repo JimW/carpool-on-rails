@@ -1,4 +1,4 @@
-class RouteInstance < ActiveRecord::Base
+class RouteInstance < ApplicationRecord
 
   belongs_to :route, :class_name => :Route
   belongs_to :instance, :class_name => :Route

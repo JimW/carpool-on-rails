@@ -1,4 +1,4 @@
-class Carpool < ActiveRecord::Base
+class Carpool < ApplicationRecord 
   resourcify
 
   validates :title, :title_short, :organization, presence: true

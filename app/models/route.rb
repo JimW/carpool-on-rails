@@ -1,7 +1,7 @@
 
 require_dependency("app/models/fullcalendar_engine/event_decorator.rb")
 
-class Route < ActiveRecord::Base
+class Route < ApplicationRecord
 
   include DirtyAssociations
   # include ActiveModel::Dirty

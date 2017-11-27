@@ -1,4 +1,4 @@
-class GcalCarpoolCreateDestroyCalendarsJob < ActiveJob::Base
+class GcalCarpoolCreateDestroyCalendarsJob < ApplicationJob
   queue_as :default
 
   def perform(cp)

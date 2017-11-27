@@ -1,4 +1,4 @@
-class GcalServiceAccountDestroyAllCalendarsJob < ActiveJob::Base
+class GcalServiceAccountDestroyAllCalendarsJob < ApplicationJob
   queue_as :default
 
 # NOTE: This is meant to be done when you reset the database, as a way to ensure that all google calendars associated with the service

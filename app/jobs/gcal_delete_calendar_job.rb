@@ -1,4 +1,4 @@
-class GcalDeleteCalendarJob < ActiveJob::Base
+class GcalDeleteCalendarJob < ApplicationJob
   queue_as :default
 
   def perform(google_calendar_id)

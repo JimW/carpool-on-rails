@@ -1,6 +1,6 @@
 require "google/apis/calendar_v3"
 
-class GcalCancelEventJob < ActiveJob::Base
+class GcalCancelEventJob < ApplicationJob
   queue_as :default
 
   def perform(gcal_id, event_data)

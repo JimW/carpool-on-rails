@@ -1,4 +1,4 @@
-class CarpoolUser < ActiveRecord::Base
+class CarpoolUser < ApplicationRecord
     
   belongs_to :user
   belongs_to :carpool

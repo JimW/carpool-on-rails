@@ -1,4 +1,4 @@
-class GcalRouteCreateEventsJob < ActiveJob::Base
+class GcalRouteCreateEventsJob < ApplicationJob
   queue_as :default
 
   def perform(rte)

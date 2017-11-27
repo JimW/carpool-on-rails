@@ -4,48 +4,56 @@ source 'https://rubygems.org'
 # http://www.sitepoint.com/rails-disco-get-event-sourcing/
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.2.10'
+gem 'rails', '>= 5.0.6', '< 5.1'
 # Use SCSS for stylesheets
-gem 'sass-rails', '~> 5.0'
+gem 'sass-rails', '~> 5.0.7'
 # Use Uglifier as compressor for JavaScript assets
-gem 'uglifier', '>= 1.3.0'
+gem 'uglifier', '>= 3.2.0'
 # Use CoffeeScript for .coffee assets and views
-gem 'coffee-rails', '~> 4.1.0'
+gem 'coffee-rails', '~> 4.2.2'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 
 # Use jquery as the JavaScript library, it's managed by rails so just use this vs bower
-gem 'jquery-ui-rails'
+gem 'jquery-ui-rails', '6.0.1'
 
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '~> 2.0'
+gem 'jbuilder', '~> 2.7.0'
 # bundle exec rake doc:rails generates the API under doc/api.
-gem 'sdoc', '~> 0.4.0', group: :doc
+gem 'sdoc', '~> 0.4.2', group: :doc
 
-gem "bower-rails", "~> 0.11.0"
+gem "bower-rails"#, "~> 0.11.0"
 gem 'sucker_punch', '~> 2.0'
 gem 'aws-sdk', '~> 2'
-gem 'phony_rails'
+gem 'phony_rails', '0.14.6'
 
-gem "omniauth-google-oauth2"
+gem "omniauth-google-oauth2", '0.5.2'
 gem 'devise', '4.3.0' 
 
-gem "rolify"
-gem "pundit"
+gem "rolify", '5.1.0'
+gem "pundit", '1.1.0'
 gem 'activeadmin', '~> 1.1.0'
-gem 'seed_dump'
+# gem 'activeadmin'#, git: 'https://github.com/activeadmin/activeadmin.git'
+# gem 'inherited_resources'#, git: 'https://github.com/activeadmin/inherited_resources'
+
+gem 'seed_dump','3.2.4'
 
 # For drag and drop lists (in route locations)
-gem 'acts_as_list'
+gem 'acts_as_list', '0.9.10'
 # gem 'activeadmin-sortable'
-gem 'best_in_place', '~> 3.1.0'
+gem 'best_in_place', '~> 3.1.1'
 # gem 'dirty_associations'
 #Just using my own from here:
 # http://anti-pattern.com/dirty-associations-with-activerecord
 
 # http://staal.io/blog/2013/02/26/mastering-activeadmin/
 gem 'chosen-rails' # don't try to take this out until chosen deals with the reference to icons in their css
+# Get rid of above XXX
+
 gem 'just-datetime-picker'
+# Get rid of above XXX.  An ActiveAdmin thing I'm not really using I think
+# https://github.com/mspanc/just-datetime-picker
+
 gem 'fullcalendar_engine', path: "vendor/fullcalendar-rails-engine"
 # https://github.com/vinsol/fullcalendar-rails-engine/issues/12
 
@@ -56,7 +64,7 @@ gem 'chronic'
 
 # CLONING ASSOCIATIONS
 # https://github.com/moiristo/deep_cloneable
-gem 'deep_cloneable', '~> 2.1.1'
+gem 'deep_cloneable', '~> 2.3.1'
 # Alternate solution.?
 # https://github.com/amoeba-rb/amoeba
 # http://www.mariocarrion.com/2015/07/12/amoeba-with-deep-cloning.html
@@ -81,7 +89,7 @@ gem 'google-api-client', '~> 0.9'
 
 gem 'base32'
 
-ruby "2.2.6" # had to downgrade for the ironworkers on Heroku, Heroku is fine with 2.2 though..
+ruby "2.4.2" # had to downgrade for the ironworkers on Heroku, Heroku is fine with 2.2 though..
 
 gem "figaro" # though rails 4.1 now uses secrets.yml, keep production secrets within Env and check that yml file into github
 # https://devcenter.heroku.com/articles/getting-started-with-rails4#local-workstation-setup
@@ -92,7 +100,7 @@ gem "puma", "3.6.2" # For webserver for Heroku
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug' # REMOVE for RUBYMINE
-  gem 'quiet_assets'
+  # gem 'quiet_assets' # removed for rails 5
   gem "better_errors"
   gem "minitest-rails"
   gem "minitest-reporters"
