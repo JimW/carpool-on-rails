@@ -320,20 +320,28 @@ You'll need to set the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY for this user
 1. Update Production DB
     ```bash
     heroku run rake db:migrate --remote staging
-    ```
-1. Be sure your local db/seeds/development/heroku_staging/seed_data.yml contains the seed data you want.
+    ``` 
 
-1. if ENV['AWS_S3_SEED_DIR_PATH'] is set, this task will translate:  db/seeds/development/heroku_staging/seed_data.yml to json and push to that AWS path.
+1. Push local seed data to AWS (only do this when changing seed data).
+
+    The following command will:
+
+    1. convert: db/seeds/development/heroku_staging/seed_data.yml to json
+
+    1. push json to AWS_S3_SEED_DIR_PATH for use by Heroku.
+
     ```bash
     bundle exec rake aws:plant_seeds
     ```
-Look inside this task for altering source seed file paths
+    Look inside this task for altering source seed file paths
 
-1. Seed the Heroku DB (be careful..) If ENV['AWS_S3_SEED_DIR_PATH'] is set within Heroku, seeds.rb will look for seed data you previously planted on AWS.
+1. Seed the Heroku DB (be careful..) 
     ```bash
     heroku run rake db:seed --remote staging
     ```
-1. Should be good when you navigate to your heroku project's url
+    If AWS_S3_SEED_DIR_PATH env is set within Heroku, seeds.rb will look for seed data you just planted on AWS.
+
+1. Navigate to your heroku project's url and it should work.
 
 ### [Heroko](https://devcenter.heroku.com/articles/fork-app) Forking a Production Server
 
