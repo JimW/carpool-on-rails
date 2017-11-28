@@ -287,6 +287,7 @@ You'll need to set the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY for this user
     ```json
         SECRET_KEY_BASE: "xx"
         RAILS_ENV: "production"
+        RACK_ENV: "production" # Heroku wants this
         RAILS_SERVE_STATIC_FILES: "enabled"
 
         DEVISE_SECRET_KEY: can use SECRET_KEY_BASE

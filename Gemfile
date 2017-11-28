@@ -12,7 +12,6 @@ gem 'uglifier', '>= 3.2.0'
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.2.2'
 # See https://github.com/rails/execjs#readme for more supported runtimes
-# gem 'therubyracer', platforms: :ruby
 
 # Use jquery as the JavaScript library, it's managed by rails so just use this vs bower
 gem 'jquery-ui-rails', '6.0.1'
@@ -89,12 +88,12 @@ gem 'google-api-client', '~> 0.9'
 
 gem 'base32'
 
-ruby "2.4.2" # had to downgrade for the ironworkers on Heroku, Heroku is fine with 2.2 though..
 
 gem "figaro" # though rails 4.1 now uses secrets.yml, keep production secrets within Env and check that yml file into github
 # https://devcenter.heroku.com/articles/getting-started-with-rails4#local-workstation-setup
 
 gem "puma", "3.6.2" # For webserver for Heroku
+gem "lograge"
 
 # Why is this group or any group called development not being picked up by bundler ??? Really?
 group :development, :test do
@@ -108,14 +107,15 @@ group :development, :test do
   gem 'web-console', '~> 2.0'
   gem 'meta_request'
   # gem 'rails-erd'
-  gem "lograge"
 end
 
 # https://devcenter.heroku.com/articles/getting-started-with-rails4#local-workstation-setup
 group :production do
-  gem 'rails_12factor' # To enable features such as static asset serving and logging on Heroku
   gem 'pg'
 end
+
+# Keep ruby version at the end like Heroku suggests..
+ruby "2.4.2" # had to downgrade for the ironworkers on Heroku, Heroku is fine with 2.2 though..
 
 # gem 'simple_uuid' # for rfc4122 based event ids as suggested by google calendar v3
 
