@@ -18,7 +18,7 @@ class Carpool < ApplicationRecord
   has_many :active_drivers, -> { all_can_drive }, :class_name => 'User', :through => :active_driving_members, :source => :user
 
   has_many :active_members, -> {is_active}, :class_name => 'CarpoolUser', inverse_of: :carpool
-  has_many :active_users, -> {uniq}, :class_name => 'User', :through => :active_members, :source => :user
+  has_many :active_users, -> {distinct}, :class_name => 'User', :through => :active_members, :source => :user
   accepts_nested_attributes_for :active_members
   accepts_nested_attributes_for :active_users
 
@@ -32,8 +32,8 @@ class Carpool < ApplicationRecord
   accepts_nested_attributes_for :passenger_members
   accepts_nested_attributes_for :passengers
 
-  has_many :unique_members, -> {uniq}, :class_name => 'CarpoolUser', inverse_of: :carpool, :dependent => :destroy
-  has_many :users, -> {uniq}, :through => :unique_members, :class_name => 'User'
+  has_many :unique_members, -> {distinct}, :class_name => 'CarpoolUser', inverse_of: :carpool, :dependent => :destroy
+  has_many :users, -> {distinct}, :through => :unique_members, :class_name => 'User'
   has_many :google_calendar_subscribers, -> {all_google_calendar_subscribers}, :class_name => 'User', :through => :unique_members, :source => :user
   accepts_nested_attributes_for :unique_members, allow_destroy: true
   accepts_nested_attributes_for :google_calendar_subscribers

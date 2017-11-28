@@ -21,8 +21,7 @@ class Route < ApplicationRecord
 
   attr_accessor :deleted_user_ids, :added_user_ids, :updated_user_ids, :subscriber_ids_previous, :subscriber_ids_current
 
-  def initialize(attributes = {}, options = {})
-    super(attributes, options)
+  def after_initialize
     subscriber_ids_previous = []
     subscriber_ids_current = []
     deleted_user_ids = []
@@ -88,7 +87,7 @@ class Route < ApplicationRecord
   # monitor_association_changes :drivers
 
   has_many :is_passenger_users, -> {is_passenger}, :class_name => 'RouteUser', inverse_of: :route, :dependent => :destroy
-  has_many :passengers, -> { uniq }, :class_name => 'User', :through => :is_passenger_users, :source => :user#, :before_add => :remember_previous_subscribers, :before_remove => :remember_previous_subscribers
+  has_many :passengers, -> { distinct }, :class_name => 'User', :through => :is_passenger_users, :source => :user#, :before_add => :remember_previous_subscribers, :before_remove => :remember_previous_subscribers
   # monitor_association_changes :passengers
 
   has_many :is_routine_driver_users, -> {is_driver}, :class_name => 'RouteUser', inverse_of: :route, :dependent => :destroy
@@ -96,7 +95,7 @@ class Route < ApplicationRecord
   # monitor_association_changes :routine_drivers
 
   has_many :is_routine_passenger_users,  -> {is_passenger}, :class_name => 'RouteUser', inverse_of: :route, :dependent => :destroy
-  has_many :routine_passengers, -> {uniq}, :class_name => 'User', :through => :is_routine_passenger_users, :source => :user, :dependent => :destroy#, :after_add => :make_dirty, :after_remove => :make_dirty
+  has_many :routine_passengers, -> { distinct }, :class_name => 'User', :through => :is_routine_passenger_users, :source => :user, :dependent => :destroy#, :after_add => :make_dirty, :after_remove => :make_dirty
   # monitor_association_changes :routine_passengers
 
   has_many :route_users, :class_name => 'RouteUser', inverse_of: :route

@@ -168,7 +168,7 @@ end
 
 controller do
 
-  before_filter {
+  before_action {
     @page_title = "Routes for #{current_user.current_carpool.title_short}"
   }
 

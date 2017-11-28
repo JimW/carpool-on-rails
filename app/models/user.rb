@@ -34,7 +34,7 @@ class User < ApplicationRecord
   accepts_nested_attributes_for :work_places
 
   has_many :route_users, :class_name => 'RouteUser', inverse_of: :user, :dependent => :destroy
-  has_many :routes, -> { uniq }, :through => :route_users, :source => :route
+  has_many :routes, -> { distinct }, :through => :route_users, :source => :route
   accepts_nested_attributes_for :routes
 
   has_many :is_driver_routes,  -> {is_driver}, :class_name => 'RouteUser', inverse_of: :user, :dependent => :destroy
@@ -61,17 +61,17 @@ class User < ApplicationRecord
   accepts_nested_attributes_for :passenger_routine_routes, allow_destroy: true
 
   has_many :memberships_as_active, -> {is_active}, :class_name => 'CarpoolUser', inverse_of: :user#, :dependent => :destroy
-  has_many :active_carpools, -> { uniq }, :class_name => 'Carpool', :through => :memberships_as_active, :source => :carpool
+  has_many :active_carpools, -> { distinct }, :class_name => 'Carpool', :through => :memberships_as_active, :source => :carpool
   accepts_nested_attributes_for :active_carpools, allow_destroy: true
   accepts_nested_attributes_for :memberships_as_active, allow_destroy: true
 
   has_many :memberships_as_driver,  -> {is_driver}, :class_name => 'CarpoolUser', inverse_of: :user#, :dependent => :destroy
-  has_many :driver_memberships, -> { uniq }, :class_name => 'Carpool', :through => :memberships_as_driver, :source => :carpool
+  has_many :driver_memberships, -> { distinct }, :class_name => 'Carpool', :through => :memberships_as_driver, :source => :carpool
   accepts_nested_attributes_for :memberships_as_driver
   accepts_nested_attributes_for :driver_memberships
 
   has_many :memberships_as_passenger,  -> {is_passenger}, :class_name => 'CarpoolUser', inverse_of: :user#, :dependent => :destroy
-  has_many :passenger_memberships, -> { uniq }, :class_name => 'Carpool', :through => :memberships_as_passenger, :source => :carpool
+  has_many :passenger_memberships, -> { distinct }, :class_name => 'Carpool', :through => :memberships_as_passenger, :source => :carpool
   accepts_nested_attributes_for :memberships_as_passenger
   accepts_nested_attributes_for :passenger_memberships
 

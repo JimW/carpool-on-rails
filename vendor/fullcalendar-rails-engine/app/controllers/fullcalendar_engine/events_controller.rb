@@ -5,8 +5,8 @@ module FullcalendarEngine
 
     layout FullcalendarEngine::Configuration['layout'] || 'application'
 
-    before_filter :load_event, only: [:edit, :update, :destroy, :move, :resize]
-    before_filter :determine_event_type, only: :create
+    before_action :load_event, only: [:edit, :update, :destroy, :move, :resize]
+    before_action :determine_event_type, only: :create
 
     def create
       if @event.save
