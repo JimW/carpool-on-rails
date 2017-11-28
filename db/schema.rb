@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -25,18 +24,16 @@ ActiveRecord::Schema.define(version: 20170329053442) do
     t.string   "author_type"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.index ["author_type", "author_id"], name: "index_active_admin_comments_on_author_type_and_author_id", using: :btree
+    t.index ["namespace"], name: "index_active_admin_comments_on_namespace", using: :btree
+    t.index ["resource_type", "resource_id"], name: "index_active_admin_comments_on_resource_type_and_resource_id", using: :btree
   end
-
-  add_index "active_admin_comments", ["author_type", "author_id"], name: "index_active_admin_comments_on_author_type_and_author_id", using: :btree
-  add_index "active_admin_comments", ["namespace"], name: "index_active_admin_comments_on_namespace", using: :btree
-  add_index "active_admin_comments", ["resource_type", "resource_id"], name: "index_active_admin_comments_on_resource_type_and_resource_id", using: :btree
 
   create_table "carpool_locations", force: :cascade do |t|
     t.integer "carpool_id"
     t.integer "location_id"
+    t.index ["carpool_id", "location_id"], name: "by_carpool_and_location", unique: true, using: :btree
   end
-
-  add_index "carpool_locations", ["carpool_id", "location_id"], name: "by_carpool_and_location", unique: true, using: :btree
 
   create_table "carpool_users", force: :cascade do |t|
     t.integer "user_id"
@@ -44,11 +41,10 @@ ActiveRecord::Schema.define(version: 20170329053442) do
     t.boolean "is_driver"
     t.boolean "is_passenger"
     t.boolean "is_active",    default: true
+    t.index ["carpool_id", "user_id"], name: "by_carpool_and_user", unique: true, using: :btree
+    t.index ["carpool_id"], name: "index_carpool_user_on_carpool_id", using: :btree
+    t.index ["user_id"], name: "index_carpool_user_on_user_id", using: :btree
   end
-
-  add_index "carpool_users", ["carpool_id", "user_id"], name: "by_carpool_and_user", unique: true, using: :btree
-  add_index "carpool_users", ["carpool_id"], name: "index_carpool_user_on_carpool_id", using: :btree
-  add_index "carpool_users", ["user_id"], name: "index_carpool_user_on_user_id", using: :btree
 
   create_table "carpools", force: :cascade do |t|
     t.string   "title",                                      null: false
@@ -64,11 +60,10 @@ ActiveRecord::Schema.define(version: 20170329053442) do
   create_table "event_routes", force: :cascade do |t|
     t.integer "route_id"
     t.integer "event_id"
+    t.index ["event_id"], name: "index_event_route_on_event_id", using: :btree
+    t.index ["route_id", "event_id"], name: "by_event_and_route", unique: true, using: :btree
+    t.index ["route_id"], name: "index_event_route_on_user_id", using: :btree
   end
-
-  add_index "event_routes", ["event_id"], name: "index_event_route_on_event_id", using: :btree
-  add_index "event_routes", ["route_id", "event_id"], name: "by_event_and_route", unique: true, using: :btree
-  add_index "event_routes", ["route_id"], name: "index_event_route_on_user_id", using: :btree
 
   create_table "fullcalendar_engine_event_series", force: :cascade do |t|
     t.integer  "frequency",  default: 1
@@ -89,18 +84,16 @@ ActiveRecord::Schema.define(version: 20170329053442) do
     t.integer  "event_series_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.index ["event_series_id"], name: "index_fullcalendar_engine_events_on_event_series_id", using: :btree
   end
-
-  add_index "fullcalendar_engine_events", ["event_series_id"], name: "index_fullcalendar_engine_events_on_event_series_id", using: :btree
 
   create_table "location_routes", force: :cascade do |t|
     t.integer "location_id"
     t.integer "route_id"
     t.boolean "arrived"
     t.integer "position"
+    t.index ["location_id", "route_id", "position"], name: "by_location_and_user_and_position", unique: true, using: :btree
   end
-
-  add_index "location_routes", ["location_id", "route_id", "position"], name: "by_location_and_user_and_position", unique: true, using: :btree
 
   create_table "location_users", force: :cascade do |t|
     t.integer "location_id"
@@ -109,11 +102,10 @@ ActiveRecord::Schema.define(version: 20170329053442) do
     t.boolean "is_end_point"
     t.boolean "is_home"
     t.boolean "is_work"
+    t.index ["location_id", "user_id"], name: "by_location_and_user", unique: true, using: :btree
+    t.index ["location_id"], name: "index_location_users_on_location_id", using: :btree
+    t.index ["user_id"], name: "index_location_users_on_user_id", using: :btree
   end
-
-  add_index "location_users", ["location_id", "user_id"], name: "by_location_and_user", unique: true, using: :btree
-  add_index "location_users", ["location_id"], name: "index_location_users_on_location_id", using: :btree
-  add_index "location_users", ["user_id"], name: "index_location_users_on_user_id", using: :btree
 
   create_table "locations", force: :cascade do |t|
     t.string   "title",            null: false
@@ -134,9 +126,8 @@ ActiveRecord::Schema.define(version: 20170329053442) do
     t.integer "organization_id"
     t.integer "user_id"
     t.string  "personal_gcal_id"
+    t.index ["organization_id", "user_id"], name: "by_organization_and_user", unique: true, using: :btree
   end
-
-  add_index "organization_users", ["organization_id", "user_id"], name: "by_organization_and_user", unique: true, using: :btree
 
   create_table "organizations", force: :cascade do |t|
     t.string   "title",       null: false
@@ -152,19 +143,17 @@ ActiveRecord::Schema.define(version: 20170329053442) do
     t.string   "resource_type"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.index ["name", "resource_type", "resource_id"], name: "index_roles_on_name_and_resource_type_and_resource_id", using: :btree
+    t.index ["name"], name: "index_roles_on_name", using: :btree
   end
-
-  add_index "roles", ["name", "resource_type", "resource_id"], name: "index_roles_on_name_and_resource_type_and_resource_id", using: :btree
-  add_index "roles", ["name"], name: "index_roles_on_name", using: :btree
 
   create_table "route_instances", force: :cascade do |t|
     t.integer "route_id"
     t.integer "instance_id"
     t.boolean "modified"
+    t.index ["instance_id"], name: "index_route_instances_on_instance_id", using: :btree
+    t.index ["route_id"], name: "index_route_instances_on_route_id", using: :btree
   end
-
-  add_index "route_instances", ["instance_id"], name: "index_route_instances_on_instance_id", using: :btree
-  add_index "route_instances", ["route_id"], name: "index_route_instances_on_route_id", using: :btree
 
   create_table "route_users", force: :cascade do |t|
     t.integer "route_id"
@@ -172,11 +161,10 @@ ActiveRecord::Schema.define(version: 20170329053442) do
     t.boolean "is_driver"
     t.boolean "is_passenger"
     t.integer "position"
+    t.index ["route_id", "user_id"], name: "by_route_and_user", unique: true, using: :btree
+    t.index ["route_id"], name: "index_route_user_on_route_id", using: :btree
+    t.index ["user_id"], name: "index_route_user_on_user_id", using: :btree
   end
-
-  add_index "route_users", ["route_id", "user_id"], name: "by_route_and_user", unique: true, using: :btree
-  add_index "route_users", ["route_id"], name: "index_route_user_on_route_id", using: :btree
-  add_index "route_users", ["user_id"], name: "index_route_user_on_user_id", using: :btree
 
   create_table "routes", force: :cascade do |t|
     t.boolean  "completed",     default: false
@@ -215,17 +203,15 @@ ActiveRecord::Schema.define(version: 20170329053442) do
     t.boolean  "mobile_phone_messaging"
     t.integer  "current_carpool_id"
     t.boolean  "subscribe_to_gcal",      default: false
+    t.index ["authentication_token"], name: "index_users_on_authentication_token", using: :btree
+    t.index ["email"], name: "index_users_on_email", unique: true, using: :btree
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
   end
-
-  add_index "users", ["authentication_token"], name: "index_users_on_authentication_token", using: :btree
-  add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
-  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
   create_table "users_roles", id: false, force: :cascade do |t|
     t.integer "user_id"
     t.integer "role_id"
+    t.index ["user_id", "role_id"], name: "index_users_roles_on_user_id_and_role_id", using: :btree
   end
-
-  add_index "users_roles", ["user_id", "role_id"], name: "index_users_roles_on_user_id_and_role_id", using: :btree
 
 end
