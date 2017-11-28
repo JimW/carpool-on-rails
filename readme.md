@@ -105,7 +105,7 @@ In order to get the carpool server running both locally and on Heroku, you'll ne
 
 
 - [Bower](https://bower.io/#install-bower) with Node, NPM, and GIT,  for building javascript
-- [Ruby on Rails 4.2](http://guides.rubyonrails.org/v4.2/) via a ruby version manager
+- [Ruby on Rails 5.06](http://guides.rubyonrails.org/v5.0.6/index.html) via a ruby version manager
 - [Account for Heroku](https://id.heroku.com/login) production hosting
 - [Account for Managing Google APIs](https://console.developers.google.com/apis/dashboard)
 
