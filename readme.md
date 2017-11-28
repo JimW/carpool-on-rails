@@ -286,7 +286,6 @@ You'll need to set the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY for this user
     Under Settings, Reveal Config Vars, Set these ENV Vars as follows (see sample application.yml):
     ```json
         SECRET_KEY_BASE: "xx"
-        RACK_ENV: "production"
         RAILS_ENV: "production"
         RAILS_SERVE_STATIC_FILES: "enabled"
 
@@ -302,7 +301,7 @@ You'll need to set the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY for this user
         AWS_S3_SEED_DIR_PATH: 'seeds/heroku_staging or seeds/heroku_production'
 
         DATABASE_URL: "AUTO SET BY HEROKU"
-        MAX_THREADS: 2
+        RAILS_MAX_THREADS: 2
         DB_POOL: 4
         LANG: "en_US.UTF-8"
         SITE_ROOT_URL:"https://WHATEVER" (Added this for any future issue, see zquestz/omniauth-google-oauth2)
