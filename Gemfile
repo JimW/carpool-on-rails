@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 # http://www.sitepoint.com/rails-disco-get-event-sourcing/
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '>= 5.0.6', '< 5.1'
+gem 'rails', '5.1.4'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0.7'
 # Use Uglifier as compressor for JavaScript assets
@@ -113,6 +113,10 @@ end
 group :production do
   gem 'pg'
 end
+
+gem "rack-timeout"
+# https://github.com/heroku/rack-timeout
+# all kinds of stuff here related to timeouts.  May need to examine logs under some load to figure out what tweaks are needed XXX
 
 # Keep ruby version at the end like Heroku suggests..
 ruby "2.4.2" # had to downgrade for the ironworkers on Heroku, Heroku is fine with 2.2 though..

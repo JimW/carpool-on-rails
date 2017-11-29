@@ -285,29 +285,34 @@ You'll need to set the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY for this user
 
     Under Settings, Reveal Config Vars, Set these ENV Vars as follows (see sample application.yml):
     ```json
-        SECRET_KEY_BASE: "xx"
-        RAILS_ENV: "production"
-        RACK_ENV: "production" # Heroku wants this
-        RAILS_SERVE_STATIC_FILES: "enabled"
+    SECRET_KEY_BASE: "xx"
+    RAILS_ENV: "production"
+    RACK_ENV: "production" # Heroku wants this
+    RAILS_SERVE_STATIC_FILES: "enabled"
 
-        DEVISE_SECRET_KEY: can use SECRET_KEY_BASE
-        GOOGLE_CLIENT_ID: <Paste downloaded Credentials>
-        GOOGLE_CLIENT_SECRET: <Paste downloaded Credential>
-        MY_SERVICE_ACCOUNT_JSON: <Paste entire text from downloaded SERVICE ACCOUNT JSON Credentials>
+    DEVISE_SECRET_KEY: can use SECRET_KEY_BASE
+    GOOGLE_CLIENT_ID: <Paste downloaded Credentials>
+    GOOGLE_CLIENT_SECRET: <Paste downloaded Credential>
+    MY_SERVICE_ACCOUNT_JSON: <Paste entire text from downloaded SERVICE ACCOUNT JSON Credentials>
 
-        AWS_ACCESS_KEY_ID: '<>'
-        AWS_SECRET_ACCESS_KEY: '<>'
+    AWS_ACCESS_KEY_ID: '<>'
+    AWS_SECRET_ACCESS_KEY: '<>'
 
-        AWS_S3_BUCKET: 'yourbucketnamewithnospecialcharacters'
-        AWS_S3_SEED_DIR_PATH: 'seeds/heroku_staging or seeds/heroku_production'
+    AWS_S3_BUCKET: 'yourbucketnamewithnospecialcharacters'
+    AWS_S3_SEED_DIR_PATH: 'seeds/heroku_staging or seeds/heroku_production'
 
-        DATABASE_URL: "AUTO SET BY HEROKU"
-        RAILS_MAX_THREADS: 2
-        DB_POOL: 4
-        LANG: "en_US.UTF-8"
-        SITE_ROOT_URL:"https://WHATEVER" (Added this for any future issue, see zquestz/omniauth-google-oauth2)
+    DATABASE_URL: "AUTO SET BY HEROKU"
+    RAILS_MAX_THREADS: 1
+    MIN_THREADS: 1
+
+    DB_POOL: 2
+    LANG: "en_US.UTF-8"
+    SITE_ROOT_URL:"https://WHATEVER" (Added this for any future issue, see zquestz/omniauth-google-oauth2)
     ```
-    You could also potentially use the Heroku API to push these all up at once using curl..
+    You could also potentially use the Heroku API to push these all up at once using curl.. or use a few of these for the various configs above:
+    ```
+    heroku config:set MIN_THREADS=1 RAILS_MAX_THREADS=1 --remote staging 
+    ```
 
 1. Push the project to Heroku
     ```bash

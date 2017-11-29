@@ -10,6 +10,9 @@ Bundler.require(*Rails.groups)
 
 module CarPool
   class Application < Rails::Application
+    # Initialize configuration defaults for originally generated Rails version.
+    config.load_defaults 5.1
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
@@ -24,10 +27,11 @@ module CarPool
     # config.action_mailer.perform_caching = true
     # config.active_record.dump_schemas = :all
     # config.ssl_options = { hsts: { subdomains: true } }
-    # ActiveSupport.to_time_preserves_timezone = false
+    # ActiveSupport.to_time_preserves_timezone = false  
 
 
 
+# Check if all this stuff stioll good for 5.1 XXX 
 
     # https://hackhands.com/rails-nameerror-uninitialized-constant-class-solution/
     config.autoload_paths += %W(#{config.root}/lib)
@@ -63,6 +67,6 @@ module CarPool
         end)
         # config.assets.precompile += %w( .svg .eot .woff .ttf )
         config.assets.paths << Rails.root.join('vendor', 'assets', 'bower_components')
-    
-  end
+
+        end
 end
