@@ -105,7 +105,7 @@ In order to get the carpool server running both locally and on Heroku, you'll ne
 
 
 - [Bower](https://bower.io/#install-bower) with Node, NPM, and GIT,  for building javascript
-- [Ruby on Rails 4.2](http://guides.rubyonrails.org/v4.2/) via a ruby version manager
+- [Ruby on Rails 5.1](http://guides.rubyonrails.org/v5.1/) via a ruby version manager
 - [Account for Heroku](https://id.heroku.com/login) production hosting
 - [Account for Managing Google APIs](https://console.developers.google.com/apis/dashboard)
 
@@ -172,7 +172,7 @@ Follow the setup for the following sections to complete Installation of the Carp
     ```
 1. Install Ruby
     ```bash
-    rbenv install 2.2.6
+    rbenv install 2.4.2
     ```
 1. Install Bundler
     ```bash
@@ -456,17 +456,8 @@ Batch actions (for Delete) should work on heroku, but not locally for some JSy r
   - Org Crashes on Delete (use just a single organization for now)
   - Add current_org to User maybe within organization_users (useful for Admin at least right now)
   - Enable multiple Orgs? Not sure I want to scale that far..
-
-  ```ruby
-  class AddCurrentOrganizationToUsers < ActiveRecord::Migration
-      def change
-        add_column :users, :current_organization_id, :integer
-      end
-  end
-  ```
-
-    - Renaming org.title_short won't propagate to calendars
-
+  - Renaming org.title_short won't propagate to calendars
+  
 
 - Carpool Page
   - Add a has_one lobby to Carpool instead of all this "Lobby" stuff in the code, but make sure that association is a carpool with "Lobby" as the name, fix up all the Lobby code accordingly

@@ -82,9 +82,7 @@ gem 'icalendar'
 
 # Sync with Google Cal API
 # http://baugues.com/google-calendar-api-oauth2-and-ruby-on-rails
-# gem 'google-api-client', '0.9.27' # pre3'#,:require => 'google/api_client'
-gem 'google-api-client', '~> 0.9'
-# gem 'google-api-client', '0.10.0' # pre3'#,:require => 'google/api_client'
+gem 'google-api-client', '~> 0.17.3'
 
 gem 'base32'
 
@@ -92,7 +90,9 @@ gem 'base32'
 gem "figaro" # though rails 4.1 now uses secrets.yml, keep production secrets within Env and check that yml file into github
 # https://devcenter.heroku.com/articles/getting-started-with-rails4#local-workstation-setup
 
-gem "puma", "3.6.2" # For webserver for Heroku
+# https://devcenter.heroku.com/articles/deploying-rails-applications-with-the-puma-web-server
+gem "puma", "3.11.0" 
+
 gem "lograge"
 
 # Why is this group or any group called development not being picked up by bundler ??? Really?
@@ -107,6 +107,7 @@ group :development, :test do
   gem 'web-console', '~> 2.0'
   gem 'meta_request'
   # gem 'rails-erd'
+  gem 'listen'
 end
 
 # https://devcenter.heroku.com/articles/getting-started-with-rails4#local-workstation-setup

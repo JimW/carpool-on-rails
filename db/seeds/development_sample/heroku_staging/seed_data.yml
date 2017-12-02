@@ -1,17 +1,15 @@
 ---
 orgs:
-- title_short: MyOrg
-  title: My Org Title
-  description: Blah Blah
+- title_short: DTech
+  title: Design Tech High School
+  description: Public charter high school (on Oracle's campus), located on the San Francisco Peninsula
   carpools:
   - title_short: Lobby
     title: Lobby
     locations:
-    # - {}
     member_roles:
-    # - {}
-  - title_short: CityCarpool
-    title: City CarPool
+  - title_short: CarpoolA
+    title: CarPool Alpha
     locations:
     - short_name: dTech
       title: dTech Campus
@@ -19,30 +17,30 @@ orgs:
       street: 1 School St.
     - short_name: CityPO
       title: City Post Office
-      city: Some City
+      city: San Francisco
       street: 1 Main St.
     member_roles:
-    - role: admin
+    - role : admin
       users:
-      - email: admin@xxx.com
-        password: asdf
-        can_drive: true
-        first_name: Admin
-        last_name: LastName
-        mobile_phone: "(555) 555-3333"
-    - role: manager
+      - email: a@a.com
+        password: a
+        can_drive: yes
+        first_name: Big
+        last_name: Guy
+        mobile_phone: (415) 444-4444
+    - role : manager
       users:
-      - email: x@x.com
-        password: asdf
-        can_drive: true
-        first_name: XDriver
-        last_name: LastName
-        mobile_phone: "(555) 555-2222"
-    - role: peon
+      - email: b@b.com
+        password: a
+        can_drive: yes
+        first_name: Malaka
+        last_name: Managoriakopolis
+        mobile_phone: (415) 555-5555
+    - role : peon
       users:
-      - email: y@y.com
-        password: asdf
-        can_drive: false
-        first_name: YDriver
-        last_name: Lastname
-        mobile_phone: "(555) 555-1111"
+      - email: c@c.com
+        password: a
+        can_drive: no
+        first_name: Pewee
+        last_name: Peon
+        mobile_phone: (415) 666-6666

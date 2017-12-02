@@ -3,7 +3,7 @@
   "dependencies": {
     "jQuery-contextMenu": "2.6.3",
     "js-cookie": "latest",
-    "moment": "2.19.2",
+    "moment": "2.19.3",
     "fullcalendar": "3.4.0",
     "jquery.scrollTo": "latest",
     "jquery.ui.touch": "latest",

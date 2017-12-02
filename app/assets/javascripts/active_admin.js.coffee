@@ -2,6 +2,7 @@
 #= require active_admin/base
 
 #= require jquery-ui
+#= require jquery_ujs
 #= require jquery.scrollTo/jquery.scrollTo
 #= require jQuery-contextMenu/dist/jquery.contextMenu
 #= require js-cookie/src/js.cookie
