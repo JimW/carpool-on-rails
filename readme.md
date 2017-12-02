@@ -105,7 +105,7 @@ In order to get the carpool server running both locally and on Heroku, you'll ne
 
 
 - [Bower](https://bower.io/#install-bower) with Node, NPM, and GIT,  for building javascript
-- [Ruby on Rails 5.06](http://guides.rubyonrails.org/v5.0.6/index.html) via a ruby version manager
+- [Ruby on Rails 5.1](http://guides.rubyonrails.org/v5.1/) via a ruby version manager
 - [Account for Heroku](https://id.heroku.com/login) production hosting
 - [Account for Managing Google APIs](https://console.developers.google.com/apis/dashboard)
 
@@ -172,7 +172,7 @@ Follow the setup for the following sections to complete Installation of the Carp
     ```
 1. Install Ruby
     ```bash
-    rbenv install 2.2.6
+    rbenv install 2.4.2
     ```
 1. Install Bundler
     ```bash
@@ -285,29 +285,34 @@ You'll need to set the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY for this user
 
     Under Settings, Reveal Config Vars, Set these ENV Vars as follows (see sample application.yml):
     ```json
-        SECRET_KEY_BASE: "xx"
-        RAILS_ENV: "production"
-        RACK_ENV: "production" # Heroku wants this
-        RAILS_SERVE_STATIC_FILES: "enabled"
+    SECRET_KEY_BASE: "xx"
+    RAILS_ENV: "production"
+    RACK_ENV: "production" # Heroku wants this
+    RAILS_SERVE_STATIC_FILES: "enabled"
 
-        DEVISE_SECRET_KEY: can use SECRET_KEY_BASE
-        GOOGLE_CLIENT_ID: <Paste downloaded Credentials>
-        GOOGLE_CLIENT_SECRET: <Paste downloaded Credential>
-        MY_SERVICE_ACCOUNT_JSON: <Paste entire text from downloaded SERVICE ACCOUNT JSON Credentials>
+    DEVISE_SECRET_KEY: can use SECRET_KEY_BASE
+    GOOGLE_CLIENT_ID: <Paste downloaded Credentials>
+    GOOGLE_CLIENT_SECRET: <Paste downloaded Credential>
+    MY_SERVICE_ACCOUNT_JSON: <Paste entire text from downloaded SERVICE ACCOUNT JSON Credentials>
 
-        AWS_ACCESS_KEY_ID: '<>'
-        AWS_SECRET_ACCESS_KEY: '<>'
+    AWS_ACCESS_KEY_ID: '<>'
+    AWS_SECRET_ACCESS_KEY: '<>'
 
-        AWS_S3_BUCKET: 'yourbucketnamewithnospecialcharacters'
-        AWS_S3_SEED_DIR_PATH: 'seeds/heroku_staging or seeds/heroku_production'
+    AWS_S3_BUCKET: 'yourbucketnamewithnospecialcharacters'
+    AWS_S3_SEED_DIR_PATH: 'seeds/heroku_staging or seeds/heroku_production'
 
-        DATABASE_URL: "AUTO SET BY HEROKU"
-        RAILS_MAX_THREADS: 2
-        DB_POOL: 4
-        LANG: "en_US.UTF-8"
-        SITE_ROOT_URL:"https://WHATEVER" (Added this for any future issue, see zquestz/omniauth-google-oauth2)
+    DATABASE_URL: "AUTO SET BY HEROKU"
+    RAILS_MAX_THREADS: 1
+    MIN_THREADS: 1
+
+    DB_POOL: 2
+    LANG: "en_US.UTF-8"
+    SITE_ROOT_URL:"https://WHATEVER" (Added this for any future issue, see zquestz/omniauth-google-oauth2)
     ```
-    You could also potentially use the Heroku API to push these all up at once using curl..
+    You could also potentially use the Heroku API to push these all up at once using curl.. or use a few of these for the various configs above:
+    ```
+    heroku config:set MIN_THREADS=1 RAILS_MAX_THREADS=1 --remote staging 
+    ```
 
 1. Push the project to Heroku
     ```bash
@@ -451,17 +456,8 @@ Batch actions (for Delete) should work on heroku, but not locally for some JSy r
   - Org Crashes on Delete (use just a single organization for now)
   - Add current_org to User maybe within organization_users (useful for Admin at least right now)
   - Enable multiple Orgs? Not sure I want to scale that far..
-
-  ```ruby
-  class AddCurrentOrganizationToUsers < ActiveRecord::Migration
-      def change
-        add_column :users, :current_organization_id, :integer
-      end
-  end
-  ```
-
-    - Renaming org.title_short won't propagate to calendars
-
+  - Renaming org.title_short won't propagate to calendars
+  
 
 - Carpool Page
   - Add a has_one lobby to Carpool instead of all this "Lobby" stuff in the code, but make sure that association is a carpool with "Lobby" as the name, fix up all the Lobby code accordingly

@@ -8,6 +8,7 @@ class User < ApplicationRecord
   validates :first_name, :last_name, presence: true
 
   phony_normalize :mobile_phone, default_country_code: 'US'
+  phony_normalize :home_phone, default_country_code: 'US'
 
   rolify strict: true
 
@@ -80,7 +81,7 @@ class User < ApplicationRecord
   accepts_nested_attributes_for :organization_users
   accepts_nested_attributes_for :organizations
 
-  belongs_to :current_organization, :class_name => :Organization, foreign_key: 'current_organization_id'
+  # belongs_to :current_organization, :class_name => :Organization, foreign_key: 'current_organization_id'
 
   scope :in_lobby, -> { joins(:carpools).merge(Carpool.lobbies) }
   scope :all_can_drive, -> {where :can_drive => true}

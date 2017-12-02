@@ -10,6 +10,23 @@ Bundler.require(*Rails.groups)
 
 module CarPool
   class Application < Rails::Application
+    # Initialize configuration defaults for originally generated Rails version.
+    # config.load_defaults 5.1
+
+    # Enable per-form CSRF tokens. Previous versions had false.
+    config.action_controller.per_form_csrf_tokens = false
+
+    # Enable origin-checking CSRF mitigation. Previous versions had false.
+    config.action_controller.forgery_protection_origin_check = false
+
+    # Make Ruby 2.4 preserve the timezone of the receiver when calling `to_time`.
+    # Previous versions had false.
+    ActiveSupport.to_time_preserves_timezone = true
+
+    # Require `belongs_to` associations by default. Previous versions had false.
+    config.active_record.belongs_to_required_by_default = false
+    # XXX When set to true and the seeding will fail because of some belongs_to somewhere.  And then the admin role won't work.
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
@@ -24,11 +41,8 @@ module CarPool
     # config.action_mailer.perform_caching = true
     # config.active_record.dump_schemas = :all
     # config.ssl_options = { hsts: { subdomains: true } }
-    # ActiveSupport.to_time_preserves_timezone = false
-
-
-
-
+    # ActiveSupport.to_time_preserves_timezone = false  
+    
     # https://hackhands.com/rails-nameerror-uninitialized-constant-class-solution/
     config.autoload_paths += %W(#{config.root}/lib)
     
@@ -40,9 +54,6 @@ module CarPool
         # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
         # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
         # config.i18n.default_locale = :de
-    
-        # Do not swallow errors in after_commit/after_rollback callbacks.
-        config.active_record.raise_in_transactional_callbacks = true
     
         # config.serve_static_assets = true
         # doing ABOVE instead via gem 'rails_12factor', group: :production
@@ -63,6 +74,6 @@ module CarPool
         end)
         # config.assets.precompile += %w( .svg .eot .woff .ttf )
         config.assets.paths << Rails.root.join('vendor', 'assets', 'bower_components')
-    
-  end
+
+        end
 end

@@ -18,7 +18,7 @@ Rails.application.configure do
 
     config.cache_store = :memory_store
     config.public_file_server.headers = {
-      'Cache-Control' => 'public, max-age=172800'
+      'Cache-Control' => "public, max-age=#{2.days.seconds.to_i}"
     }
   else
     config.action_controller.perform_caching = false
@@ -45,27 +45,29 @@ Rails.application.configure do
 
   # Suppress logger output for asset requests.
   config.assets.quiet = true
-  
-  # From rails 4.2 XXX check these are still right for 5.0 XXX
+
+  # From rails 4.2 XXX check these are still right for 5.0 XXX for 5.1 too..
   # Asset digests allow you to set far-future HTTP expiration dates on all assets,
   # yet still be able to expire them through the digest params.
   config.assets.digest = true
   
-    # Adds additional error checking when serving assets at runtime.
-    # Checks for improperly declared sprockets dependencies.
-    # Raises helpful error messages.
-    config.assets.raise_runtime_errors = true
+  # Adds additional error checking when serving assets at runtime.
+  # Checks for improperly declared sprockets dependencies.
+  # Raises helpful error messages.
+  config.assets.raise_runtime_errors = true
   
-    # for Devise
-    config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
-  
-    # Raises error for missing translations
-    # config.action_view.raise_on_missing_translations = true
-    config.active_record.logger = nil
+  # for Devise
+  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+    
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+  config.active_record.logger = nil
+  
 
   # Use an evented file watcher to asynchronously detect changes in source code,
   # routes, locales, etc. This feature depends on the listen gem.
-  # config.file_watcher = ActiveSupport::EventedFileUpdateChecker
+  config.file_watcher = ActiveSupport::EventedFileUpdateChecker
+
+  config.read_encrypted_secrets = false
+  
 end

@@ -14,7 +14,7 @@ asset 'jQuery-contextMenu', "2.6.3"
 
 #http://guides.rubyonrails.org/asset_pipeline.html#coding-links-to-assets
 asset 'js-cookie'
-asset 'moment', "2.19.2"
+asset 'moment', "2.19.3" 
 asset 'fullcalendar', "3.4.0" # after 3.1, some increased Jquery dependency is screwing things up? XXX
 asset 'jquery.scrollTo'
 asset 'jquery.ui.touch'

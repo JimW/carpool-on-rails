@@ -12,5 +12,8 @@ production:
   adapter: postgresql
   encoding: unicode
   url: <%= ENV['DATABASE_URL'] %>
-  pool: <%= ENV["DB_POOL"] || ENV['MAX_THREADS'] || 5 %>
+  pool: <%= ENV["DB_POOL"] || ENV['RAILS_MAX_THREADS'] || 5 %>
   # https://devcenter.heroku.com/articles/concurrency-and-database-connections#threaded-servers
+  # "If you are using the Puma web server we recommend setting the pool value to equal ENV['RAILS_MAX_THREADS']. 
+  # When using multiple processes each process will contain its own pool so as long as no worker process has more
+  #  than ENV['RAILS_MAX_THREADS'] then this setting should be adequate.""
