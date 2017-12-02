@@ -64,13 +64,13 @@ GEM
     arbre (1.1.1)
       activesupport (>= 3.0.0)
     arel (8.0.0)
-    aws-sdk (2.10.94)
-      aws-sdk-resources (= 2.10.94)
-    aws-sdk-core (2.10.94)
+    aws-sdk (2.10.95)
+      aws-sdk-resources (= 2.10.95)
+    aws-sdk-core (2.10.95)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.10.94)
-      aws-sdk-core (= 2.10.94)
+    aws-sdk-resources (2.10.95)
+      aws-sdk-core (= 2.10.95)
     aws-sigv4 (1.0.2)
     base32 (0.3.2)
     bcrypt (3.1.11)
@@ -81,12 +81,19 @@ GEM
       coderay (>= 1.0.0)
       erubi (>= 1.0.0)
       rack (>= 0.9.0)
-    binding_of_caller (0.7.3)
-      debug_inspector (>= 0.0.1)
-    bower-rails (0.11.0)
+    bindex (0.5.0)
     builder (3.2.3)
     byebug (9.1.0)
     callsite (0.0.11)
+    capybara (2.16.1)
+      addressable
+      mini_mime (>= 0.1.3)
+      nokogiri (>= 1.3.3)
+      rack (>= 1.0.0)
+      rack-test (>= 0.5.4)
+      xpath (~> 2.0)
+    childprocess (0.8.0)
+      ffi (~> 1.0, >= 1.0.11)
     chosen-rails (1.5.2)
       coffee-rails (>= 3.2)
       railties (>= 3.0)
@@ -102,7 +109,6 @@ GEM
     coffee-script-source (1.12.2)
     concurrent-ruby (1.0.5)
     crass (1.0.3)
-    debug_inspector (0.0.3)
     declarative (0.0.10)
     declarative-option (0.1.0)
     deep_cloneable (2.3.1)
@@ -148,10 +154,10 @@ GEM
     i18n (0.9.1)
       concurrent-ruby (~> 1.0)
     icalendar (2.4.1)
-    inherited_resources (1.7.2)
-      actionpack (>= 3.2, < 5.2.x)
+    inherited_resources (1.8.0)
+      actionpack (>= 4.2, <= 5.2)
       has_scope (~> 0.6)
-      railties (>= 3.2, < 5.2.x)
+      railties (>= 4.2, <= 5.2)
       responders
     jbuilder (2.7.0)
       activesupport (>= 4.2.0)
@@ -257,6 +263,8 @@ GEM
     rack (2.0.3)
     rack-contrib (2.0.0)
       rack (~> 2.0)
+    rack-proxy (0.6.2)
+      rack
     rack-test (0.8.2)
       rack (>= 1.0, < 3)
     rack-timeout (0.4.2)
@@ -306,6 +314,7 @@ GEM
     rolify (5.1.0)
     ruby-progressbar (1.9.0)
     ruby_dep (1.5.0)
+    rubyzip (1.2.1)
     sass (3.5.3)
       sass-listen (~> 4.0.0)
     sass-listen (4.0.0)
@@ -323,11 +332,19 @@ GEM
     seed_dump (3.2.4)
       activerecord (>= 4)
       activesupport (>= 4)
+    selenium-webdriver (3.8.0)
+      childprocess (~> 0.5)
+      rubyzip (~> 1.0)
     signet (0.8.1)
       addressable (~> 2.3)
       faraday (~> 0.9)
       jwt (>= 1.5, < 3.0)
       multi_json (~> 1.10)
+    spring (2.0.2)
+      activesupport (>= 4.2)
+    spring-watcher-listen (2.0.1)
+      listen (>= 2.7, < 4.0)
+      spring (>= 1.2, < 3.0)
     sprockets (3.7.1)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
@@ -340,6 +357,9 @@ GEM
     thor (0.20.0)
     thread_safe (0.3.6)
     tilt (2.0.8)
+    turbolinks (5.0.1)
+      turbolinks-source (~> 5)
+    turbolinks-source (5.0.3)
     tzinfo (1.2.4)
       thread_safe (~> 0.1)
     uber (0.1.0)
@@ -347,14 +367,20 @@ GEM
       execjs (>= 0.3.0, < 3)
     warden (1.2.7)
       rack (>= 1.0)
-    web-console (2.3.0)
-      activemodel (>= 4.0)
-      binding_of_caller (>= 0.7.2)
-      railties (>= 4.0)
-      sprockets-rails (>= 2.0, < 4.0)
+    web-console (3.5.1)
+      actionview (>= 5.0)
+      activemodel (>= 5.0)
+      bindex (>= 0.4.0)
+      railties (>= 5.0)
+    webpacker (3.0.2)
+      activesupport (>= 4.2)
+      rack-proxy (>= 0.6.1)
+      railties (>= 4.2)
     websocket-driver (0.6.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.3)
+    xpath (2.1.0)
+      nokogiri (~> 1.3)
 
 PLATFORMS
   ruby
@@ -366,21 +392,21 @@ DEPENDENCIES
   base32
   best_in_place (~> 3.1.1)
   better_errors
-  bower-rails
   byebug
+  capybara (~> 2.13)
   chosen-rails
   chronic
-  coffee-rails (~> 4.2.2)
+  coffee-rails (~> 4.2)
   deep_cloneable (~> 2.3.1)
   devise (= 4.3.0)
   figaro
   fullcalendar_engine!
   google-api-client (~> 0.17.3)
   icalendar
-  jbuilder (~> 2.7.0)
+  jbuilder (~> 2.5)
   jquery-ui-rails (= 6.0.1)
   just-datetime-picker
-  listen
+  listen (>= 3.0.5, < 3.2)
   lograge
   meta_request
   minitest-rails
@@ -393,12 +419,18 @@ DEPENDENCIES
   rack-timeout
   rails (= 5.1.4)
   rolify (= 5.1.0)
-  sass-rails (~> 5.0.7)
+  sass-rails (~> 5.0)
   sdoc (~> 0.4.2)
   seed_dump (= 3.2.4)
+  selenium-webdriver
+  spring
+  spring-watcher-listen (~> 2.0.0)
   sucker_punch (~> 2.0)
+  turbolinks (~> 5)
+  tzinfo-data
   uglifier (>= 3.2.0)
-  web-console (~> 2.0)
+  web-console (>= 3.3.0)
+  webpacker
 
 RUBY VERSION
    ruby 2.4.2p198
