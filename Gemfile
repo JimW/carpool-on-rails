@@ -18,6 +18,8 @@ gem 'uglifier', '>= 3.2.0'
 # Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
 gem 'webpacker', '~> 3.0'
 
+gem 'graphql'
+
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 
@@ -173,3 +175,5 @@ ruby "2.4.2" # had to downgrade for the ironworkers on Heroku, Heroku is fine wi
 # for easily handling repeated events (schedules)
 # gem 'ice_cube'
 # gem 'recurring_select' # One of ice_cube's bitches 
+
+gem 'graphiql-rails', group: :development

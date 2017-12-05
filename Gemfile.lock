@@ -146,6 +146,9 @@ GEM
       multi_json (~> 1.11)
       os (~> 0.9)
       signet (~> 0.7)
+    graphiql-rails (1.4.8)
+      rails
+    graphql (1.7.7)
     has_scope (0.7.1)
       actionpack (>= 4.1, < 5.2)
       activesupport (>= 4.1, < 5.2)
@@ -402,6 +405,8 @@ DEPENDENCIES
   figaro
   fullcalendar_engine!
   google-api-client (~> 0.17.3)
+  graphiql-rails
+  graphql
   icalendar
   jbuilder (~> 2.5)
   jquery-ui-rails (= 6.0.1)
