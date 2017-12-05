@@ -23,10 +23,17 @@ module FullcalendarEngine
         session[:last_route_id_edited] = @event.route.id
         cookies.permanent[:last_working_date] = @event.starttime.iso8601
         # p "_______________________ FullcalendarEngine: move -- event was saved _______________________"
-      end
-      render :json => {:event => @event, :category => @event.route.category.to_s }
+      end 
+      render :json => {:event => @event, :category => @event.route.category.to_s }   
     end
 
+    def resize
+      if @event
+        @event.endtime = DateTime.iso8601(params[:day_delta]) # rename day_delta to something reasonable like :event_begin
+        @event.save
+      end    
+      render body: nil      
+    end
   end
 
   Event.class_eval do # _______________________ Model __________________________

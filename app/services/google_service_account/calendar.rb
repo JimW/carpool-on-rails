@@ -240,7 +240,7 @@ class GoogleServiceAccount::Calendar
           p 'deleted: Resource has been deleted __________ CAUGHT for ' + event_id_hex
         end
         p "calendar.event_delete ERROR = " + err.to_s if !err.nil?
-        p "calendar.event_delete RESPONSE = " + res.to_s if !res.nil?
+        # p "calendar.event_delete RESPONSE = " + res.to_s if !res.nil?
       }
     end
   end

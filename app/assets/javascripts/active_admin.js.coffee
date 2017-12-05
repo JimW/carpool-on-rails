@@ -3,8 +3,8 @@
 
 #= require jquery-ui
 #= require jquery_ujs
-#= require jquery.scrollTo/jquery.scrollTo
-#= require jQuery-contextMenu/dist/jquery.contextMenu
+#= require jquery.scrollto/jquery.scrollTo
+#= require jquery-contextmenu/dist/jquery.contextMenu
 #= require js-cookie/src/js.cookie
 #= require best_in_place
 #= require best_in_place.purr
@@ -13,7 +13,7 @@
 #= require fullcalendar/dist/fullcalendar
 #= require_tree ./fullcalendar_engine
 #= require_tree ./active_admin
-#= require jqueryui-touch-punch/jquery.ui.touch-punch.min
+#= require jquery-ui-touch-punch/jquery.ui.touch-punch.min
 #= require jquery.ui.touch/jquery.ui.touch
 #= require spin.js/spin
 

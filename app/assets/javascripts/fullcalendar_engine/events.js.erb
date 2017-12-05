@@ -103,9 +103,9 @@ $.extend(full_calendar_options, {
         break;
       default:
         if (startDate.hasTime()) { // did not click within allday area (template)
-          var start = new moment(startDate, "s");
+          var start = new moment(startDate, "s"); 
           var end = new moment(endDate, "s");
-          var slotInterval = new moment(full_calendar_options.slotDuration, "hh:mm:ss");
+          var slotInterval = new moment.duration(full_calendar_options.slotDuration); //, "HH:mm:ss");
 
           if (end.isSame(start.clone().add(slotInterval))) {
             slotInterval.add(slotInterval);
@@ -366,21 +366,14 @@ $(document).ready(function(){
           // e is the original contextmenu event, containing e.pageX and e.pageY (amongst other data)
           // https://swisnl.github.io/jQuery-contextMenu/demo/dynamic-create.html
 
-          // https://github.com/fullcalendar/fullcalendar/issues/3892
-          // https://github.com/fullcalendar/fullcalendar/issues/3920
-          // Trying to figure out why data event cannot be retrieved..??? Timing issue?
-          // Also, sometimes the moment dates are screwed up when creating an entry and it spans acoss years...
-          // so that's why I'm using fullcalendar 3.4.0
-
           return {
               callback: function(key, options) {
-                var fcEventData = $trigger.data('fc-seg').event;
-                // var m = "clicked: " + key;
+                var eventId = $trigger.data('event-id');
                 if (key == "edit") {
-                  FullcalendarEngine.displayEditScreen(fcEventData.id);
+                  FullcalendarEngine.displayEditScreen(eventId);
                 } else {
                   // Don't need a window, just do it
-                  FullcalendarEngine.Events[key](fcEventData.id);
+                  FullcalendarEngine.Events[key](eventId);
                 };
               },
               items: $(e.currentTarget).determineEventItems()

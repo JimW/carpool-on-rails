@@ -85,8 +85,8 @@ ajv@^4.9.1:
     json-stable-stringify "^1.0.1"
 
 ajv@^5.0.0, ajv@^5.1.0, ajv@^5.1.5:
-  version "5.5.0"
-  resolved "https://registry.yarnpkg.com/ajv/-/ajv-5.5.0.tgz#eb2840746e9dc48bd5e063a36e3fd400c5eab5a9"
+  version "5.5.1"
+  resolved "https://registry.yarnpkg.com/ajv/-/ajv-5.5.1.tgz#b38bb8876d9e86bee994956a04e721e88b248eb2"
   dependencies:
     co "^4.6.0"
     fast-deep-equal "^1.0.0"
@@ -2090,12 +2090,12 @@ fstream@^1.0.0, fstream@^1.0.10, fstream@^1.0.2:
     mkdirp ">=0.5 0"
     rimraf "2"
 
-fullcalendar@^3.7.0:
-  version "3.7.0"
-  resolved "https://registry.yarnpkg.com/fullcalendar/-/fullcalendar-3.7.0.tgz#74309943790a0085647ef7671c81c852f68b4a28"
+fullcalendar@2.9.1:
+  version "2.9.1"
+  resolved "https://registry.yarnpkg.com/fullcalendar/-/fullcalendar-2.9.1.tgz#dd2a84469b627749e47c5dd9fd71f56146e0651b"
   dependencies:
-    jquery "2 - 3"
-    moment "^2.9.0"
+    jquery ">=1.7.1"
+    moment ">=2.5.0"
 
 function-bind@^1.0.2, function-bind@^1.1.1:
   version "1.1.1"
@@ -2729,7 +2729,7 @@ jquery.ui.touch@^0.0.1:
   dependencies:
     jquery "*"
 
-jquery@*, "jquery@2 - 3", jquery@>=1.8:
+jquery@*, jquery@>=1.7.1, jquery@>=1.8:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.2.1.tgz#5c4d9de652af6cd0a770154a631bba12b015c787"
 
@@ -3218,7 +3218,7 @@ mkdirp@0.5.x, "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.0, mkd
   dependencies:
     minimist "0.0.8"
 
-moment@^2.19.3, moment@^2.9.0:
+moment@>=2.5.0, moment@^2.19.3:
   version "2.19.3"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.19.3.tgz#bdb99d270d6d7fda78cc0fbace855e27fe7da69f"
 
@@ -4940,9 +4940,9 @@ spdy@^3.4.1:
     select-hose "^2.0.0"
     spdy-transport "^2.0.18"
 
-spin.js@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/spin.js/-/spin.js-3.1.0.tgz#c2d2a4ba83dd6a81e01e0a61b125292b34807128"
+spin.js@2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/spin.js/-/spin.js-2.3.2.tgz#6caa56d520673450fd5cfbc6971e6d0772c37a1a"
 
 sprintf-js@~1.0.2:
   version "1.0.3"

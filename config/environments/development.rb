@@ -69,5 +69,5 @@ Rails.application.configure do
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
   config.read_encrypted_secrets = false
-  
+    
 end

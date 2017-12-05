@@ -16,7 +16,7 @@ gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 3.2.0'
 # Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
-gem 'webpacker'
+gem 'webpacker', '~> 3.0'
 
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
@@ -66,7 +66,6 @@ gem 'jquery-ui-rails', '6.0.1'
 
 # bundle exec rake doc:rails generates the API under doc/api.
 gem 'sdoc', '~> 0.4.2', group: :doc
-# gem "bower-rails"#, "~> 0.11.0"
 gem 'sucker_punch', '~> 2.0'
 gem 'aws-sdk', '~> 2'
 gem 'phony_rails', '0.14.6'

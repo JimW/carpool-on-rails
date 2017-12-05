@@ -301,6 +301,17 @@ $(document).ready(function(){
     interrupt: true
   });
 
+// Must set view specific options like this:
+
+//  $('.calendar').fullCalendar(
+//    views: {
+//          month: { // name of view
+//              titleFormat: 'YYYY, MM, DD'
+//              // other view-specific options here
+//          }
+//      }
+//  });
+  // So no more full_calendar_options as used below (as of fullcalendar v3) XXX TODO
   $('.calendar').fullCalendar(full_calendar_options);
   $('.calendar').addClass('noselect');
 

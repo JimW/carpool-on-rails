@@ -306,7 +306,7 @@ controller do
         cookies.permanent[:last_working_date] = new_route.starts_at.iso8601 # TEST !!!
       end
 
-      head :ok # what ? this
+      head :ok # like a render body:nil
     end
   end
 

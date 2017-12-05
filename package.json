@@ -1,22 +1,22 @@
 {
   "name": "CarPool",
-  "private": true,  
+  "private": true,
   "engines": {
     "npm": "5.5.x",
     "node": "8.9.x"
   },
   "dependencies": {
     "@rails/webpacker": "^3.0.2",
-    "coffeescript": "1.12.7",
     "chosen-js": "^1.8.2",
-    "fullcalendar": "^3.7.0",
+    "coffeescript": "1.12.7",
+    "fullcalendar": "2.9.1",
     "jquery-contextmenu": "^2.6.3",
     "jquery-ui-touch-punch": "^0.2.3",
     "jquery.scrollto": "^2.1.2",
     "jquery.ui.touch": "^0.0.1",
     "js-cookie": "^2.2.0",
     "moment": "^2.19.3",
-    "spin.js": "^3.1.0"
+    "spin.js": "2.3.2"
   },
   "devDependencies": {
     "webpack-dev-server": "^2.9.5"

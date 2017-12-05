@@ -103,13 +103,15 @@ Manager:
 
 In order to get the carpool server running both locally and on Heroku, you'll need to have these components installed and configured:
 
-
-- [Bower](https://bower.io/#install-bower) with Node, NPM, and GIT,  for building javascript
+- [Yarn](https://yarnpkg.com/en/docs/install) with Node, NPM, and GIT,  for javascript
 - [Ruby on Rails 5.1](http://guides.rubyonrails.org/v5.1/) via a ruby version manager
 - [Account for Heroku](https://id.heroku.com/login) production hosting
 - [Account for Managing Google APIs](https://console.developers.google.com/apis/dashboard)
 
-For local Development: I've used OSX and now [WSL on Windows](https://msdn.microsoft.com/en-us/commandline/wsl/faq) (the Aug 2016 stablish beta release) works for me)
+      Notes:
+      For local Development: I've used OSX and now [WSL on Windows](https://msdn.microsoft.com/en-us/commandline/wsl/faq)
+
+      Be careful naming files and directories.  Git can be (is) configured to ignore case, so changes in case that are important can be ignored.  You should use git specific commands for mving (renaming) files if you run into issues.
 
 Follow the setup for the following sections to complete Installation of the Carpool server. It will step you through setting up the various cloud accounts and configuring the server via credentials and execution of a few rake tasks that were created to ease the setup process.
 
@@ -125,22 +127,22 @@ Follow the setup for the following sections to complete Installation of the Carp
 
 1. set **MY_SERVICE_ACCOUNT_JSON** within application.yml (:development and :production) with that JSON
 
-1. Create 2 Oauth 2.0 Client IDs (for both development and production) and save generated keys
+1. Create 2 Oauth 2.0 Client IDs (name them "development" and "production") and save generated keys
 
 1. update application.yml for:
     - GOOGLE_CLIENT_ID
     - GOOGLE_CLIENT_SECRET
 
-![](support_docs/GoogleOAuthIDs.png )
-    This is for server logins via google, which is not really necessary as you can login using username/password too
+![](support_docs/GoogleOAuthIDs.PNG )  
+These OAuth credentials are for server logins via google, which is not really necessary as you can login using username/password too.
 
 1. Set the *Callbacks*
 
-    Local Dev should look like this:
-![](support_docs/DevOAuthCallbackSettings.png )
+    Local Dev should look something like this: (but name them "development" and "production")
+![](support_docs/DevOAuthCallbackSettings.PNG )
 
     Staging or Production should look like this:
-![](support_docs/ProductionHerokuOAuthCallbackSettings.png )
+![](support_docs/ProductionHerokuOAuthCallbackSettings.PNG )
 
 ### Local Development Setup
 
