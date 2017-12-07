@@ -9,6 +9,7 @@
 </div>
 <br>
  <script>
+
    $(document).ready(function(){
      var spinner;
      var opts = {
@@ -60,25 +61,103 @@
      full_calendar_options.events = "";// Need to mute this because somewhere within the fc engine, it's setting it
 
      full_calendar_options.eventSources = [
+       /*
        {
-         url: '<%= Rails.application.routes.url_helpers.routes_path %>' + "?request_type=instance",
+         url: '<%= Rails.application.routes.url_helpers.graphql_path %>'+ '?query={fc_events(cat_type: "special") {}}',
+         type: 'POST',
          color: '#D4FFD7',
          borderColor: '#93CC97',
          textColor: '#524B3E',
        },
        {
-         url: '<%= Rails.application.routes.url_helpers.routes_path %>' + "?request_type=modified_instance",
+         url: '<%= Rails.application.routes.url_helpers.graphql_path %>' + '?query={fc_events(cat_type: "instance") {}}',
+         type: 'POST',
          color: '#F0FFB6',
          textColor: '#35352E',
          borderColor: '#50DA59',
        },
        {
-         url: '<%= Rails.application.routes.url_helpers.routes_path %>' + "?request_type=special",
+         url: '<%= Rails.application.routes.url_helpers.graphql_path %>' + '?query={fc_events(cat_type: "modified_instance") {}}',
+         type: 'POST',
          color: '#F9E0CA',
          textColor: '#503A0D',
          borderColor: '#E4AFAF',
-       }
+       }, 
+*/
+        {
+          events: function(start, end, timezone, callback){
+              $.ajax({
+                  url: '<%= Rails.application.routes.url_helpers.graphql_path %>' + '?query={fc_events(cat_type: "instance") {}}',
+                  type: 'POST',
+                  dataType: 'json',
+                  success: function(result) {
+                    var events = construct_events(result.data.fc_events);
+                    callback(events);
+                    $('.spinner').remove(); //remove busy spinner
+                  },
+              });
+          },
+          color: '#D4FFD7',
+          textColor: '#524B3E',
+          borderColor: '#93CC97',
+        },
+        {
+          events: function(start, end, timezone, callback){
+              $.ajax({
+                  url: '<%= Rails.application.routes.url_helpers.graphql_path %>' + '?query={fc_events(cat_type: "modified_instance") {}}',
+                  type: 'POST',
+                  dataType: 'json',
+                  success: function(result) {
+                    var events = construct_events(result.data.fc_events);
+                    callback(events);
+                    $('.spinner').remove(); //remove busy spinner
+                  },
+              });
+          },
+          color: '#F0FFB6',
+          textColor: '#35352E',
+          borderColor: '#50DA59',
+        },
+        {
+          events: function(start, end, timezone, callback){
+              $.ajax({
+                  url: '<%= Rails.application.routes.url_helpers.graphql_path %>' + '?query={fc_events(cat_type: "special") {}}',
+                  type: 'POST',
+                  dataType: 'json',
+                  success: function(result) {
+                    var events = construct_events(result.data.fc_events);
+                    callback(events);
+                    $('.spinner').remove(); //remove busy spinner
+                  },
+
+              });
+                    
+          },
+          color: '#F9E0CA',
+          textColor: '#503A0D',
+          borderColor: '#E4AFAF',
+        }
+
      ];
      $('.calendar').fullCalendar(full_calendar_options);
+
+      // Necessary because fullcalendar has no way to reach into JSON and pull past the data.fc_events returned by graphql spec
+      // when pulling in event sources via it's url technique, so need to use alternate manual event source method. Could extend fullcalendar..
+      function construct_events(evt_array) {
+        var events = [];
+        evt_array = JSON.parse(evt_array);
+        evt_array.forEach(function (obj) {
+          events.push({
+              id: obj.id,
+              title: obj.title,
+              start: obj.start,
+              end: obj.end
+          });
+        });
+        return events;
+      }
+
    });
  </script>
+
+   

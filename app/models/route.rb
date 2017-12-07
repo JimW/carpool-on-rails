@@ -199,6 +199,10 @@ class Route < ApplicationRecord
     result
   end
 
+  def self.of_category(cat)
+    @routes = Route.where(:category => Route.categories[cat])    
+  end
+
   def self.get_events(cat)
     # p "self.get_events(cat) ____________________________________________________________________________________________"
     @routes = Route.where(:category => Route.categories[cat])

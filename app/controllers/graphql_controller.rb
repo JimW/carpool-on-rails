@@ -1,11 +1,13 @@
 class GraphqlController < ApplicationController
+  
+  protect_from_forgery prepend: true, with: :null_session
+
   def execute
     variables = ensure_hash(params[:variables])
-    query = params[:query]
+    query = params[:query] 
     operation_name = params[:operationName]
     context = {
-      # Query context goes here, for example:
-      # current_user: current_user,
+      current_user: current_user
     }
     result = CarPoolSchema.execute(query, variables: variables, context: context, operation_name: operation_name)
     render json: result

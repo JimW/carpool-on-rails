@@ -45,6 +45,9 @@ module CarPool
     
     # https://hackhands.com/rails-nameerror-uninitialized-constant-class-solution/
     config.autoload_paths += %W(#{config.root}/lib)
+    config.autoload_paths << Rails.root.join('app', 'graphql', 'types')
+    config.autoload_paths << Rails.root.join('app', 'graphql', 'types', 'interfaces')    
+    # config.autoload_paths << Rails.root.join('app', 'graphql', 'mutations')
     
         # Set Time.zone default to the specified zone and make Active Record auto-convert to this zone.
         # Run "rake -D time" for a list of tasks for finding time zone names. Default is UTC.
