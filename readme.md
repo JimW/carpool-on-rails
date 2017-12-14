@@ -133,16 +133,16 @@ Follow the setup for the following sections to complete Installation of the Carp
     - GOOGLE_CLIENT_ID
     - GOOGLE_CLIENT_SECRET
 
-![](support_docs/GoogleOAuthIDs.PNG )  
+![](support_docs/GoogleOAuthIDs.png )  
 These OAuth credentials are for server logins via google, which is not really necessary as you can login using username/password too.
 
 1. Set the *Callbacks*
 
     Local Dev should look something like this: (but name them "development" and "production")
-![](support_docs/DevOAuthCallbackSettings.PNG )
+![](support_docs/DevOAuthCallbackSettings.png )
 
     Staging or Production should look like this:
-![](support_docs/ProductionHerokuOAuthCallbackSettings.PNG )
+![](support_docs/ProductionHerokuOAuthCallbackSettings.png )
 
 ### Local Development Setup
 
