@@ -67,6 +67,7 @@ config/initializers/secret_token.rb
 # Dependency directories
 node_modules/
 .vscode/
+.vs/
 /public/packs
 /public/packs-test
 /node_modules
