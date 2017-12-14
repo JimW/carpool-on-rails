@@ -243,7 +243,7 @@ ActiveAdmin.register User do
   form do |f|
     f.inputs "Details" do
       f.input :subscribe_to_gcal, :value => false, :as => :boolean,
-          :hint => "disabling will delete all of " + user.first_name+ "'s carpool calendars" if current_user.is_admin? || resource == current_user
+          :hint => "disabling will delete all of " + user.first_name+ "'s carpool calendars" if ((current_user.is_admin? || resource == current_user) && !user.first_name.nil?)          
       f.input :email if (ENV['DEMO_MODE'].nil?)
       f.input :first_name
       f.input :last_name
@@ -252,7 +252,7 @@ ActiveAdmin.register User do
       # f.input :mobile_phone_messaging, :value => true
       f.input :password
       f.input :password_confirmation
-      f.input :current_carpool, :as => :radio, :collection => user.carpools.map{|cp| [cp.title_short,cp.id]}#, :as => :input,:url =>[:admin,user]
+      f.input :current_carpool, :as => :radio, :collection => user.carpools.map{|cp| [cp.title_short,cp.id]} if user.carpools.any?#, :as => :input,:url =>[:admin,user]      
       f.input :can_drive, :value => false, :as => :boolean, :hint => "changing will remove all driver/passenger assignments"
 
       # f.input :current_organization, :as => :radio, :collection => user.organizations.map{|org| [org.title_short,org.id]} if current_user.is_admin? # change here will invalidate current_carpool
