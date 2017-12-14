@@ -20,6 +20,9 @@ gem 'webpacker', '~> 3.0'
 
 gem 'graphql'
 
+# https://www.youtube.com/watch?v=SGkTvKRPYrk
+gem 'react_on_rails', '10.0.2' # prefer exact gem version to match npm version
+
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 
@@ -61,6 +64,7 @@ group :development do
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
   # gem 'rails-erd'
+  gem 'graphiql-rails'
 end
 
 # Use jquery as the JavaScript library, it's managed by rails so just use this vs bower
@@ -175,5 +179,3 @@ ruby "2.4.2" # had to downgrade for the ironworkers on Heroku, Heroku is fine wi
 # for easily handling repeated events (schedules)
 # gem 'ice_cube'
 # gem 'recurring_select' # One of ice_cube's bitches 
-
-gem 'graphiql-rails', group: :development
