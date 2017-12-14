@@ -54,6 +54,20 @@ group :development, :test do
   # Access an IRB console on exception pages or by using <%= console %> in views
   gem 'meta_request'
 
+  # https://github.com/shakacode/react-webpack-rails-tutorial/blob/master/Gemfile
+  #  ################################################################################
+  # # Favorite debugging gems
+  # gem "pry"
+  # gem "pry-byebug"
+  # gem "pry-doc"
+  # gem "pry-rails"
+  # gem "pry-rescue"
+  # gem "pry-stack_explorer"
+
+  # ################################################################################
+  # # Color console output
+  # gem "rainbow"
+
 end
 
 group :development do
@@ -179,3 +193,5 @@ ruby "2.4.2" # had to downgrade for the ironworkers on Heroku, Heroku is fine wi
 # for easily handling repeated events (schedules)
 # gem 'ice_cube'
 # gem 'recurring_select' # One of ice_cube's bitches 
+
+gem 'mini_racer', platforms: :ruby
