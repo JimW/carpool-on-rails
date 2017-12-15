@@ -3,11 +3,14 @@
   "private": true,
   "engines": {
     "npm": "5.5.x",
-    "node": "8.9.x"
+    "node": "8.9.x",
+    "yarn": ">= 0.25.2"
   },
   "dependencies": {
-    "@rails/webpacker": "^3.0.2",
+    "@rails/webpacker": "^3.2.0",
+    "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
     "chosen-js": "^1.8.2",
     "coffeescript": "1.12.7",
     "fullcalendar": "2.9.1",
@@ -21,9 +24,11 @@
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-on-rails": "^10.0.2",
+    "react-redux": "^5.0.6",
+    "redux": "^3.7.2",
     "spin.js": "2.3.2"
   },
   "devDependencies": {
-    "webpack-dev-server": "^2.9.5"
+    "webpack-dev-server": "^2.9.7"
   }
 }

@@ -566,3 +566,11 @@ Portions of this code are licensed and copyright as follows:
 FullCalendar (Standard Edition) - © 2017  FullCalendar LLC
 Fullcalendar-Rails_Engine - Copyright (c) 2014 vinsol.com, released under the New MIT License
 
+## Random Install Notes
+
+https://github.com/rails/webpacker#installation
+bundle update webpacker
+yarn upgrade @rails/webpacker --latest
+yarn upgrade webpack-dev-server --latest
+
+foreman start -f Procfile.dev

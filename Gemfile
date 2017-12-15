@@ -16,7 +16,10 @@ gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 3.2.0'
 # Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
-gem 'webpacker', '~> 3.1'
+
+gem 'webpacker', '~> 3.2.0'
+# gem 'webpacker', github: 'rails/webpacker' # Because webpacker is installing binstubs wrong
+# https://github.com/rails/webpacker/issues/995
 
 gem 'graphql'
 
