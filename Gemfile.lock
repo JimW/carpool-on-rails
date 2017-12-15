@@ -449,7 +449,7 @@ DEPENDENCIES
   tzinfo-data
   uglifier (>= 3.2.0)
   web-console (>= 3.3.0)
-  webpacker (~> 3.0)
+  webpacker (~> 3.1)
 
 RUBY VERSION
    ruby 2.4.2p198
