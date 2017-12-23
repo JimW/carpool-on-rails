@@ -182,6 +182,10 @@ These OAuth credentials are for server logins via google, which is not really ne
     gem install nokogiri -- --use-system-libraries
     bundle install
     ```
+1.  Install Forman Gem
+    ```bash
+    gem install foreman
+    ```
 1. Install [node](https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions) so you can use bower (I'm using WSL on Windows for unix)
     ```bash
     sudo npm install -g bower
@@ -197,7 +201,7 @@ These OAuth credentials are for server logins via google, which is not really ne
 1. Start the local rails server
 
     ```bash
-    rails s
+    foreman start -f Procfile.dev
     ```
 
 ## Web UI
@@ -566,11 +570,5 @@ Portions of this code are licensed and copyright as follows:
 FullCalendar (Standard Edition) - © 2017  FullCalendar LLC
 Fullcalendar-Rails_Engine - Copyright (c) 2014 vinsol.com, released under the New MIT License
 
-## Random Install Notes
-
-https://github.com/rails/webpacker#installation
-bundle update webpacker
-yarn upgrade @rails/webpacker --latest
-yarn upgrade webpack-dev-server --latest
 
 foreman start -f Procfile.dev
