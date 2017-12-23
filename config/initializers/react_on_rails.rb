@@ -8,6 +8,8 @@ ReactOnRails.configure do |config|
   config.build_production_command = "RAILS_ENV=production bin/webpack"
   # config.build_production_command = nil
 
+  # config.node_modules_location = ""
+
   ################################################################################
   ################################################################################
   # TEST CONFIGURATION OPTIONS
@@ -38,5 +40,5 @@ ReactOnRails.configure do |config|
   # different. You should have ONE server bundle which can create all of your server rendered
   # React components.
   #
-  config.server_bundle_js_file = "hello-world-bundle.js"
+  config.server_bundle_js_file = "calendar-bundle.js"
 end

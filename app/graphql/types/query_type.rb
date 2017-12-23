@@ -39,6 +39,19 @@ Types::QueryType = GraphQL::ObjectType.define do
     }
   end
 
+  field :fc_eventSources do
+    type types.String 
+    resolve -> (obj, args, ctx) {
+
+      eventSources = [
+        {events: Route.events_of_category("instance")},
+        {events: Route.events_of_category("modified_instance")},
+        {events: Route.events_of_category("special")},
+      ]
+      eventSources.to_json
+    }
+  end
+
   field :routes do
     type types[RouteType] 
     argument :cat_type, !types.String

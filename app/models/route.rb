@@ -203,6 +203,25 @@ class Route < ApplicationRecord
     @routes = Route.where(:category => Route.categories[cat])    
   end
 
+  # like the one below but not returned as Json, I didn't want to break it yet
+  def self.events_of_category(cat)
+    @routes = Route.where(:category => Route.categories[cat])    
+    events = []
+    @routes.each do |route|
+      if route.event
+        events << { id: route.event.id,
+                    title: route.event.title,
+                    description: route.event.description || '',
+                    start: route.event.starttime.iso8601,
+                    end: route.event.endtime.iso8601,
+                    allDay: route.event.all_day,
+                    recurring: (route.event.event_series_id) ? true : false
+                  }
+      end
+    end
+    events
+  end
+
   def self.get_events(cat)
     # p "self.get_events(cat) ____________________________________________________________________________________________"
     @routes = Route.where(:category => Route.categories[cat])

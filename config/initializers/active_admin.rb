@@ -1,3 +1,25 @@
+
+# all this just to get get javascript_pack_tag inserted into the header within ActiveAdmin..
+module MyApp
+  module ActiveAdmin
+    module Views
+      module Pages
+        module BaseExtension
+          def build_active_admin_head
+            super
+            within @head do
+              text_node(javascript_pack_tag('calendar-bundle'))
+            end
+          end
+        end
+      end
+    end
+  end
+end
+class ActiveAdmin::Views::Pages::Base < Arbre::HTML::Document
+  prepend MyApp::ActiveAdmin::Views::Pages::BaseExtension
+end
+
 class MyFooter < ActiveAdmin::Component
   builder_method :footer
   def build(content)
