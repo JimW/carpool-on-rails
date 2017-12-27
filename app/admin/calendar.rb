@@ -11,7 +11,6 @@ ActiveAdmin.register_page "Calendar" do
     def index
       eventSources = CarPoolSchema.execute("{fc_eventSources() {}}", variables: nil)
       @calendar_props = {
-         name: "Stranger1", 
          eventSources: eventSources["data"]["fc_eventSources"]
       }
     end

@@ -40,5 +40,5 @@ ReactOnRails.configure do |config|
   # different. You should have ONE server bundle which can create all of your server rendered
   # React components.
   #
-  config.server_bundle_js_file = "calendar-bundle.js"
+  config.server_bundle_js_file = "carpool-app-bundle.js"
 end

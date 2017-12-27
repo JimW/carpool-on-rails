@@ -8,7 +8,7 @@ module MyApp
           def build_active_admin_head
             super
             within @head do
-              text_node(javascript_pack_tag('calendar-bundle'))
+              text_node(javascript_pack_tag('carpool-app-bundle'))
             end
           end
         end

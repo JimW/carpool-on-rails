@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import apolloClient from 'lib/apolloClient';
+import gql from 'graphql-tag';
 
 export default class Calendar extends React.Component {
   static propTypes = {
-    name: PropTypes.string.isRequired, // this is passed from the Rails view
     eventSources: PropTypes.string.isRequired, // this is passed from the Rails view
   };
 
@@ -12,28 +13,31 @@ export default class Calendar extends React.Component {
    */
   constructor(props) {
     super(props);
-
     // How to set initial state in ES6 class syntax
     // https://facebook.github.io/react/docs/reusable-components.html#es6-classes
     this.state = { 
-      name: this.props.name,
       eventSources: this.props.eventSources
      };
   }
 
-  updateName = (name) => {
-    this.setState({ name });
+  render() {
+    return (
+      <div>
+        <div className='calendar'></div>
+      </div>
+    );
+  }
+
+  componentDidMount() {
+    this.updateEventSources(this.state.eventSources) 
   };
 
   updateEventSources = (eventSources) => {
-
-    // eventSources = CarPoolSchema.execute("{fc_eventSources() {}}", variables: nil)
-
+    
     this.setState({ eventSources });
+    var eSources = JSON.parse(eventSources);
 
     $('.calendar').fullCalendar('destroy');
-
-    var eSources = JSON.parse(eventSources);
 
     // Add in the fullcalendar formatting for each type of route, should centralize this !!! 
     eSources[0].color = '#D4FFD7';
@@ -72,15 +76,4 @@ export default class Calendar extends React.Component {
 
   };
 
-  componentDidMount() {
-    this.updateEventSources(this.state.eventSources) 
-  };
-
-  render() {
-    return (
-      <div>
-        <div className='calendar'></div>
-      </div>
-    );
-  }
 }
