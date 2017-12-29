@@ -21,7 +21,12 @@ gem 'webpacker', '~> 3.2.0'
 # gem 'webpacker', github: 'rails/webpacker' # Because webpacker is installing binstubs wrong
 # https://github.com/rails/webpacker/issues/995
 
-gem 'graphql'
+gem 'graphql' # evolving features with Auth are PRO only for $$$
+# https://github.com/rmosolgo/graphql-ruby
+
+# so try this instead XXX:
+# gem 'graphql-client'
+# https://github.com/github/graphql-client
 
 # https://www.youtube.com/watch?v=SGkTvKRPYrk
 gem 'react_on_rails', '10.0.2' # prefer exact gem version to match npm version

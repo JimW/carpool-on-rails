@@ -572,3 +572,6 @@ Fullcalendar-Rails_Engine - Copyright (c) 2014 vinsol.com, released under the Ne
 
 
 foreman start -f Procfile.dev
+
+ReactTable instead of Activeadmin
+https://react-table.js.org/#/story/cell-renderers-custom-components

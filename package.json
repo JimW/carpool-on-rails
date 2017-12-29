@@ -9,6 +9,9 @@
   "dependencies": {
     "@rails/webpacker": "^3.2.0",
     "apollo-client-preset": "^1.0.5",
+    "apollo-link-context": "^1.0.3",
+    "apollo-link-error": "^1.0.3",
+    "apollo-link-state": "^0.3.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
@@ -22,6 +25,8 @@
     "jquery.scrollto": "^2.1.2",
     "jquery.ui.touch": "^0.0.1",
     "js-cookie": "^2.2.0",
+    "jsonwebtoken": "^8.1.0",
+    "lodash": "^4.17.4",
     "moment": "^2.19.3",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",

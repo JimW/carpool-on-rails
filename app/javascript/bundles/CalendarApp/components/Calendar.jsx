@@ -1,9 +1,17 @@
 import PropTypes from 'prop-types';
-import React from 'react';
-import apolloClient from 'lib/apolloClient';
+import React, { Component } from 'react'
+import client from 'lib/apolloClient';
+import { graphql  } from 'react-apollo';
 import gql from 'graphql-tag';
 
-export default class Calendar extends React.Component {
+const fcEventSourcesQuery = gql`
+  query
+    fcEventSourcesQuery {
+      fc_eventSources 
+    },
+  `;
+
+class Calendar extends Component {
   static propTypes = {
     eventSources: PropTypes.string.isRequired, // this is passed from the Rails view
   };
@@ -18,7 +26,7 @@ export default class Calendar extends React.Component {
     this.state = { 
       eventSources: this.props.eventSources
      };
-  }
+    }
 
   render() {
     return (
@@ -77,3 +85,21 @@ export default class Calendar extends React.Component {
   };
 
 }
+
+export default graphql(fcEventSourcesQuery) (Calendar);
+
+// export default Calendar = graphql(fcEventSourcesQuery, {
+//   props: ({ data: { networkStatus, eventSources } }) => {
+//     if (data.loading) {
+//       return { loading: data.loading };
+//     }
+//     if (data.error) {
+//       return { error: data.error };
+//     }
+//     return {
+//       loading: false,
+//       networkStatus,
+//       eventSources,
+//     };
+//   },
+// })(Calendar);
