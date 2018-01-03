@@ -41,9 +41,4 @@ RouteType = GraphQL::ObjectType.define do
     }
   end
 
-  #field :event do
-  # XXX How can I suck in the has_one relationship of Events.. This can eliminate the need for 
-  # the Route.get_events, having it format specically for fullcalendr.  
-  # Makes more sense to move that kind of stuff to graphql layer, plus the events could be more
-  # intelligently cached there.
 end

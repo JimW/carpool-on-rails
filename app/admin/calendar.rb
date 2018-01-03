@@ -8,10 +8,11 @@ ActiveAdmin.register_page "Calendar" do
   end
 
   controller do
+
     def index
-      eventSources = CarPoolSchema.execute("{fc_eventSources() {}}", variables: nil)
+      eventSources = CarPoolSchema.execute("{fcEventSources() {}}", variables: nil)
       @calendar_props = {
-         eventSources: eventSources["data"]["fc_eventSources"]
+         eventSources: eventSources["data"]["fcEventSources"]
       }
     end
   end

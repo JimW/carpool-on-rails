@@ -6,8 +6,10 @@ class GraphqlController < ApplicationController
     variables = ensure_hash(params[:variables])
     query = params[:query] 
     operation_name = params[:operationName]
+    cp = current_user.current_carpool unless current_user.nil?
     context = {
-      current_user: current_user
+      current_user: current_user,
+      current_carpool: cp
     }
     result = CarPoolSchema.execute(query, variables: variables, context: context, operation_name: operation_name)
     render json: result
@@ -32,4 +34,13 @@ class GraphqlController < ApplicationController
       raise ArgumentError, "Unexpected parameter: #{ambiguous_param}"
     end
   end
+
+  # https://blog.codeship.com/how-to-implement-a-graphql-api-in-rails/
+  # def current_user
+  #   return nil if request.headers['Authorization'].blank?
+  #   token = request.headers['Authorization'].split(' ').last
+  #   return nil if token.blank?
+  #   AuthToken.verify(token)
+  # end
+
 end

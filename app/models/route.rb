@@ -31,6 +31,8 @@ class Route < ApplicationRecord
 
   # TODO
   # all these should be determined by relationship, not an additional variable I have to manage
+  scope :of_category, -> (category) { where category: category }
+  # Maybe replace below category scopes with one above
   scope :is_special, -> {where(category: "special")}
   scope :is_template, -> {where(category: "template")}
   scope :is_instance, -> {where(category: "instance")}
@@ -199,9 +201,20 @@ class Route < ApplicationRecord
     result
   end
 
-  def self.of_category(cat)
-    @routes = Route.where(:category => Route.categories[cat])    
-  end
+  # All this event fullcalendar mapping stuff belongs in Reactland, seems
+  def self.all_events
+    # all.map(&:first_for_customer?).count(true)
+    all.map {|r| 
+    { 
+      id: r.event.id,
+      title: r.event.title,
+      description: r.event.description || '',
+      start: r.event.starttime.iso8601,
+      end: r.event.endtime.iso8601,
+      allDay: r.event.all_day,
+      recurring: (r.event.event_series_id) ? true : false
+    }}
+ end
 
   # like the one below but not returned as Json, I didn't want to break it yet
   def self.events_of_category(cat)
@@ -222,9 +235,9 @@ class Route < ApplicationRecord
     events
   end
 
-  def self.get_events(cat)
+  def self.get_events(routes, cat)
     # p "self.get_events(cat) ____________________________________________________________________________________________"
-    @routes = Route.where(:category => Route.categories[cat])
+    @routes = routes.where(:category => Route.categories[cat])
     events = []
     @routes.each do |route|
       if route.event

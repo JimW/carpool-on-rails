@@ -31,10 +31,13 @@ http://graphql-ruby.org/schema/testing.html
 
 ```json
 {
-  drivers {
+  currentUser {
     first_name
   },
-  fc_events(cat_type: "special") {},
+  fcEventSources
+  all_routes {
+    title
+  },
   user(id:1) {
     first_name
   },
@@ -47,9 +50,6 @@ http://graphql-ruby.org/schema/testing.html
       title
       id
       passengers {
-        first_name
-      }
-      drivers {
         first_name
       }
       routes {
@@ -69,6 +69,9 @@ http://graphql-ruby.org/schema/testing.html
         }
       }
     }
-	}
+  },
+  allUsers {
+    first_name
+  }
 }
 ```

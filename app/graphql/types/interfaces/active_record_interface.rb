@@ -4,7 +4,8 @@ ActiveRecordInterface = GraphQL::InterfaceType.define do
   name "ActiveRecord"
   description "Active Record Interface"
 
-  field :id, types.Int
+  # field :id, types.Int
+  field :id, !types.ID
 
   field :updated_at do
     type types.String

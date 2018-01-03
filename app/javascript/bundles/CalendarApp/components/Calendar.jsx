@@ -1,49 +1,51 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react'
-import client from 'lib/apolloClient';
 import { graphql  } from 'react-apollo';
 import gql from 'graphql-tag';
 
-const fcEventSourcesQuery = gql`
-  query
-    fcEventSourcesQuery {
-      fc_eventSources 
-    },
-  `;
-
 class Calendar extends Component {
-  static propTypes = {
-    eventSources: PropTypes.string.isRequired, // this is passed from the Rails view
-  };
+  // static propTypes = {
+  //   eventSources: PropTypes.string.isRequired, 
+  // };
 
   /**
    * @param props - Comes from your rails view.
    */
   constructor(props) {
     super(props);
-    // How to set initial state in ES6 class syntax
-    // https://facebook.github.io/react/docs/reusable-components.html#es6-classes
-    this.state = { 
-      eventSources: this.props.eventSources
-     };
     }
 
   render() {
+    const { loading, error } = this.props.data;
+
+    if (loading) {
+      return <p>Loading...</p>;
+    } else if (error) {
+      return <p>Error!</p>;
+    }
     return (
       <div>
         <div className='calendar'></div>
       </div>
     );
   }
+  componentDidUpdate() {
+    const { fcEventSources } = this.props.data;
+    // fc_eventSources is the massaged data that fcCalendar wants.  
+    // Need to to that tranformation here on the client vs the server, maybe via an Apollo method
 
-  componentDidMount() {
-    this.updateEventSources(this.state.eventSources) 
-  };
+    // this.setState({ eventSources });
+    // console.log("Calendar: componentDidUpdate: eventSources = " + JSON.stringify(fcEventSources));
+    this.updateEventSources(JSON.parse(fcEventSources));
+  }
+
+  // componentDidMount() {
+  //   console.log("Calendar: componentDidMount: eventSources = " + JSON.stringify(this.props.data));
+  // };
 
   updateEventSources = (eventSources) => {
     
-    this.setState({ eventSources });
-    var eSources = JSON.parse(eventSources);
+    var eSources = eventSources;
 
     $('.calendar').fullCalendar('destroy');
 
@@ -86,20 +88,28 @@ class Calendar extends Component {
 
 }
 
-export default graphql(fcEventSourcesQuery) (Calendar);
+const fcEventSourcesQuery = gql`
+  query fcEventSourcesQuery {
+    fcEventSources 
+    },
+  `;
 
-// export default Calendar = graphql(fcEventSourcesQuery, {
-//   props: ({ data: { networkStatus, eventSources } }) => {
-//     if (data.loading) {
-//       return { loading: data.loading };
-//     }
-//     if (data.error) {
-//       return { error: data.error };
-//     }
-//     return {
-//       loading: false,
-//       networkStatus,
-//       eventSources,
-//     };
-//   },
-// })(Calendar);
+// https://www.apollographql.com/docs/react/basics/queries.html
+export default  graphql(fcEventSourcesQuery, {
+  // ownProps are the props that are passed into the `ProfileWithData`
+  // when it is used by a parent component
+  // props: ({ ownProps, data: { fcEventSources } }) => ({
+  //   loading: loading,
+  //   // user: currentUser,
+  //   eventSources: fcEventSources,
+
+  //   // refetchUser: refetch,
+  // }),
+  // options: { 
+  //   variables: { avatarSize: 100 },
+  //   pollInterval: 20000 
+  // },
+  // skip: (ownProps) => !ownProps.authenticated,
+})(Calendar);
+
+// export default CalendarWithData;

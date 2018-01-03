@@ -7,6 +7,9 @@ Types::QueryType = GraphQL::ObjectType.define do
     type UserType
     description "Current user"
     resolve ->(obj, args, ctx) {
+      if ctx[:current_user].blank?
+        raise GraphQL::ExecutionError.new("Authentication required")
+      end
       ctx[:current_user]
     }
   end
@@ -14,6 +17,9 @@ Types::QueryType = GraphQL::ObjectType.define do
   field :carpool do
     type CarpoolType
     resolve -> (obj, args, ctx) {
+      if ctx[:current_user].blank?
+        raise GraphQL::ExecutionError.new("Authentication required")
+      end
       argument :id, !types.ID      
       Carpool.find(args[:id])
     }
@@ -23,50 +29,57 @@ Types::QueryType = GraphQL::ObjectType.define do
     type UserType
     argument :id, !types.ID
     resolve -> (obj, args, ctx) {
+      if ctx[:current_user].blank?
+        raise GraphQL::ExecutionError.new("Authentication required")
+      end
       User.find(args[:id])
     }
   end
 
-  field :users, types[UserType] do
-    resolve -> (obj, args, ctx) { User.all }
-  end
-  
-  field :fc_events do
-    type types.String 
-    argument :cat_type, !types.String
-    resolve -> (obj, args, ctx) {
-      Route.get_events(args[:cat_type])
+  field :allUsers, types[UserType] do
+    resolve -> (obj, args, ctx) { 
+      if ctx[:current_user].blank?
+        raise GraphQL::ExecutionError.new("Authentication required")
+      end
+      User.all 
     }
   end
 
-  field :fc_eventSources do
+  field :currentUser do
+    type UserType 
+    resolve -> (obj, args, ctx) {
+      if ctx[:current_user].blank?
+        raise GraphQL::ExecutionError.new("Authentication required")
+      end
+      ctx[:current_user]
+    }
+  end
+
+  field :fcEventSources do
     type types.String 
     resolve -> (obj, args, ctx) {
-
+      if ctx[:current_user].blank?
+        raise GraphQL::ExecutionError.new("Authentication required")
+      end
+      cp = ctx[:current_carpool]
       eventSources = [
-        {events: Route.events_of_category("instance")},
-        {events: Route.events_of_category("modified_instance")},
-        {events: Route.events_of_category("special")},
+        {events: cp.routes.of_category("instance").all_events()},
+        {events: cp.routes.of_category("modified_instance").all_events()},
+        {events: cp.routes.of_category("special").all_events()},
       ]
       eventSources.to_json
     }
   end
 
-  field :routes do
+  field :all_routes do
     type types[RouteType] 
-    argument :cat_type, !types.String
     resolve -> (obj, args, ctx) {
-      Route.of_category(args[:cat_type])
+      if ctx[:current_user].blank?
+        raise GraphQL::ExecutionError.new("Authentication required")
+      end
+      cp = ctx[:current_carpool]
+      cp.routes
     }
   end
-
-  # field :drivers do
-  #   type types[DriverType]
-  #   description "User that can drive"
-  #   resolve ->(obj, args, ctx) {
-  #     current_user = ctx[:current_user]
-  #     current_user.current_carpool.drivers
-  #   }
-  # end
 
 end

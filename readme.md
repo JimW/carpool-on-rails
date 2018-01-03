@@ -575,3 +575,6 @@ foreman start -f Procfile.dev
 
 ReactTable instead of Activeadmin
 https://react-table.js.org/#/story/cell-renderers-custom-components
+
+Add this:
+https://www.apollographql.com/docs/engine/

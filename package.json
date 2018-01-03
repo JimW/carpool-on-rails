@@ -1,5 +1,5 @@
 {
-  "name": "CarPool",
+  "name": "carpool-on-rails",
   "private": true,
   "engines": {
     "npm": "5.5.x",
