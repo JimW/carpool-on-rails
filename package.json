@@ -17,7 +17,7 @@
     "babel-preset-stage-2": "^6.24.1",
     "chosen-js": "^1.8.2",
     "coffeescript": "1.12.7",
-    "fullcalendar": "2.9.1",
+    "fullcalendar": "3.4.0",
     "graphql": "^0.12.3",
     "graphql-tag": "^2.6.1",
     "jquery-contextmenu": "^2.6.3",

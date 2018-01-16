@@ -1,9 +1,3 @@
-PATH
-  remote: vendor/fullcalendar-rails-engine
-  specs:
-    fullcalendar_engine (1.0.6)
-      rails (>= 4.0.0)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -30,13 +24,13 @@ GEM
       erubi (~> 1.4)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.0, >= 1.0.3)
-    activeadmin (1.1.0)
+    activeadmin (1.2.1)
       arbre (>= 1.1.1)
       coffee-rails
       formtastic (~> 3.1)
       formtastic_i18n
       inherited_resources (~> 1.7)
-      jquery-rails
+      jquery-rails (>= 4.2.0)
       kaminari (>= 0.15, < 2.0)
       railties (>= 4.2, < 5.2)
       ransack (~> 1.3)
@@ -64,13 +58,13 @@ GEM
     arbre (1.1.1)
       activesupport (>= 3.0.0)
     arel (8.0.0)
-    aws-sdk (2.10.104)
-      aws-sdk-resources (= 2.10.104)
-    aws-sdk-core (2.10.104)
+    aws-sdk (2.10.118)
+      aws-sdk-resources (= 2.10.118)
+    aws-sdk-core (2.10.118)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.10.104)
-      aws-sdk-core (= 2.10.104)
+    aws-sdk-resources (2.10.118)
+      aws-sdk-core (= 2.10.118)
     aws-sigv4 (1.0.2)
     base32 (0.3.2)
     bcrypt (3.1.11)
@@ -85,16 +79,16 @@ GEM
     builder (3.2.3)
     byebug (9.1.0)
     callsite (0.0.11)
-    capybara (2.16.1)
+    capybara (2.17.0)
       addressable
       mini_mime (>= 0.1.3)
       nokogiri (>= 1.3.3)
       rack (>= 1.0.0)
       rack-test (>= 0.5.4)
-      xpath (~> 2.0)
+      xpath (>= 2.0, < 4.0)
     childprocess (0.8.0)
       ffi (~> 1.0, >= 1.0.11)
-    chosen-rails (1.5.2)
+    chosen-rails (1.8.2)
       coffee-rails (>= 3.2)
       railties (>= 3.0)
       sass-rails (>= 3.2)
@@ -149,11 +143,11 @@ GEM
       signet (~> 0.7)
     graphiql-rails (1.4.8)
       rails
-    graphql (1.7.7)
+    graphql (1.7.8)
     has_scope (0.7.1)
       actionpack (>= 4.1, < 5.2)
       activesupport (>= 4.1, < 5.2)
-    hashie (3.5.6)
+    hashie (3.5.7)
     httpclient (2.8.3)
     i18n (0.9.1)
       concurrent-ruby (~> 1.0)
@@ -190,7 +184,7 @@ GEM
       activerecord
       kaminari-core (= 1.1.1)
     kaminari-core (1.1.1)
-    libv8 (5.9.211.38.1)
+    libv8 (6.3.292.48.1)
     listen (3.1.5)
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
@@ -199,10 +193,10 @@ GEM
     logging (2.2.2)
       little-plugger (~> 1.1)
       multi_json (~> 1.10)
-    lograge (0.7.1)
-      actionpack (>= 4, < 5.2)
-      activesupport (>= 4, < 5.2)
-      railties (>= 4, < 5.2)
+    lograge (0.9.0)
+      actionpack (>= 4)
+      activesupport (>= 4)
+      railties (>= 4)
       request_store (~> 1.0)
     loofah (2.1.1)
       crass (~> 1.0.2)
@@ -220,9 +214,9 @@ GEM
     mime-types-data (3.2016.0521)
     mini_mime (1.0.0)
     mini_portile2 (2.3.0)
-    mini_racer (0.1.14)
-      libv8 (~> 5.9)
-    minitest (5.10.3)
+    mini_racer (0.1.15)
+      libv8 (~> 6.3)
+    minitest (5.11.1)
     minitest-rails (3.0.0)
       minitest (~> 5.8)
       railties (~> 5.0)
@@ -231,10 +225,10 @@ GEM
       builder
       minitest (>= 5.0)
       ruby-progressbar
-    multi_json (1.12.2)
+    multi_json (1.13.1)
     multi_xml (0.6.0)
     multipart-post (2.0.0)
-    nio4r (2.1.0)
+    nio4r (2.2.0)
     nokogiri (1.8.1)
       mini_portile2 (~> 2.3.0)
     oauth2 (1.4.0)
@@ -243,7 +237,7 @@ GEM
       multi_json (~> 1.3)
       multi_xml (~> 0.5)
       rack (>= 1.2, < 3)
-    omniauth (1.7.1)
+    omniauth (1.8.1)
       hashie (>= 3.4.6, < 3.6.0)
       rack (>= 1.6.2, < 3)
     omniauth-google-oauth2 (0.5.2)
@@ -257,11 +251,11 @@ GEM
     orm_adapter (0.5.0)
     os (0.9.6)
     pg (0.21.0)
-    phony (2.16.1)
+    phony (2.16.3)
     phony_rails (0.14.6)
       activesupport (>= 3.0)
       phony (> 2.15)
-    polyamorous (1.3.1)
+    polyamorous (1.3.2)
       activerecord (>= 3.0)
     public_suffix (3.0.1)
     puma (3.11.0)
@@ -321,7 +315,8 @@ GEM
       declarative (< 0.1.0)
       declarative-option (< 0.2.0)
       uber (< 0.2.0)
-    request_store (1.3.2)
+    request_store (1.4.0)
+      rack (>= 1.4)
     responders (2.4.0)
       actionpack (>= 4.2.0, < 5.3)
       railties (>= 4.2.0, < 5.3)
@@ -330,7 +325,7 @@ GEM
     ruby-progressbar (1.9.0)
     ruby_dep (1.5.0)
     rubyzip (1.2.1)
-    sass (3.5.4)
+    sass (3.5.5)
       sass-listen (~> 4.0.0)
     sass-listen (4.0.0)
       rb-fsevent (~> 0.9, >= 0.9.4)
@@ -372,13 +367,13 @@ GEM
     thor (0.20.0)
     thread_safe (0.3.6)
     tilt (2.0.8)
-    turbolinks (5.0.1)
-      turbolinks-source (~> 5)
-    turbolinks-source (5.0.3)
+    turbolinks (5.1.0)
+      turbolinks-source (~> 5.1)
+    turbolinks-source (5.1.0)
     tzinfo (1.2.4)
       thread_safe (~> 0.1)
     uber (0.1.0)
-    uglifier (4.0.2)
+    uglifier (4.1.3)
       execjs (>= 0.3.0, < 3)
     warden (1.2.7)
       rack (>= 1.0)
@@ -394,14 +389,14 @@ GEM
     websocket-driver (0.6.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.3)
-    xpath (2.1.0)
-      nokogiri (~> 1.3)
+    xpath (3.0.0)
+      nokogiri (~> 1.8)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  activeadmin (~> 1.1.0)
+  activeadmin (~> 1.2.1)
   acts_as_list (= 0.9.10)
   aws-sdk (~> 2)
   base32
@@ -415,7 +410,6 @@ DEPENDENCIES
   deep_cloneable (~> 2.3.1)
   devise (= 4.3.0)
   figaro
-  fullcalendar_engine!
   google-api-client (~> 0.17.3)
   graphiql-rails
   graphql
@@ -430,12 +424,13 @@ DEPENDENCIES
   minitest-rails
   minitest-reporters
   omniauth-google-oauth2 (= 0.5.2)
-  pg
+  pg (= 0.21)
   phony_rails (= 0.14.6)
   puma (= 3.11.0)
   pundit (= 1.1.0)
   rack-timeout
   rails (= 5.1.4)
+  rainbow
   react_on_rails (= 10.0.2)
   rolify (= 5.1.0)
   sass-rails (~> 5.0)

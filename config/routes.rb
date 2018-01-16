@@ -9,9 +9,7 @@ Rails.application.routes.draw do
 
 # http://stackoverflow.com/questions/11691169/how-can-i-change-the-default-url-of-activeadmin
 
-# mount FullcalendarEngine::Engine => "/admin/routes"
-  # mount FullcalendarEngine::Engine => "/admin/calendar"
-  mount FullcalendarEngine::Engine => "/calendar"
+
   # devise_for :users, ActiveAdmin::Devise.config
 
   # http://stackoverflow.com/questions/30249740/how-do-i-use-devise-and-activeadmin-for-the-same-user-model
@@ -32,10 +30,10 @@ Rails.application.routes.draw do
   get 'welcome/index'
 
   resources :routes do  
-      collection do
-        get :get_missing_persons
-      end
+    collection do
+      get :get_missing_persons
     end
+  end
 
   namespace :admin do
       resources :users

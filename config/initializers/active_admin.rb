@@ -209,9 +209,12 @@ ActiveAdmin.setup do |config|
   #
   # This allows your users to comment on any resource registered with Active Admin.
   #
-  # You can completely disable comments:
+  # You can completely disable comments: 
   config.comments = false
-  #
+  # (I don't even want any related tables in my schema!)
+  # config.allow_comments = false # not in AA 1.1 >
+  # https://github.com/activeadmin/activeadmin/issues/3695
+
   # config.comments_menu = 
   #
   # You can change the name under which comments are registered:

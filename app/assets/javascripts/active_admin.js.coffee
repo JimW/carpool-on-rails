@@ -11,7 +11,7 @@
 #= require chosen-jquery
 #= require moment/moment
 #= require fullcalendar/dist/fullcalendar
-#= require_tree ./fullcalendar_engine
+#= require_tree ./calendar_stuff
 #= require_tree ./active_admin
 #= require jquery-ui-touch-punch/jquery.ui.touch-punch.min
 #= require jquery.ui.touch/jquery.ui.touch

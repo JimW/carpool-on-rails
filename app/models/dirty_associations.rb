@@ -8,7 +8,9 @@ module DirtyAssociations
     self.dirty = true
     self._record_changes = record
   end
-
+  
+  # saved_changes? ---> DEPRECATION WARNING
+  # This is tigerring all kinds of other deprectation warnings too, not sure yet what to do
   def changed?
     dirty || super
   end

@@ -1,6 +1,4 @@
 
-require_dependency("app/models/fullcalendar_engine/event_decorator.rb")
-
 class Route < ApplicationRecord
 
   include DirtyAssociations
@@ -71,7 +69,7 @@ class Route < ApplicationRecord
 
   # https://github.com/vinsol/fullcalendar-rails-engine/issues/12
   has_one :event_route, inverse_of: :route, :dependent => :destroy
-  has_one :event, class_name: "FullcalendarEngine::Event", through: :event_route, :dependent => :destroy
+  has_one :event, class_name: "Event", through: :event_route, :dependent => :destroy
   # "Note that :dependent option is ignored for has_one :through associations."
 
   accepts_nested_attributes_for :event_route, allow_destroy: true
@@ -85,11 +83,11 @@ class Route < ApplicationRecord
   accepts_nested_attributes_for :locations, allow_destroy: true
 
   has_many :is_driver_users, -> {is_driver}, :class_name => 'RouteUser', inverse_of: :route, :dependent => :destroy
-  has_many :drivers, -> { all_can_drive }, :class_name => 'User', :through => :is_driver_users, :source => :user#, :after_add => :after_driver_add, :after_remove => :after_driver_remove
+  has_many :drivers, -> { all_can_drive }, :class_name => 'User', :through => :is_driver_users, :source => :user, :after_add => :make_dirty, :after_remove => :make_dirty
   # monitor_association_changes :drivers
 
   has_many :is_passenger_users, -> {is_passenger}, :class_name => 'RouteUser', inverse_of: :route, :dependent => :destroy
-  has_many :passengers, -> { distinct }, :class_name => 'User', :through => :is_passenger_users, :source => :user#, :before_add => :remember_previous_subscribers, :before_remove => :remember_previous_subscribers
+  has_many :passengers, -> { distinct }, :class_name => 'User', :through => :is_passenger_users, :source => :user, :after_add => :make_dirty, :after_remove => :make_dirty#, :before_add => :remember_previous_subscribers, :before_remove => :remember_previous_subscribers
   # monitor_association_changes :passengers
 
   has_many :is_routine_driver_users, -> {is_driver}, :class_name => 'RouteUser', inverse_of: :route, :dependent => :destroy
@@ -104,30 +102,74 @@ class Route < ApplicationRecord
   has_many :google_calendar_subscribers, -> { all_google_calendar_subscribers }, :class_name => 'User', :through => :route_users, :source => :user, :after_remove => :make_dirty, :after_add => :make_dirty
   accepts_nested_attributes_for :route_users
 
-  # before_validation
-  before_save :set_as_modified_instance#, :set_as_special_if_start_changes
+  before_update :set_as_modified_instance#, :set_as_special_if_start_changes ??
     # TODO  Integrate some variable watching, for visually showing people what changed, but also for rollback.
     def set_as_modified_instance
+ 
+      # associationDataModified = (self.locations.any?(&:changed?) || self.passengers.any?(&:changed?) || self.drivers.any?(&:changed?) )
+      #  should not happen because I'm only changing tne relationship data, not the actual data of those relationships, but still
 
-      # update Timestamp is trigerring self.changed? !!! Not good when creating an instance?
-      # if self.changed_attributes.
-
-      # DirtyAssociations module included for use with my has_may associations, to help .changed? work correctly
-      if !self.new_record? && self.changed? # does this apply just to my has_manys? why does define_attribute_method not work ???
-        # p "This is what changed: " + self.changes.inspect.humanize
-
-        # if (self.changes.count == 1) && self.updated_at_changed?
-        #   p "______________ Just the updated_at changed for " + self.title_for_admin_ui
-        # end
-
-        if self.instance? && !self.category_changed?
+      # DirtyAssociations module cia make_dirty within has_may definitions, helps .changed? reflect those add/removes
+      if (self.changed?)# || associationDataModified)
+        if self.instance? && !self.category_changed? 
           self.category = :modified_instance
-          p "self.category = :modified_instance"
         end
-        # if self.template? && (self.scheduled_instances.any?)
-        #   # self.scheduled_instances.first.category = :modified_instance # what is this first stuff..., needs to be has_one !!!
-        #   p "self.scheduled_instances.first.category = :modified_instance"
-        # end
+      end
+    end
+
+    def update_times(e_time, s_time = nil)
+      self.remember_gcal_subscribers 
+
+      if s_time # optional param
+        event.starttime = s_time
+        self.starts_at = s_time
+      end
+
+      event.endtime   = e_time
+      self.ends_at = e_time
+      
+      event.all_day = false # not sure this is necessary, what if I want to move templates
+      
+      event.save!
+      # if (instance? || modified_instance?)
+      #   if starts_at.to_date != self.instance_parent.starts_at.to_date # event was dragged to new date
+      #     p "self.starts_at.wday != self.instance_parent.starts_at.wday ******"
+      #     self.category = :special # Because they dragged it off the same day as the template
+      #     # use self.category because it's an undocumented reserved word (3 hours later..)
+
+      #     self.route_parent.destroy
+      #   else
+      #     p "SETTING: category = :modified_instance"
+
+      #     self.category = :modified_instance
+      #   end
+      # end
+      self.save!
+      # # ToReImplement via graphql or maybe in Apollo Link? XXX
+      #   # session[:last_route_id_edited] = @event.route.id
+      #   # cookies.permanent[:last_working_date] = @event.starttime.iso8601
+      #   # route.make_dirty(route)
+    end
+
+  before_update :make_route_dirty_if_time_changed
+    def make_route_dirty_if_time_changed
+      # if (saved_change_to_start_time? || saved_change_to_end_time?)
+      if (starts_at_changed? || ends_at_changed?)
+        # route.make_dirty(route.google_calendar_subscribers.pluck(:id)) # should use better way to set this, I'm just passing this so it can be used within route's after_commit
+        # route.make_dirty(self)
+        remember_gcal_subscribers 
+        # route.starts_at = self.starttime # hopefully no longer need these, but keep for now because of activeadmin form dependencies !!!
+        # route.ends_at = self.endtime
+        # Update route.category as necessary
+        if (!self.new_record?) && (self.instance? || self.modified_instance?)
+          if self.starts_at.to_date != self.instance_parent.starts_at.to_date
+            # p " self.starts_at.to_date != self.instance_parent.starts_at.to_date ******"
+            self.category = :special # Because they dragged it off the same day as the template
+            self.instance_parent.scheduled_instances.delete(self)
+          else
+            self.category = :modified_instance
+          end
+        end
 
       end
     end
@@ -202,56 +244,72 @@ class Route < ApplicationRecord
   end
 
   # All this event fullcalendar mapping stuff belongs in Reactland, seems
-  def self.all_events
-    # all.map(&:first_for_customer?).count(true)
-    all.map {|r| 
-    { 
-      id: r.event.id,
-      title: r.event.title,
-      description: r.event.description || '',
-      start: r.event.starttime.iso8601,
-      end: r.event.endtime.iso8601,
-      allDay: r.event.all_day,
-      recurring: (r.event.event_series_id) ? true : false
-    }}
- end
-
-  # like the one below but not returned as Json, I didn't want to break it yet
-  def self.events_of_category(cat)
-    @routes = Route.where(:category => Route.categories[cat])    
-    events = []
-    @routes.each do |route|
-      if route.event
-        events << { id: route.event.id,
-                    title: route.event.title,
-                    description: route.event.description || '',
-                    start: route.event.starttime.iso8601,
-                    end: route.event.endtime.iso8601,
-                    allDay: route.event.all_day,
-                    recurring: (route.event.event_series_id) ? true : false
-                  }
-      end
-    end
-    events
+  def self.as_fullcalendar_events
+    all.includes(:scheduled_instances).map(&:as_fullcalendar_event)
   end
 
-  def self.get_events(routes, cat)
-    # p "self.get_events(cat) ____________________________________________________________________________________________"
-    @routes = routes.where(:category => Route.categories[cat])
-    events = []
-    @routes.each do |route|
-      if route.event
-        events << { id: route.event.id,
-                    title: route.event.title,
-                    description: route.event.description || '',
-                    start: route.event.starttime.iso8601,
-                    end: route.event.endtime.iso8601,
-                    allDay: route.event.all_day,
-                    recurring: (route.event.event_series_id) ? true : false
-                  }
+  def as_fullcalendar_event
+    eventDataForFullcalendar = { 
+      id: event.id,
+      title: event.title,
+      description: event.description || '',
+      start: event.starttime.iso8601,
+      end: event.endtime.iso8601,
+      allDay: event.all_day,
+      recurring: (event.event_series_id) ? true : false,
+      category: category.to_s,
+      has_children: (self.scheduled_instances.any?) ? true: false,
+      route_id: id,
+      child_id: (self.scheduled_instances.any?) ?  self.scheduled_instances.first.event.id : '',
+      parent_template_id: (self.instance_parent) ?  self.instance_parent.event.id : ''
+    }
+    return eventDataForFullcalendar
+  end
+  
+  def duplicate_as (cat) 
+
+    # p "duplicate_as: " + cat.to_s + "______________________________________________________"
+
+    new_route = self.deep_clone :include => [:drivers, :passengers, :locations]
+    new_route.event =  Event.new({
+        :starttime => event.starttime.iso8601,
+        :endtime => event.endtime.iso8601
+    })
+    new_route.event.all_day = false # move this to client
+
+    case cat.to_s
+    when "template" # Transform current route to an instance, new_route becomes a template parenting this instance
+      new_route.category = :template
+      new_route.event.all_day = true  # so it shows at top in Fullcalendar, move this to event code !!! ?, no, move to js..
+      # Turn original into an instance
+      self.category = :instance
+      self.instance_parent = new_route
+      new_route.scheduled_instances << self
+      # event_clicked.save
+      # event_clicked.route.modified = false
+    when "instance"
+      if !scheduled_instances.any? # only one instance allowed
+        new_route.category = :instance
+        self.scheduled_instances << new_route
       end
+    when "special"
+      new_route.category = :special
+      # Might have to not copy the passengers and drivers once there becomes
+      # logic validations (like no passenger in 2 cars at same time, etc)
+      # Maybe a way to turn on and off validations? so the admin can mess around freely? ???
     end
-    events.to_json
+
+    self.save
+    new_route.save
+    new_route
+    # Not sure how to deal with this yet in graphql
+    # if dup_type.to_s == "make_instance"
+    #   session[:last_route_id_edited] = event_clicked.route.id # keep focus on the instance
+    #   # p "session[:last_route_id_edited] = " + session[:last_route_id_edited] + " and should = " + event_clicked.route.id.to_s
+    # else
+    #   session[:last_route_id_edited] = new_route.id
+    # end
+
   end
 
   def display_driver

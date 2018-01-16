@@ -74,7 +74,7 @@ group :development, :test do
 
   # ################################################################################
   # # Color console output
-  # gem "rainbow"
+  gem "rainbow"
 
 end
 
@@ -103,13 +103,12 @@ gem "rolify", '5.1.0'
 gem "pundit", '1.1.0'
 
 # ___  Active Admin stuff
-gem 'activeadmin', '~> 1.1.0'
+gem 'activeadmin', '~> 1.2.1'
 # gem 'activeadmin'#, git: 'https://github.com/activeadmin/activeadmin.git'
 # gem 'inherited_resources'#, git: 'https://github.com/activeadmin/inherited_resources'
 # For drag and drop lists (in route locations):
 gem 'acts_as_list', '0.9.10'
 gem 'best_in_place', '~> 3.1.1'
-
 gem 'seed_dump','3.2.4'
 
 # gem 'dirty_associations'
@@ -117,14 +116,14 @@ gem 'seed_dump','3.2.4'
 # http://anti-pattern.com/dirty-associations-with-activerecord
 
 # http://staal.io/blog/2013/02/26/mastering-activeadmin/
-gem 'chosen-rails' # don't try to take this out until chosen deals with the reference to icons in their css
+gem 'chosen-rails'#, '1.5.2' # don't try to take this out until chosen deals with the reference to icons in their css
 # Get rid of above XXX
 
 gem 'just-datetime-picker'
 # using this for starts_at, ends_at within route model
 # https://github.com/mspanc/just-datetime-picker
 
-gem 'fullcalendar_engine', path: "vendor/fullcalendar-rails-engine"
+# gem 'fullcalendar_engine', path: "vendor/fullcalendar-rails-engine"
 # https://github.com/vinsol/fullcalendar-rails-engine/issues/12
 
 gem 'chronic'
@@ -153,7 +152,7 @@ gem "puma", "3.11.0"
 
 # https://devcenter.heroku.com/articles/getting-started-with-rails4#local-workstation-setup
 group :production do
-  gem 'pg'
+  gem 'pg', "0.21" # 1.0 not supported yet by some rails dependency
 end
 
 # "to bring sanity to Rails' noisy and unusable, unparsable and, in the context of running multiple processes and servers, unreadable default logging output"

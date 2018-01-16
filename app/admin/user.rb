@@ -25,6 +25,7 @@ ActiveAdmin.register User do
   end
 
   config.filters = false # ...simplicity
+
   # filter :carpools, collection: proc { policy_scope(Carpool) } # if: proc { current_user.is_admin? || current_user.has_role?(:manager, current_user.current_carpool) }
   # filter :email
   # filter :first_name

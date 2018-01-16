@@ -342,9 +342,9 @@ You'll need to set the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY for this user
     1. push json to AWS_S3_SEED_DIR_PATH for use by Heroku.
 
     ```bash
-    bundle exec rake aws:plant_seeds
+    RAILS_ENV=production bundle exec rake aws:plant_seeds
     ```
-    Look inside this task for altering source seed file paths
+    Look inside this task for altering source seed file paths.  Once you've done it once, you're set.
 
 1. Seed the Heroku DB (be careful..) 
     ```bash

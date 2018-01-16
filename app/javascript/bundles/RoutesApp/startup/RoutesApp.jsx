@@ -1,25 +1,18 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
-
 import merge from 'lodash/merge';
 import gql from 'graphql-tag';
-
-// https://www.apollographql.com/docs
-// https://github.com/apollographql/apollo-client/tree/master/packages/apollo-client-preset
 import { ApolloProvider, graphql } from 'react-apollo';
 // import ApolloClient from 'apollo-client'
 import ApolloClient from 'apollo-client-preset'; // changes how it's loaded, with a few "reasonable" presets, maybe this was my issue..
 import { HttpLink, InMemoryCache } from 'apollo-client-preset'
-
-// https://www.apollographql.com/docs/link/links/state.html
 import { ApolloLink } from 'apollo-link';
 import { withClientState } from 'apollo-link-state';
 import { createHttpLink } from "apollo-link-http";
 import { setContext } from 'apollo-link-context';
 import { onError } from "apollo-link-error";
 
-// Components
-import Calendar from '../components/Calendar';
+import RouteCalendar from '../components/RouteCalendar';
 
 const httpLink = createHttpLink({
   uri: '/graphql',
@@ -38,10 +31,11 @@ const authLink = setContext((_, { headers }) => {
 });
 const client = new ApolloClient({
   link: authLink.concat(httpLink),
+  // cache: new InMemoryCache().restore({})
   cache: new InMemoryCache()
 });
 
-export default class CalendarApp extends Component {
+export default class RoutesApp extends Component {
   static propTypes = {
     eventSources: PropTypes.string.isRequired, // this is passed from the Rails view
   }
@@ -55,7 +49,7 @@ export default class CalendarApp extends Component {
   render() {
     return (
       <ApolloProvider client={client}>
-        <Calendar eventSources={this.props.eventSources}/>
+        <RouteCalendar eventSources={this.props.eventSources}/>
       </ApolloProvider>
     );
   }

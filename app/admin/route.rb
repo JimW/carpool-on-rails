@@ -1,8 +1,7 @@
-require_dependency("../app/models/fullcalendar_engine/event_decorator.rb")
-
 ActiveAdmin.register Route do
   menu priority: 1
   config.clear_action_items! # removes "Create New Route" button
+
 # https://github.com/activeadmin/activeadmin/issues/3676
 # Maybe the issue with the ransack error is because the join table is missing an id field?
 # That's why I had to remove these filters, or at least define them explicetely
@@ -50,15 +49,6 @@ end
 
 # Need to clean some of this out !!! Talking to normal controllers in some places
 
-# this sets up the route so keep it in, I think..
-collection_action :duplicate, method: [:post] do
-  if request.post?
-    # p "params[:event_id] = " + params[:event_id]
-    # head :ok
-  else
-    # render :foo
-  end
-end
 
 # this sets up the route so keep it in, I think..
 collection_action :jump_to_calendar_event, method: [:get] do
@@ -78,18 +68,9 @@ collection_action :refresh_calendar, method: [:get] do
   # end
 end
 
+# Graphqlize XXX
 # this sets up the route so keep it in, I think..
 collection_action :update_via_event, method: [:post] do
-  if request.post?
-    # p "params[:event_id] = " + params[:event_id]
-    # head :ok
-  else
-    # render :foo
-  end
-end
-
-# Should expand this out to ajaxafy more
-collection_action :get_events, method: [:get] do
   if request.post?
     # p "params[:event_id] = " + params[:event_id]
     # head :ok
@@ -106,10 +87,9 @@ index do
   session[:search] = params[:q] ? params[:q] : nil
   session[:working_date] = params[:working_date] ? params[:working_date] : "2017-02-26" # !!!
   @working_date = session[:working_date]
-  @most_recent_date_edit = Route.order("updated_at").last
+  @most_recent_date_edit = current_user.current_carpool.routes.order("updated_at").last if !current_user.nil? # not even using this?
 
   render partial: 'route_calendar'
-  # render partial: 'missing_routes'
 
   # id_column
   selectable_column
@@ -172,6 +152,20 @@ controller do
     @page_title = "Routes for #{current_user.current_carpool.title_short}"
   }
 
+  def index 
+    cp = current_user.current_carpool if !current_user.nil?
+    context = {
+      current_user: current_user, 
+      current_carpool: cp
+    }
+    # templates are missing from query I think XXX, originally done just for calendar page
+    eventSources = CarPoolSchema.execute("{fcEventSourcesRoutes() {}}", context: context, variables: nil)
+    # should snag the error if any
+    @calendar_props = {
+      eventSources: eventSources["data"]["fcEventSourcesRoutes"]
+    }
+  end
+
   def update(options={}, &block)
 
     @route = Route.find(permitted_params[:id])
@@ -190,7 +184,7 @@ controller do
 
     # Need to remove any assignments before I can add them, due to db constraints and how super.do does things..
     # becareful that all the callbacks still work if I hace to manually process route stuff...
-    # XXX
+    # XXX what was I saying..?
 
     super do |success,failure|
       success.html {
@@ -205,7 +199,7 @@ controller do
 
     if request.xhr?
       # It's really an event ID from the FullcalendarEngine stuff
-      @route = FullcalendarEngine::Event.find(permitted_params[:id]).route
+      @route = Event.find(permitted_params[:id]).route
     else
       @route = Route.find(permitted_params[:id])
     end
@@ -235,7 +229,7 @@ controller do
   def edit # ___________________________________________________________________
     if request.xhr?
       # It's really an event ID, so look it up
-      @route = FullcalendarEngine::Event.find(permitted_params[:id]).route
+      @route = Event.find(permitted_params[:id]).route
       # p "Admin: Route: Controller: edit (request.xhr), route_id = " + @route.id.to_s
     else
       @route = Route.find(permitted_params[:id])
@@ -245,7 +239,6 @@ controller do
 
   def new # ____________________________________________________________________
      new! do |format|
-        #  format.html #{ render active_admin_template('new') }
          format.js
        end
   end
@@ -255,13 +248,11 @@ controller do
     @route = Route.new(permitted_params[:route])
     @route.category = :special
     @route.carpool = current_user.current_carpool
-    @route.event =  FullcalendarEngine::Event.new({
+    @route.event =  Event.new({
         :starttime => @route.starts_at,
         :endtime => @route.ends_at #starts_at + 30.minutes # Conifiga !!! default_route_time, later it will auto-calc based on locations
     })
     cookies.permanent[:last_working_date] = @route.starts_at.iso8601
-
-    # session[:route_action] = "create"
 
     super do |success,failure|
       success.html {
@@ -269,18 +260,19 @@ controller do
         session[:last_route_id_edited] = @route.id # used to plant a Class to mark the event in the calendar, so the js can highlight the change and scroll to it.
         redirect_to collection_path
       }
-      failure.html { render :edit }
+      failure.html {
+        render :edit 
+    }
     end
 
   end # create
 
-
+  # Graphqlize XXX
   def update_via_event # _______________________________________________________
     if request.xhr?
 
       update_type = params[:update_type]
-
-      event_clicked = FullcalendarEngine::Event.find(params[:event_id])
+      event_clicked = Event.find(params[:event_id])
 
       # if event_clicked.route.modified_instance? && event_clicked.route.instance_parent.any?
       # end
@@ -292,7 +284,7 @@ controller do
         new_route.instance_parent = event_clicked.route.instance_parent
 
         # !!! This will need to dynamically determine the actual date for the instance template (using day of week of template and date of exhisting instance)
-        new_route.event =  FullcalendarEngine::Event.new({
+        new_route.event =  Event.new({
             :starttime => event_clicked.route.instance_parent.event.starttime.iso8601,
             :endtime => event_clicked.route.instance_parent.event.endtime.iso8601
         })
@@ -313,55 +305,6 @@ controller do
   def refresh_calendar # _________________________________________________________
     @working_week = params[:working_week] ? params[:working_week] : "2015 09 12" #YYYY MM DD
     # p "@working_week = " + @working_week
-  end
-
-  def duplicate # ______________________________________________________________
-
-    dup_type = params[:dup_as]
-
-    if request.xhr?
-
-      event_clicked = FullcalendarEngine::Event.find(params[:event_id])
-      new_route = event_clicked.route.deep_clone :include => [:drivers, :passengers, :locations]
-      new_route.event =  FullcalendarEngine::Event.new({
-          :starttime => event_clicked.starttime.iso8601,
-          :endtime => event_clicked.endtime.iso8601
-      })
-
-      case dup_type.to_s
-      when "make_template"
-          new_route.category = :template
-          new_route.event.all_day = true  # so it shows at top in Fullcalendar, move this to event code !!! ?
-          # Turn original into an instance
-          event_clicked.route.category = :instance
-          new_route.scheduled_instances << event_clicked.route
-          event_clicked.save
-          # event_clicked.route.modified = false
-        when "make_instance"
-          if !event_clicked.route.scheduled_instances.any? # still the way to do this ??? !!!, just double check
-            new_route.category = :instance
-            new_route.event.all_day = false
-            event_clicked.route.scheduled_instances << new_route
-          end
-        when "make_special"
-          new_route.category = :special
-          new_route.event.all_day = false
-          # Might have to not copy the passengers and drivers once there becomes
-          # logic validations (like no passenger in 2 cars at same time, etc)
-          # Maybe a way to turn on and off validations? so the admin can mess around freely? ???
-      end
-
-      new_route.save
-      if dup_type.to_s == "make_instance"
-        session[:last_route_id_edited] = event_clicked.route.id # keep focus on the instance
-        # p "session[:last_route_id_edited] = " + session[:last_route_id_edited] + " and should = " + event_clicked.route.id.to_s
-      else
-        session[:last_route_id_edited] = new_route.id
-      end
-
-      head :ok
-    else
-    end
   end
 
   def get_events # _____________________________________________________________

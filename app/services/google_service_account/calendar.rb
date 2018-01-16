@@ -3,6 +3,14 @@ require 'googleauth'
 
 class GoogleServiceAccount::Calendar
 
+  Google::Apis.logger.level = Logger::WARN
+    # You can set the logging level to one of the following:
+    # FATAL (least amount of logging)
+    # ERROR
+    # WARN
+    # INFO
+    # DEBUG (most amount of logging)
+
 # Create calendar within organizer's google account (organizer will need this permission request (special interaction for additional API MAYBE))
 # Share calendar with the service account's email (how many can an account have??? MAYBE)
 # Add service accont to carpool organizer's account via ACL, giving role of ...?
@@ -138,7 +146,7 @@ class GoogleServiceAccount::Calendar
           user_carpool_routes = user.routes.where(carpool_id: carpool_id)
           cservice.batch do |cservice|
             user_carpool_routes.each do |route|
-              p "_______________ add_all_events_to_personal_org_calendar: adding route"
+              # p "_______________ add_all_events_to_personal_org_calendar: adding route"
               event_add(cid, route.to_google_event, cservice)
             end
           end if user_carpool_routes.any?
@@ -246,12 +254,12 @@ class GoogleServiceAccount::Calendar
   end
 
   def event_add(cal_id, google_event, cservice = self.cservice) # pass cservice so it can be passed in by batching callers
-    puts "____ event_add CALLER = " + caller[0]
+    # puts "____ event_add CALLER = " + caller[0]
     if !google_event.nil? && !cal_id.nil?
-      #  p "About to insert_event $$$: " #+ google_event.summary + " with " + google_event.id.to_s + " into " + cal_id
+      #  p "About to insert_event $$$: " + google_event.summary + " with " + google_event.id.to_s + " into " + cal_id
       cservice.insert_event(cal_id, google_event) { |res, err|
         case err.to_s
-      when 'duplicate: The requested identifier already exists.' 
+        when 'duplicate: The requested identifier already exists.' 
           # watch out, they change this text ... must find some static codes I can use from somewhere, just use delete_all_calendars task and you're safe
           p "insert_event found duplicate ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++, assuming it's really marked as cancelled"
           event_undelete(cal_id, google_event)
@@ -275,6 +283,13 @@ class GoogleServiceAccount::Calendar
         # when 'duplicate' # it must use the id field
         #   p "Found DUPLICATE ________________"
         # end
+
+        # When  I had no internet, testing locally:
+        # [ActiveJob] [GcalRouteUpdateEventsJob] [7390f275-9592-46fe-b83a-92acb8d7c58e] Caught error notFound: Not Found
+        # 17:12:24 web.1    | [ActiveJob] [GcalRouteUpdateEventsJob] [7390f275-9592-46fe-b83a-92acb8d7c58e] Error - #<Google::Apis::ClientError: notFound: Not Found>
+        # 17:12:24 web.1    |
+        # 17:12:24 web.1    | "++++++++++++++++++++++++++++++++++++++++++++++++++ calendar.event_update ERROR = notFound: Not Found"
+
         if err
           # possible errors 'duplicate'
           p "++++++++++++++++++++++++++++++++++++++++++++++++++ calendar.event_update ERROR = " + err.to_s

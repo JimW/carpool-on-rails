@@ -1,6 +1,17 @@
 # Use of Graphql 
 As the UI evolves, graphql will allow more flexibility and separation between client and server.  Serverless technologies like AWS lambda are evolving quickly and Graphql will enable various middleware type serverless technologies to help with caching and various other realtime logic and analysis.
 
+### Next Tasks  
+- [ ] Graphlize Routes Panel
+  - [ ] Create root queries for
+    - [ ] updateFcEventMutation
+
+- [ ] Add Authoriz to graphql queries
+- [ ] Add gem, https://github.com/gjtorikian/graphql-docs
+
+- [ ] Install https://www.npmjs.com/package/@playlyfe/gql
+- [ ] Install graphql extension for VS Code, above is prerequisite
+
 Reference Links:
 
 [graphql](http://graphql.org/)  
@@ -18,12 +29,6 @@ https://www.youtube.com/watch?v=xaorvBjCE7A
 ### Token Auth
 https://github.com/lynndylanhurley/devise_token_auth
 https://paweljw.github.io/2017/07/rails-5.1-api-with-vue.js-frontend-part-4-authentication-and-authorization/
-
-TODO:
-1. Add Authent and Authoriz to graphql
-1. Create a query that pulls in the has_one events of routes.
-1. Add Apollo client with basic React implementation of some basic carpool feature, https://github.com/apollographql/apollo-client
-1. Add gem, https://github.com/gjtorikian/graphql-docs
 
 Sample graphql query that can be pasted into graphiql to test what's setup so far.  
 (needs to be wrapped into proper tests XXX):

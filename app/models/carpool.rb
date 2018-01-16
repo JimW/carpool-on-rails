@@ -83,6 +83,9 @@ class Carpool < ApplicationRecord
       # This will be a Sunday, even if the cal is Mon-Fri
 
       missing_persons = {}
+
+      return missing_persons if working_week == ""
+
       start_date = Date.iso8601(working_week)
       end_date = start_date + 6.days
       routes_within_range = routes.select {|r| r.starts_at.to_date.between?(start_date, end_date)}
@@ -110,7 +113,7 @@ class Carpool < ApplicationRecord
       end
 
       return missing_persons
-    end
+  end
 
   def is_lobby?
     (title_short == LOBBY)

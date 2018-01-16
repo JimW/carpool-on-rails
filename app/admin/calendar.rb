@@ -10,11 +10,18 @@ ActiveAdmin.register_page "Calendar" do
   controller do
 
     def index
-      eventSources = CarPoolSchema.execute("{fcEventSources() {}}", variables: nil)
+      cp = current_user.current_carpool if !current_user.nil?
+      context = {
+        current_user: current_user, 
+        current_carpool: cp
+      }
+      eventSources = CarPoolSchema.execute("{fcEventSources() {}}", context: context, variables: nil)
+      # should snag the error if any
       @calendar_props = {
-         eventSources: eventSources["data"]["fcEventSources"]
+        eventSources: eventSources["data"]["fcEventSources"]
       }
     end
+    
   end
 
   content do

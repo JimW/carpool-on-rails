@@ -103,7 +103,7 @@ class User < ApplicationRecord
   def remove_from_routes_as_driver(carpool)
     rts = driver_routes.where(carpool_id: carpool.id).all
     rts.each { |r|
-      r.remember_gcal_subscribers
+      r.remember_gcal_subscribers # could move to/around make_dirty or at least within before_update ??
       r.drivers.destroy(self)
       r.save # after_commit updates gcals
     }
@@ -112,7 +112,7 @@ class User < ApplicationRecord
   def remove_from_routes_as_passenger(carpool)
     rts = passenger_routes.where(carpool_id: carpool.id).all
     rts.each { |r|
-      r.remember_gcal_subscribers
+      r.remember_gcal_subscribers # could move to/around make_dirty or at least within before_update ??
       r.passengers.destroy(self)
       r.save # after_commit updates gcals
     }
@@ -121,7 +121,7 @@ class User < ApplicationRecord
   def remove_from_all_routes(carpool)
     rts = routes.where(carpool_id: carpool.id).all
     rts.each { |r|
-      r.remember_gcal_subscribers
+      r.remember_gcal_subscribers # could move to/around make_dirty or at least within before_update ??
       r.drivers.destroy(self)
       r.passengers.destroy(self)
       r.save # after_commit updates gcals
