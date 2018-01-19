@@ -24,4 +24,17 @@ namespace :db do
   end
   # task :rebuild_dev => ["db:drop:all", "db:create", "db:migrate", "db:seed", "gs:delete_all_calendars"]
 
+# TODO: would like to force the env to TEST, not sure a good way..
+# This task is necessary because the Test DB can get itself tied up in knots 
+  # task :rebuild_test do
+  #   if Rails.env.test?
+  #       Rake::Task["db:drop:all"].invoke
+  #       Rake::Task["db:create"].invoke
+  #       Rake::Task["db:migrate"].invoke
+  #       # Rake::Task["gs:delete_all_calendars"].invoke
+  #   else
+  #     p "rebuild_test is only for TEST"
+  #   end
+  # end
+
 end

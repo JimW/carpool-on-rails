@@ -38,8 +38,30 @@ class UserTest < ActiveSupport::TestCase
   #   # assert driver1.is_manager?(carpool)
   # end
 
-  test "full_name" do
+
+  test 'reset_current_carpool' do
+    @driver1.current_carpool = carpools(:lobby)
+    @driver1.reset_current_carpool
+    assert @driver1.current_carpool == carpools(:main)
+    @driver1.carpools.delete(@driver1.current_carpool)
+    @driver1.reset_current_carpool
+    assert @driver1.current_carpool == carpools(:lobby)
+  end
+
+  test 'full_name' do
     assert @driver1.full_name == "Jim Aa"
+  end
+
+  test 'short_name' do
+    assert @driver1.short_name == "Jim"
+  end
+
+  test 'short_name_with_mobile_phone' do
+    assert @driver1.short_name_with_mobile_phone == "Jim (415) 555-5555"
+  end
+
+  test 'full_name_with_mobile_phone' do
+    assert @driver1.full_name_with_mobile_phone == "Jim Aa (415) 555-5555"
   end
 
 end

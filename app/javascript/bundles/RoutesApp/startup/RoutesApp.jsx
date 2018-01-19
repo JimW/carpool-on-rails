@@ -11,6 +11,7 @@ import { withClientState } from 'apollo-link-state';
 import { createHttpLink } from "apollo-link-http";
 import { setContext } from 'apollo-link-context';
 import { onError } from "apollo-link-error";
+// import RetryLink from "apollo-link-retry"
 
 import RouteCalendar from '../components/RouteCalendar';
 
@@ -29,6 +30,20 @@ const authLink = setContext((_, { headers }) => {
     }
   }
 });
+
+// https://www.youtube.com/watch?v=bv74TcKb1jw
+// const retryLink = new RetryLink({
+//   max: 10,
+//   delay: 5000,
+//   interval: (delay, count) => (count > 5 ? 10000 : delay),
+// });
+
+// const errorLink = onError(({graphqlErrors, networkError}) => {
+//   if (graphqlErrors) sendToLogger(graphqlErrors); // https://sentry.io/pricing/
+//   if (networkError) logoutUser();
+// });
+// const link = errorLink.concat(authLink.concat(httpLink));
+
 const client = new ApolloClient({
   link: authLink.concat(httpLink),
   // cache: new InMemoryCache().restore({})

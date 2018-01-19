@@ -710,7 +710,7 @@ function revertToTemplate(eventId, top, $trigger) {
   })
     .then(({ data }) => {
       var newRevertedRoute = JSON.parse(data.revertToTemplateMutation);
-      assignFullCalendarStyle("instance",newRevertedRoute);
+      assignFullCalendarStyle(newRevertedRoute.category, newRevertedRoute); // newRevertedRoute.category should be instance. test this as there could be a bug where category is not getting updated from modified_instance
       $('.calendar').fullCalendar('removeEvents', [Number.parseInt(clickedEvent.id)]);
       $('.calendar').fullCalendar('renderEvent', newRevertedRoute); // Same ID?
 

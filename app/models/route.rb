@@ -67,7 +67,6 @@ class Route < ApplicationRecord
 
   # monitor_association_changes :scheduled_instances
 
-  # https://github.com/vinsol/fullcalendar-rails-engine/issues/12
   has_one :event_route, inverse_of: :route, :dependent => :destroy
   has_one :event, class_name: "Event", through: :event_route, :dependent => :destroy
   # "Note that :dependent option is ignored for has_one :through associations."
@@ -105,54 +104,25 @@ class Route < ApplicationRecord
   before_update :set_as_modified_instance#, :set_as_special_if_start_changes ??
     # TODO  Integrate some variable watching, for visually showing people what changed, but also for rollback.
     def set_as_modified_instance
- 
+
+      # if self.saved_change_to_category?(from: 'template', to: 'instance') # the new 5.1 way
+      #   # Happens after dup of the original template while creating an instance, causes this 2nd update here so should change probably change how I create an instance
+      # end
+
+      # Note: DirtyAssociations module cia make_dirty within has_may definitions, helps .changed? reflect changes within drivers, passengers, and location associations
       # associationDataModified = (self.locations.any?(&:changed?) || self.passengers.any?(&:changed?) || self.drivers.any?(&:changed?) )
       #  should not happen because I'm only changing tne relationship data, not the actual data of those relationships, but still
-
-      # DirtyAssociations module cia make_dirty within has_may definitions, helps .changed? reflect those add/removes
       if (self.changed?)# || associationDataModified)
         if self.instance? && !self.category_changed? 
+          # p "set_as_modified_instance ____________________________________ self.category = :modified_instance"
           self.category = :modified_instance
         end
       end
     end
 
-    def update_times(e_time, s_time = nil)
-      self.remember_gcal_subscribers 
-
-      if s_time # optional param
-        event.starttime = s_time
-        self.starts_at = s_time
-      end
-
-      event.endtime   = e_time
-      self.ends_at = e_time
-      
-      event.all_day = false # not sure this is necessary, what if I want to move templates
-      
-      event.save!
-      # if (instance? || modified_instance?)
-      #   if starts_at.to_date != self.instance_parent.starts_at.to_date # event was dragged to new date
-      #     p "self.starts_at.wday != self.instance_parent.starts_at.wday ******"
-      #     self.category = :special # Because they dragged it off the same day as the template
-      #     # use self.category because it's an undocumented reserved word (3 hours later..)
-
-      #     self.route_parent.destroy
-      #   else
-      #     p "SETTING: category = :modified_instance"
-
-      #     self.category = :modified_instance
-      #   end
-      # end
-      self.save!
-      # # ToReImplement via graphql or maybe in Apollo Link? XXX
-      #   # session[:last_route_id_edited] = @event.route.id
-      #   # cookies.permanent[:last_working_date] = @event.starttime.iso8601
-      #   # route.make_dirty(route)
-    end
-
   before_update :make_route_dirty_if_time_changed
     def make_route_dirty_if_time_changed
+      # p "______ make_route_dirty_if_time_changed "
       # if (saved_change_to_starts_at? || saved_change_to_ends_at?)
       if (starts_at_changed? || ends_at_changed?)
         # route.make_dirty(route.google_calendar_subscribers.pluck(:id)) # should use better way to set this, I'm just passing this so it can be used within route's after_commit
@@ -165,12 +135,13 @@ class Route < ApplicationRecord
           if self.starts_at.to_date != self.instance_parent.starts_at.to_date
             # p " self.starts_at.to_date != self.instance_parent.starts_at.to_date ******"
             self.category = :special # Because they dragged it off the same day as the template
+            # p "make_route_dirty_if_time_changed ____________________________________ self.category = :special"
             self.instance_parent.scheduled_instances.delete(self)
           else
             self.category = :modified_instance
+            # p "make_route_dirty_if_time_changed ____________________________________ self.category = :modified_instance"
           end
         end
-
       end
     end
 
@@ -181,9 +152,12 @@ class Route < ApplicationRecord
   before_destroy :cancel_google_event, prepend: true #if (rte.category.to_sym != :template)  #, on: [:destroy]
     def cancel_google_event
       # Should use a status flag here !!! because maybe the API will fail and need a way to know that things are out of sync
+      
+      # During revert, I'm concerned that 2 asych events, one for delete and another for the new one, could get mixed up in sequence during actual execution and fail because of a duplicate event error from google
+      # should really make the google ID be less tied to event/route id, store it in the db along with a new sync_status flag and solve 2 issues.  But then we won't be able to actually delete it here.
+      # This situation could potentially be helped out by some apollo-link middleware, once that evolves more maybe ??? XXX
 
       if (category.to_sym != :template)
-        # Move some of this into Event class  !!!
         event_data = {
           location: first_stop_street_city,
           start_iso8601: event.starttime.iso8601,
@@ -219,6 +193,41 @@ class Route < ApplicationRecord
       end
     end
 
+  def update_times(e_time, s_time = nil)
+    self.remember_gcal_subscribers 
+
+    if s_time # optional param
+      event.starttime = s_time
+      self.starts_at = s_time
+    end
+
+    event.endtime   = e_time
+    self.ends_at = e_time
+    
+    event.all_day = false # not sure this is necessary, what if I want to move templates
+    
+    event.save!
+    # all this stuff was moved from Event Controller so it could be still done but via graphql: (just keeping it around for a while)
+    # if (instance? || modified_instance?)
+    #   if starts_at.to_date != self.instance_parent.starts_at.to_date # event was dragged to new date
+    #     p "self.starts_at.wday != self.instance_parent.starts_at.wday ******"
+    #     self.category = :special # Because they dragged it off the same day as the template
+    #     # use self.category because it's an undocumented reserved word (3 hours later..)
+
+    #     self.route_parent.destroy
+    #   else
+    #     p "SETTING: category = :modified_instance"
+
+    #     self.category = :modified_instance
+    #   end
+    # end
+    self.save!
+    # # ToReImplement via graphql or maybe in Apollo Link? XXX
+    #   # session[:last_route_id_edited] = @event.route.id
+    #   # cookies.permanent[:last_working_date] = @event.starttime.iso8601
+    #   # route.make_dirty(route)
+  end
+  
   def self.batch_update_calendars_for(route_ids)
     # makes this a batch request !!! (it's called from User when it's meta changes)
     route_ids.each do |id|

@@ -116,17 +116,16 @@ Types::MutationType = GraphQL::ObjectType.define do
 
       event_clicked = Event.find(args[:eventId])
       template = event_clicked.route.instance_parent
-      new_route = template.deep_clone :include => [:drivers, :passengers, :locations]
 
+      new_route = template.deep_clone :include => [:drivers, :passengers, :locations]  
       new_route.instance_parent = template
-
       new_route.event =  Event.new({
         :starttime => template.event.starttime.iso8601,
         :endtime => template.event.endtime.iso8601
       })
-
       new_route.category = :instance
-      new_route.save
+      new_route.save!
+      
       template.scheduled_instances.destroy(event_clicked.route)
       template.scheduled_instances << new_route
       template.save!
@@ -137,6 +136,7 @@ Types::MutationType = GraphQL::ObjectType.define do
       # session[:last_route_id_edited] = new_route.id # used to plant a Class to mark the event in the calendar, so the js can highlight the change and scroll to it.
       # cookies.permanent[:last_working_date] = new_route.starts_at.iso8601 # TEST !!!
 
+      # could return a hash with both event and template data to make client life easier !!!
       new_route.as_fullcalendar_event.to_json
     }
   end
