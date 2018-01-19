@@ -1,23 +1,33 @@
-# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
-  title: MyString
-  desc: MyText
-  latitude: MyString
-  longitude: MyString
-  intersectStreet1: MyString
-  intersectStreet2: MyString
-  street: MyString
-  city: MyString
-  state: MyString
-
-two:
-  title: MyString
-  desc: MyText
-  latitude: MyString
-  longitude: MyString
-  intersectStreet1: MyString
-  intersectStreet2: MyString
-  street: MyString
-  city: MyString
-  state: MyString
+po:
+  title: Some Post Office
+  short_name: PO
+  desc: null
+  latitude: null
+  longitude: null
+  intersectStreet1: null
+  intersectStreet2: null
+  street: null
+  city: Redwood City
+  state: CA
+sf_lib:
+  title: SF Main Library
+  short_name: Libtary
+  desc: SF Main Library
+  latitude: null
+  longitude: null
+  intersectStreet1: null
+  intersectStreet2: null
+  street: 1 Shaddy Street
+  city: San Francisco
+  state: CA
+dtech:
+  title: Design Tech High School
+  short_name: dTech
+  desc: null
+  latitude: null
+  longitude: null
+  intersectStreet1: null
+  intersectStreet2: null
+  street: 275 Oracle Parkway
+  city: Redwood City
+  state: CA

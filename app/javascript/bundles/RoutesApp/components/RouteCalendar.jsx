@@ -716,8 +716,7 @@ function revertToTemplate(eventId, top, $trigger) {
 
       var templateId = $(`[data-child-id='${eventId}']`).first().attr('data-event-id');
       var templatefcEvent = $('.calendar').fullCalendar( 'clientEvents', templateId.toString())[0];
-      
-      // The template's instances now have no children so need to be updated to show that visually, should probably have a new category for template_fulfilled or ...
+
       templatefcEvent.has_children = true; 
       templatefcEvent.child_id = newRevertedRoute.id; // Event/route id same ?? make sure..
       // assignFullCalendarStyle("template_implemented",newRevertedRoute); // wishful thinking

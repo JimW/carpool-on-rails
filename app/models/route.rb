@@ -153,7 +153,7 @@ class Route < ApplicationRecord
 
   before_update :make_route_dirty_if_time_changed
     def make_route_dirty_if_time_changed
-      # if (saved_change_to_start_time? || saved_change_to_end_time?)
+      # if (saved_change_to_starts_at? || saved_change_to_ends_at?)
       if (starts_at_changed? || ends_at_changed?)
         # route.make_dirty(route.google_calendar_subscribers.pluck(:id)) # should use better way to set this, I'm just passing this so it can be used within route's after_commit
         # route.make_dirty(self)

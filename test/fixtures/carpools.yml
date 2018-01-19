@@ -1,7 +1,10 @@
-# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
-  title: MyString
-
-two:
-  title: MyString
+lobby:
+  title: Lobby
+  title_short: Lobby
+  publish_to_gcal: false
+  organization: dtech
+main:
+  title: Main CarPool
+  title_short: Main
+  publish_to_gcal: false
+  organization: dtech

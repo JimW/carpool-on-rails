@@ -37,6 +37,20 @@
     "spin.js": "2.3.2"
   },
   "devDependencies": {
+    "jest": "^22.1.1",
     "webpack-dev-server": "^2.9.7"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "jest": {
+    "roots": [
+      "spec/javascript",
+      "app/javascript"
+    ],
+    "moduleDirectories": [
+      "node_modules",
+      "app/javascript"
+    ]
   }
 }

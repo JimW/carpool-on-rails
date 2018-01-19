@@ -54,11 +54,13 @@ group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '~> 2.13'
-  gem 'selenium-webdriver'
+  gem 'selenium-webdriver'  
 
   gem "better_errors"
   gem "minitest-rails"
   gem "minitest-reporters"
+  gem 'minitest-rails-capybara'
+
   # Access an IRB console on exception pages or by using <%= console %> in views
   gem 'meta_request'
 
@@ -87,6 +89,9 @@ group :development do
   gem 'spring-watcher-listen', '~> 2.0.0'
   # gem 'rails-erd'
   gem 'graphiql-rails'
+  # gem 'ruby-debug-ide'
+  # gem 'debase', '0.2.2.beta14'
+  gem 'rubocop', '~> 0.52.1', require: false
 end
 
 # Use jquery as the JavaScript library, it's managed by rails so just use this vs bower
