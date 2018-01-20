@@ -65,8 +65,6 @@ class Route < ApplicationRecord
   has_many :modified_route_instances, -> { is_modified }, inverse_of: :route, :class_name => "RouteInstance", foreign_key: 'route_id', :dependent => :destroy
   has_many :modified_scheduled_instances, class_name: "Route", :source => :instance, through: :modified_route_instances, :dependent => :destroy
 
-  # monitor_association_changes :scheduled_instances
-
   has_one :event_route, inverse_of: :route, :dependent => :destroy
   has_one :event, class_name: "Event", through: :event_route, :dependent => :destroy
   # "Note that :dependent option is ignored for has_one :through associations."
@@ -76,26 +74,21 @@ class Route < ApplicationRecord
 
   has_many :location_routes,  -> { order 'position' }, inverse_of: :route, :dependent => :destroy
   has_many :locations, through: :location_routes, :after_remove => :make_dirty, :after_add => :make_dirty
-  # monitor_association_changes :locations
 
   accepts_nested_attributes_for :location_routes, allow_destroy: true
   accepts_nested_attributes_for :locations, allow_destroy: true
 
   has_many :is_driver_users, -> {is_driver}, :class_name => 'RouteUser', inverse_of: :route, :dependent => :destroy
   has_many :drivers, -> { all_can_drive }, :class_name => 'User', :through => :is_driver_users, :source => :user, :after_add => :make_dirty, :after_remove => :make_dirty
-  # monitor_association_changes :drivers
 
   has_many :is_passenger_users, -> {is_passenger}, :class_name => 'RouteUser', inverse_of: :route, :dependent => :destroy
   has_many :passengers, -> { distinct }, :class_name => 'User', :through => :is_passenger_users, :source => :user, :after_add => :make_dirty, :after_remove => :make_dirty#, :before_add => :remember_previous_subscribers, :before_remove => :remember_previous_subscribers
-  # monitor_association_changes :passengers
 
   has_many :is_routine_driver_users, -> {is_driver}, :class_name => 'RouteUser', inverse_of: :route, :dependent => :destroy
   has_many :routine_drivers, -> {all_can_drive}, :class_name => 'User', :through => :is_routine_driver_users, :source => :user, :dependent => :destroy#, :after_add => :make_dirty, :after_remove => :make_dirty
-  # monitor_association_changes :routine_drivers
 
   has_many :is_routine_passenger_users,  -> {is_passenger}, :class_name => 'RouteUser', inverse_of: :route, :dependent => :destroy
   has_many :routine_passengers, -> { distinct }, :class_name => 'User', :through => :is_routine_passenger_users, :source => :user, :dependent => :destroy#, :after_add => :make_dirty, :after_remove => :make_dirty
-  # monitor_association_changes :routine_passengers
 
   has_many :route_users, :class_name => 'RouteUser', inverse_of: :route
   has_many :google_calendar_subscribers, -> { all_google_calendar_subscribers }, :class_name => 'User', :through => :route_users, :source => :user, :after_remove => :make_dirty, :after_add => :make_dirty

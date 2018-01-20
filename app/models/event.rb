@@ -1,6 +1,5 @@
 class Event < ApplicationRecord
-# Need to remove remnents of FullcalendarEngine, pieces were pulled from there, but there is not much left that is really used.
-# Still need to remove repeating event stuff from here and schema
+  # Still need to remove repeating event stuff from here, left over from fullcalendar_engine, setup tests first
 
   attr_accessor :period, :frequency, :commit_button
   validate :validate_timings
