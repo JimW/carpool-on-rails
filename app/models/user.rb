@@ -237,9 +237,11 @@ class User < ApplicationRecord
     self.has_role? :manager, cp
   end
 
+  # :nocov:
   def super_admin?
     self.has_role?(:super_admin)
   end
+  # :nocov:
 
   # __________________________ Devise ____________________________________________
 

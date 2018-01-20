@@ -64,4 +64,14 @@ class UserTest < ActiveSupport::TestCase
     assert @driver1.full_name_with_mobile_phone == "Jim Aa (415) 555-5555"
   end
 
+  test "is_admin?" do
+    assert @driver1.is_admin?
+    assert_not @driver2.is_admin?
+  end
+
+  test "is_manager?" do
+    assert_not @driver1.is_manager? carpools(:main)
+    assert @driver2.is_manager? carpools(:main)
+  end
+
 end

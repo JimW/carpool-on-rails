@@ -8,3 +8,5 @@ main:
   title_short: Main
   publish_to_gcal: false
   organization: dtech
+  id: 1
+

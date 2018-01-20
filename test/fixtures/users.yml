@@ -6,6 +6,7 @@ driver1:
   home_phone: ''
   mobile_phone: '+14155555555'
   mobile_phone_messaging: false
+  roles: admin_role
 driver2:
   email: b@b.com
   can_drive: true
@@ -14,6 +15,7 @@ driver2:
   home_phone: ''
   mobile_phone: '+14155556666'
   mobile_phone_messaging: false
+  roles: manager_role
 passenger1:
   email: c@c.com
   can_drive: false
