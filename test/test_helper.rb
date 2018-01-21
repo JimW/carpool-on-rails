@@ -1,5 +1,19 @@
-require 'simplecov'
-SimpleCov.start 'rails'
+require 'simplecov'     # Must come first
+# SimpleCov.start 'rails'
+SimpleCov.start do
+  load_profile "test_frameworks"
+  add_filter %r{^/config/}
+  add_filter %r{^/db/}
+  add_group "GraphQL", "app/graphql" 
+  add_group "Controllers", "app/controllers"
+  add_group "Channels", "app/channels" if defined?(ActionCable)
+  add_group "Models", "app/models"
+  add_group "Mailers", "app/mailers"
+  add_group "Helpers", "app/helpers"
+  add_group "Jobs", %w[app/jobs app/workers]
+  add_group "Libraries", "lib/"
+  track_files "{app,lib}/**/*.rb"
+end
 
 ENV["RAILS_ENV"] = "test"
 require File.expand_path("../../config/environment", __FILE__)
@@ -7,13 +21,24 @@ require "rails/test_help"
 require "minitest/rails"
 require "minitest/pride"        # for colorful output
 require 'minitest/reporters'
-require "minitest/rails/capybara"
-# require 'minitest/autorun' # need this???
+
+Minitest::Reporters.use!
+# Minitest::Reporters.use! [Minitest::Reporters::SpecReporter.new]
+
 
 # include Warden::Test::Helpers
 # https://github.com/plataformatec/devise/wiki/How-To:-Test-with-Capybara
 
-Minitest::Reporters.use!
+# https://github.com/DatabaseCleaner/database_cleaner#minitest-example
+
+# Capybara.register_driver :selenium do |app|
+#   Capybara::Selenium::Driver.new(app, browser: :chrome)
+# end
+# Capybara.javascript_driver = :chrome
+# Capybara.configure do |config|
+#   config.default_max_wait_time = 10 # seconds
+#   config.default_driver = :selenium
+# end
 
 class ActiveSupport::TestCase
   
@@ -24,3 +49,17 @@ class ActiveSupport::TestCase
   # Add more helper methods to be used by all tests here...
 
 end
+
+class ActionController::TestCase
+  include Devise::Test::ControllerHelpers
+end
+
+# class ActionDispatch::IntegrationTest
+#   def sign_in(user)
+#     post user_session_path \
+#       "user[email]"    => user.email,
+#       "user[password]" => user.password
+#   end
+# end
+
+# http://docs.seattlerb.org/minitest/Minitest/Assertions.html

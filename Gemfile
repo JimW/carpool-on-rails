@@ -11,6 +11,10 @@ source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '5.1.4'
+# gem 'rails', '5.2,0.beta' # this will force proper puma config for capybara, single thread or something..
+  # https://github.com/rails/rails/pull/30638
+  # TODO: first deal with any before_save change deprectaions warnings from in 5.1
+  
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
@@ -48,39 +52,62 @@ gem 'jbuilder', '~> 2.5'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
+gem "awesome_print"
+
 # https://github.com/colszowka/simplecov
 gem 'simplecov', :require => false, :group => :test
+# gem 'coverband' # https://github.com/danmayer/coverband
 
 group :development, :test do
 
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
-  # Adds support for Capybara system testing and selenium driver
-  gem 'capybara', '~> 2.13'
-  gem 'selenium-webdriver'  
 
   gem "better_errors"
-  gem "minitest-rails"
-  gem "minitest-reporters"
-  gem 'minitest-rails-capybara'
 
   # Access an IRB console on exception pages or by using <%= console %> in views
   gem 'meta_request'
 
-  # https://github.com/shakacode/react-webpack-rails-tutorial/blob/master/Gemfile
-  #  ################################################################################
-  # # Favorite debugging gems
-  # gem "pry"
-  # gem "pry-byebug"
-  # gem "pry-doc"
-  # gem "pry-rails"
-  # gem "pry-rescue"
-  # gem "pry-stack_explorer"
+  gem "pry"
+  gem "pry-byebug"
+  gem "pry-doc"
+  gem "pry-rails"
+  gem "pry-rescue"
+  gem "pry-stack_explorer"
 
-  # ################################################################################
+  # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
+  # gem "spring"
+  # gem "spring-commands-rspec"
+
   # # Color console output
   gem "rainbow"
 
+  # Linters and Security
+  gem 'rubocop', '~> 0.52.1', require: false
+  gem "ruby-lint", require: false
+    # Critical that require: false be set! https://github.com/brigade/scss-lint/issues/278
+  gem "brakeman", require: false
+  gem "bundler-audit", require: false
+  gem "scss_lint", require: false
+end
+
+group :test do
+  gem "minitest-rails"
+  gem "minitest-reporters"
+  gem 'minitest-rails-capybara'
+  gem "selenium-webdriver"
+  
+  # gem "chromedriver-helper"
+  # or when using wsl install via:
+  # http://ngauthier.com/2017/09/rails-system-tests-with-headless-chrome-on-windows-bash-wsl.html
+
+  gem "capybara-screenshot"
+  # gem "launchy"
+  # gem "capybara-webkit", "1.14.0"
+  # gem "poltergeist"
+
+  gem "database_cleaner"
+  gem "rails_best_practices"
 end
 
 group :development do
@@ -88,13 +115,12 @@ group :development do
   gem 'web-console', '>= 3.3.0'
   gem 'listen', '>= 3.0.5', '< 3.2'
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
-  gem 'spring'
-  gem 'spring-watcher-listen', '~> 2.0.0'
+  # gem 'spring'
+  # gem 'spring-watcher-listen', '~> 2.0.0'
   # gem 'rails-erd'
   gem 'graphiql-rails'
   # gem 'ruby-debug-ide'
   # gem 'debase', '0.2.2.beta14'
-  gem 'rubocop', '~> 0.52.1', require: false
 end
 
 # Use jquery as the JavaScript library, it's managed by rails so just use this vs bower

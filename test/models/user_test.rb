@@ -33,11 +33,12 @@ class UserTest < ActiveSupport::TestCase
     assert @passenger1.active_carpools.count == 1
   end
 
-  # test "roles" do
-  #     # driver1.add_role(:manager, carpool)
-  #   # assert driver1.is_manager?(carpool)
-  # end
-
+  test 'scopes' do
+    assert_includes User.in_lobby, users(:driver1)
+    assert_includes User.in_lobby, users(:passenger1)
+    refute_includes User.all_can_drive, users(:passenger1)
+    refute_includes User.all_google_calendar_subscribers, users(:passenger1)
+  end
 
   test 'reset_current_carpool' do
     @driver1.current_carpool = carpools(:lobby)
@@ -71,6 +72,8 @@ class UserTest < ActiveSupport::TestCase
 
   test "is_manager?" do
     assert_not @driver1.is_manager? carpools(:main)
+    @driver1.add_role(:manager, carpools(:main))
+    assert @driver1.is_manager? carpools(:main)
     assert @driver2.is_manager? carpools(:main)
   end
 

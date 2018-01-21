@@ -1,5 +1,5 @@
 driver1:
-  email: a@a.com
+  email: a@aaa.com
   can_drive: true
   first_name: Jim
   last_name: Aa
@@ -7,8 +7,9 @@ driver1:
   mobile_phone: '+14155555555'
   mobile_phone_messaging: false
   roles: admin_role
+  encrypted_password: '<%= Devise::Encryptor.digest(User, "a") %>'
 driver2:
-  email: b@b.com
+  email: b@bbbb.com
   can_drive: true
   first_name: John
   last_name: Bb
@@ -16,19 +17,24 @@ driver2:
   mobile_phone: '+14155556666'
   mobile_phone_messaging: false
   roles: manager_role
+  encrypted_password: '<%= Devise::Encryptor.digest(User, "a") %>'
 passenger1:
-  email: c@c.com
+  email: c@cccc.com
   can_drive: false
   first_name: Jo
   last_name: Cc
   home_phone: ''
   mobile_phone: '+14155557777'
   mobile_phone_messaging: false
+  encrypted_password: '<%= Devise::Encryptor.digest(User, "a") %>'
+  roles: null
 passenger2:
-  email: d@d.com
+  email: d@dddd.com
   can_drive: false
   first_name: Patricia
   last_name: Dd
   home_phone: ''
   mobile_phone: '+14155558888'
   mobile_phone_messaging: false
+  encrypted_password: '<%= Devise::Encryptor.digest(User, "a") %>'
+  roles: null
