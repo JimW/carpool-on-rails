@@ -3,6 +3,7 @@ class Route < ApplicationRecord
 
   include DirtyAssociations
   # include ActiveModel::Dirty
+  validates :starts_at, :ends_at, presence: true
 
   # http://www.mariocarrion.com/2015/07/01/dirty-associations.html
   # https://github.com/krisleech/wisper
@@ -35,7 +36,7 @@ class Route < ApplicationRecord
   scope :is_template, -> {where(category: "template")}
   scope :is_instance, -> {where(category: "instance")}
   # Breaking instance apart so I can show visually the state of the instances
-  scope :is_modified_instance, -> {where(category: "instance_modified")}
+  scope :is_modified_instance, -> {where(category: "modified_instance")}
   scope :assignments_x, -> user_id {   # No space between "->" and "("
   #   includes(:user_assignments).where('user_assignments.id == ' + user_id.to_s)
     assignments.for_user(user_id )
@@ -106,8 +107,9 @@ class Route < ApplicationRecord
       # associationDataModified = (self.locations.any?(&:changed?) || self.passengers.any?(&:changed?) || self.drivers.any?(&:changed?) )
       #  should not happen because I'm only changing tne relationship data, not the actual data of those relationships, but still
       if (self.changed?)# || associationDataModified)
-        if self.instance? && !self.category_changed? 
+        if self.instance? && !self.category_changed? && !self.carpool_id_changed? # last one happens as a byproduct of testing with fixtures, don't plan on dragging routes between carpools, but who knows..
           # p "set_as_modified_instance ____________________________________ self.category = :modified_instance"
+          # binding.pry
           self.category = :modified_instance
         end
       end
@@ -131,6 +133,7 @@ class Route < ApplicationRecord
             # p "make_route_dirty_if_time_changed ____________________________________ self.category = :special"
             self.instance_parent.scheduled_instances.delete(self)
           else
+            # binding.pry
             self.category = :modified_instance
             # p "make_route_dirty_if_time_changed ____________________________________ self.category = :modified_instance"
           end

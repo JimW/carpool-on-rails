@@ -4,13 +4,17 @@ SimpleCov.start do
   load_profile "test_frameworks"
   add_filter %r{^/config/}
   add_filter %r{^/db/}
+  add_filter %r{^/app/policies/}
   add_group "GraphQL", "app/graphql" 
   add_group "Controllers", "app/controllers"
+  add_group "ActiveAdmin", "app/admin"
   add_group "Channels", "app/channels" if defined?(ActionCable)
   add_group "Models", "app/models"
-  add_group "Mailers", "app/mailers"
+  # add_group "Mailers", "app/mailers"
   add_group "Helpers", "app/helpers"
   add_group "Jobs", %w[app/jobs app/workers]
+  add_group "Services", "app/services"
+
   add_group "Libraries", "lib/"
   track_files "{app,lib}/**/*.rb"
 end
@@ -21,10 +25,12 @@ require "rails/test_help"
 require "minitest/rails"
 require "minitest/pride"        # for colorful output
 require 'minitest/reporters'
+require 'test_setups'
 
-Minitest::Reporters.use!
-# Minitest::Reporters.use! [Minitest::Reporters::SpecReporter.new]
 
+
+# Minitest::Reporters.use!
+Minitest::Reporters.use! [Minitest::Reporters::SpecReporter.new]
 
 # include Warden::Test::Helpers
 # https://github.com/plataformatec/devise/wiki/How-To:-Test-with-Capybara
@@ -40,18 +46,20 @@ Minitest::Reporters.use!
 #   config.default_driver = :selenium
 # end
 
-class ActiveSupport::TestCase
-  
-  self.use_instantiated_fixtures = true
 
+class ActiveSupport::TestCase
+  # include FactoryBot::Syntax::Methods
+  self.use_instantiated_fixtures = true
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
-  # Add more helper methods to be used by all tests here...
+  include TestSetups
+  # include Devise::Test::T
 
 end
 
 class ActionController::TestCase
   include Devise::Test::ControllerHelpers
+  include TestSetups
 end
 
 # class ActionDispatch::IntegrationTest

@@ -1,0 +1,26 @@
+
+special1:
+  category: special
+  starts_at: '2018-01-18 08:20:00 -0800'
+  ends_at: '2018-01-18 08:40:00 -0800'
+  carpool: main
+template1:
+  category: template
+  starts_at: '2018-01-17 08:00:00 -0800'
+  ends_at: '2018-01-17 09:00:00 -0800'
+  carpool: main
+template2:
+  category: template
+  starts_at: '2018-02-17 08:00:00 -0800'
+  ends_at: '2018-02-17 09:00:00 -0800'
+  carpool: main
+instance1:
+  category: instance
+  starts_at: '2018-01-17 08:00:00 -0800'
+  ends_at: '2018-01-17 09:00:00 -0800'
+  carpool: main
+modified_instance1:
+  category: modified_instance
+  starts_at: '2018-02-17 18:00:00 -0800'
+  ends_at: '2018-02-17 19:00:00 -0800'
+  carpool: main  

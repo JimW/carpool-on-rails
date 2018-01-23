@@ -11,7 +11,7 @@ source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '5.1.4'
-# gem 'rails', '5.2,0.beta' # this will force proper puma config for capybara, single thread or something..
+# gem 'rails', '5.2.0.beta2' # this will force proper puma config for capybara, single thread or something..
   # https://github.com/rails/rails/pull/30638
   # TODO: first deal with any before_save change deprectaions warnings from in 5.1
   
@@ -89,6 +89,7 @@ group :development, :test do
   gem "brakeman", require: false
   gem "bundler-audit", require: false
   gem "scss_lint", require: false
+  # gem 'factory_bot_rails' # prefer to keep it as simple as possible right now, so no..
 end
 
 group :test do
@@ -104,7 +105,7 @@ group :test do
   gem "capybara-screenshot"
   # gem "launchy"
   # gem "capybara-webkit", "1.14.0"
-  # gem "poltergeist"
+  gem "poltergeist" # have to install some exectuable without source.. holding off testing JS system stuff
 
   gem "database_cleaner"
   gem "rails_best_practices"
