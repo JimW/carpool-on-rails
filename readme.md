@@ -578,3 +578,5 @@ https://react-table.js.org/#/story/cell-renderers-custom-components
 
 Add this:
 https://www.apollographql.com/docs/engine/
+Maybe:
+https://datatables.net/examples/index

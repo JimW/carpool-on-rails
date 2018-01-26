@@ -5,13 +5,13 @@ import gql from 'graphql-tag';
 import { compose } from 'react-apollo';
 import { hasError } from 'apollo-client/core/ObservableQuery';
 import { assignFullCalendarStyle } from '../../../libs/fullcalendar-utils';
-
-// import forms from './forms';
+import RouteForm from './forms/RouteForm';
 
 class RouteCalendar extends Component {
 
   static propTypes = {
-    eventSources: PropTypes.string.isRequired,
+    eventSources: PropTypes.string.isRequired,     // massaged data that FullCalendar wants., this will get replaced by more dynamic data elements constructed on client, managed by Apollo/React
+    newRouteFeedData: PropTypes.string.isRequired,  // Populates dropdown list.
   };
 
   /**
@@ -22,7 +22,7 @@ class RouteCalendar extends Component {
     this.state = {
       // Need to construct eventSources here from raw route data retrieved and stored in Apollo XXX
       eventSources: this.props.eventSources,
-
+      newRouteFeedData: this.props.newRouteFeedData,
       // Convert these cookies into state variables that get saved locally, forget the cookies
       // Exhisting Cookies that need to also become state variables:
       // last_calendar_type
@@ -51,7 +51,6 @@ class RouteCalendar extends Component {
         <div className='calendar'>
         </div>
         <div id="event_desc_dialog" className="dialog" style={{ display: 'none' }}></div>
-        <div id="create_event_dialog" className="dialog" style={{ display: 'none' }}></div>
       </div>
     );
   }
@@ -60,24 +59,26 @@ class RouteCalendar extends Component {
   // }
 
   componentDidUpdate() {
-    var top = this;
-    // fcEventSources is the massaged data that fcCalendar wants.  
-    // Should do that tranformation here on the client vs the server, maybe via an ApolloLink method
-    const eventSources = this.props.eventSources; // Take data from props passed in from rails
-    // const { fcEventSources } = this.props.data;  // Take data from ApolloClient data requested client side via query, leaarn how to merge these XXX
-
-    this.updateEvents(eventSources, top); // pass self so I can use Setstate and access mutations
+    this.updateEvents(); // pass self so I can use Setstate and access mutations
   }
 
-  updateEvents = function (eventSources, top) {
+  updateEvents() {
+    var top = this;
+    // https://stackoverflow.com/questions/22939130/when-should-i-use-arrow-functions-in-ecmascript-6#23045200
 
     // So fullcalendar callbacks can see
-    const { resizeFcEventMutation, 
-            moveFcEventMutation, 
-            deleteFcEventMutation, 
-            duplicateFcEventMutation 
-          } = top.props; 
+    const { resizeFcEventMutation,
+      moveFcEventMutation,
+      deleteFcEventMutation,
+      duplicateFcEventMutation,
+      eventSources,
+      newRouteFeedData,
+          } = this.props;
 
+    // This works: SAVE for TEST
+    // var newRouteFeedData = "{\"activeDrivers\":[{\"value\":1,\"text\":\"BigGuy\"},{\"value\":2,\"text\":\"JimDriver\"}],\"activePassengers\":[{\"value\":3,\"text\":\"JunkPassenger\"}]}"
+
+    var feedData = JSON.parse(newRouteFeedData);
     var eSources = JSON.parse(eventSources);
     assignFullCalendarStyle('instance', eSources[0]);
     assignFullCalendarStyle('modified_instance', eSources[1]);
@@ -132,35 +133,7 @@ class RouteCalendar extends Component {
       }
     };
 
-    var selectFullcalendar = (startDate, endDate, jsEvent, view) => { 
 
-      switch (view.name) {
-        case 'month':
-          // Move the calendar to the date and put into week mode
-          $('.calendar').fullCalendar('gotoDate', startDate);
-          $('.calendar').fullCalendar('changeView', 'agendaWeek');
-          break;
-        default:
-          if (startDate.hasTime()) { // did not click within allday area (template)
-            var start = new moment(startDate, "s");
-            var end = new moment(endDate, "s");
-            var slotInterval = new moment.duration("00:10:00"); //, "HH:mm:ss");
-
-            if (end.isSame(start.clone().add(slotInterval))) {
-              slotInterval.add(slotInterval);
-              end = start.add(slotInterval)
-            }
-
-            FullcalendarEngine.Form.display({
-              starttime: new Date(startDate),
-              endtime: end,
-              allDay: startDate.hasTime()
-            });
-          } else {
-            // do something like create a template? not really necessary as they should define a special first
-          }
-      }
-    }
 
     var eventClickFullcalendar = (event, jsEvent, view) => {
       // alert(jsEvent.which);
@@ -260,65 +233,9 @@ class RouteCalendar extends Component {
       slotEventOverlap: false,
       editable: true,
       displayEventTime: false,
-      // events: "",// Need to mute this because somewhere within the fc engine, it's setting it
       eventSources: eSources,
       loading: loadingFullcalendar,
-      eventRender: function (event, element) {
-
-        element.find('.fc-title').append("<br/>" + event.description);
-
-        // Inject stuff for dynamic context-menu options
-        element.attr('data-route-category', event.category);
-        element.attr('data-has-children', event.has_children);  // added from server to help ui
-        element.attr('data-child-id', event.child_id);         
-        element.attr('data-event-id', event.id);
-        element.addClass('route-' + event.id);                  // make easier to use scrollTo
-
-        element.addTouch();
-
-        if (event.category.indexOf("instance") > -1) {
-          element.addClass('instance-' + event.id); // so we can scrollTo when the template is clicked
-        }
-
-        // if (event.isPending) {
-        //   element.addClass('pending'); // so we can show it's network update status this way?
-        // }
-
-        element.addClass('context-class'); // For jquery contextMenu, so we can right-click and delete, etc
-
-
-        // XXX template events will not display in fullcalendar > 3.4 because they have end times set, it's a bug I hope..
-
-        if (event.category == "template") {
-
-          // XXX Reimplement once lastRouteIdEdited get's reattached
-          // if ((event.category == "template") && (event.id == last_route_id_edited)) {
-          //   element.addClass('CurrentEvent'); // Do it here now instead of at server, makes sense..
-          // }
-
-          if (!event.has_children) {
-            element.css({ "background-color": "white" });
-            element.css({ "border-color": "green" });
-            // element.addClass('ui-icon-arrowreturn-1-s');
-          }
-
-          if (currentViewName === 'month') {
-            element.hide();
-          }
-
-        } 
-
-        // if (!dragging) {
-        //   // Use something like this if I remove the scroll thing and just force
-        //   //  fullcalendar to stretch without a scroll !!!
-        //   // $(window).scrollTo('.CurrentEvent',1, function() {
-        //   //   $('.CurrentEvent').effect( "highlight", {color:"white"}, 300 );
-        //   // });
-        //   // $('.fc-scroller').scrollTo('.CurrentEvent',1, function() {
-        //   //   $('.CurrentEvent').effect( "highlight", {color:"white"}, 300 );
-        //   // });
-        // };
-      },
+      eventRender: eventRender,
       customButtons: customButtonsHash,
       eventDragStart: eventDragStartFullcalendar,
       eventDragEnd: eventDragEndFullcalendar,
@@ -348,7 +265,7 @@ class RouteCalendar extends Component {
     var eventResizeEndFullcalendar = (event, jsEvent, ui, view) => {
       dragging = false;
     };
-    
+
     var currentViewName;
     function viewRenderFullcalendar(view, element) {
 
@@ -395,6 +312,93 @@ class RouteCalendar extends Component {
       // };
       // $('.fc-today').siblings().addClass('week-highlight');
     };
+
+    function selectFullcalendar(startDate, endDate, jsEvent, view) { // ,
+
+      switch (view.name) {
+        case 'month':
+          // Move the calendar to the date and put into week mode
+          $('.calendar').fullCalendar('gotoDate', startDate);
+          $('.calendar').fullCalendar('changeView', 'agendaWeek');
+          break;
+        default:
+          if (startDate.hasTime()) { // did not click within allday area (template)
+            var start = new moment(startDate, "s");
+            var end = new moment(endDate, "s");
+            var slotInterval = new moment.duration("00:10:00"); //, "HH:mm:ss");
+
+            if (end.isSame(start.clone().add(slotInterval))) {
+              slotInterval.add(slotInterval);
+              end = start.add(slotInterval)
+            }
+
+            // https://stackoverflow.com/questions/22939130/when-should-i-use-arrow-functions-in-ecmascript-6#23045200
+            // was having scope issues
+            var component = ReactOnRails.render("RouteForm", { startsAt: start, endsAt: end, allDay: false, feedData: feedData }, 'main_content_wrapper');
+
+          } else {
+            // do something like create a template? not really necessary as they should define a special first
+          }
+      }
+    }
+
+
+    function eventRender(event, element) {
+
+      element.find('.fc-title').append("<br/>" + event.description);
+
+      // Inject stuff for dynamic context-menu options
+      element.attr('data-route-category', event.category);
+      element.attr('data-has-children', event.has_children);  // added from server to help ui
+      element.attr('data-child-id', event.child_id);
+      element.attr('data-event-id', event.id);
+      element.addClass('route-' + event.id);                  // make easier to use scrollTo
+
+      element.addTouch();
+
+      if (event.category.indexOf("instance") > -1) {
+        element.addClass('instance-' + event.id); // so we can scrollTo when the template is clicked
+      }
+
+      // if (event.isPending) {
+      //   element.addClass('pending'); // so we can show it's network update status this way?
+      // }
+
+      element.addClass('context-class'); // For jquery contextMenu, so we can right-click and delete, etc
+
+
+      // XXX template events will not display in fullcalendar > 3.4 because they have end times set, it's a bug I hope..
+
+      if (event.category == "template") {
+
+        // XXX Reimplement once lastRouteIdEdited get's reattached
+        // if ((event.category == "template") && (event.id == last_route_id_edited)) {
+        //   element.addClass('CurrentEvent'); // Do it here now instead of at server, makes sense..
+        // }
+
+        if (!event.has_children) {
+          element.css({ "background-color": "white" });
+          element.css({ "border-color": "green" });
+          // element.addClass('ui-icon-arrowreturn-1-s');
+        }
+
+        if (currentViewName === 'month') {
+          element.hide();
+        }
+
+      }
+
+      // if (!dragging) {
+      //   // Use something like this if I remove the scroll thing and just force
+      //   //  fullcalendar to stretch without a scroll !!!
+      //   // $(window).scrollTo('.CurrentEvent',1, function() {
+      //   //   $('.CurrentEvent').effect( "highlight", {color:"white"}, 300 );
+      //   // });
+      //   // $('.fc-scroller').scrollTo('.CurrentEvent',1, function() {
+      //   //   $('.CurrentEvent').effect( "highlight", {color:"white"}, 300 );
+      //   // });
+      // };
+    }
 
     function eventResizeFullcalendar(event, delta, revertFunc) {
       var spinner = createSpinner();
@@ -444,7 +448,7 @@ class RouteCalendar extends Component {
             templatefcEvent.has_children = false;
             templatefcEvent.child_id = '';
             assignFullCalendarStyle("template", templatefcEvent)
-            $('.calendar').fullCalendar( 'updateEvent', templatefcEvent); 
+            $('.calendar').fullCalendar( 'updateEvent', templatefcEvent);
           }
           spinner.stop();
 
@@ -498,6 +502,7 @@ class RouteCalendar extends Component {
                 break;
               }
               case "edit": {
+                // displayEditScreen(eventId);
                 FullcalendarEngine.displayEditScreen(eventId);
                 break;
               }
@@ -505,7 +510,7 @@ class RouteCalendar extends Component {
                 revertToTemplate(eventId, top, $trigger);
                 break;
               }
-              
+
               default: {
                 // FullcalendarEngine.Events[key](eventId); // Think that's it now, just take out
                 break;
@@ -605,7 +610,7 @@ var spinnerOpts = {
 }
 
 function createSpinner(attachElement = document.getElementsByClassName("calendar")[0]) {
-      
+
   var opts = spinnerOpts;
   opts['scale'] = .50;
   opts['top'] = '50%';
@@ -617,7 +622,7 @@ function createSpinner(attachElement = document.getElementsByClassName("calendar
 // READ XXX
 // https://notes.devlabs.bg/how-to-use-jquery-libraries-in-the-react-ecosystem-7dfeb1aafde0
 // https://swisnl.github.io/jQuery-contextMenu/demo/dynamic-create.html
-function deleteFcEvent(routeId, deleteFcEventMutation, top, $trigger) { 
+function deleteFcEvent(routeId, deleteFcEventMutation, top, $trigger) {
 
   var spinner = createSpinner($trigger.get(0));
   var origEvent = $('.calendar').fullCalendar( 'clientEvents', routeId.toString())[0];
@@ -639,15 +644,15 @@ function deleteFcEvent(routeId, deleteFcEventMutation, top, $trigger) {
       }
 
       if ((origEvent.category === "instance") || (origEvent.category === "modified_instance")) {
-        
+
         // Need reference to parent
         // var templatefcEvent = resetTemplateViaChildId(routeId, ); XXX, actually wrap all the following stuff into this
         var templateId = $(`[data-child-id='${routeId}']`).first().attr('data-event-id');
         var templatefcEvent = $('.calendar').fullCalendar( 'clientEvents', templateId.toString())[0];
-        
+
         // The template's instances now have no children so need to be updated to show that visually, should probably have a new category for template_fulfilled or ...
-        templatefcEvent.has_children = false; 
-        templatefcEvent.child_id = ''; 
+        templatefcEvent.has_children = false;
+        templatefcEvent.child_id = '';
         $('.calendar').fullCalendar( 'updateEvent', templatefcEvent); // The event will color correctly during render, should just set it here if I can..
       }
 
@@ -675,7 +680,7 @@ function duplicateFcEvent(routeId, category, top, $trigger) {
     .then(({ data }) => {
       var newEvent = data.duplicateFcEventMutation;
       newEvent = JSON.parse(newEvent);
-      
+
       if (category === "template") { // creating new template
         newEvent.has_children = true;
         newEvent.child_id = origEvent.id;
@@ -717,7 +722,7 @@ function revertToTemplate(eventId, top, $trigger) {
       var templateId = $(`[data-child-id='${eventId}']`).first().attr('data-event-id');
       var templatefcEvent = $('.calendar').fullCalendar( 'clientEvents', templateId.toString())[0];
 
-      templatefcEvent.has_children = true; 
+      templatefcEvent.has_children = true;
       templatefcEvent.child_id = newRevertedRoute.id; // Event/route id same ?? make sure..
       // assignFullCalendarStyle("template_implemented",newRevertedRoute); // wishful thinking
       $('.calendar').fullCalendar( 'updateEvent', templatefcEvent); // The event will color correctly during render, should just set it here if I can..
@@ -762,6 +767,26 @@ function showMissingPassengers(start, top) {
     });
 }
 
+// Not needed because it's sent in as a param with eventSources now
+// function newRouteFeedData() {
+
+//   var dayRowElement = document.getElementsByClassName("fc-content-skeleton")[0];
+//   var spinner = new Spinner(spinnerOpts).spin(dayRowElement);
+
+//   top.props.newRouteFeedDataQuery.refetch({})
+//     .then(({ data }) => {
+//       spinner.stop();
+//       alert(data.newRouteFeedData);
+//       // var missingPassengersEvents = { events: JSON.parse(data.missingPassengers) };
+//       // addAllDayEvents(missingPassengersEvents) // could replace with this..to help modularize jquery stuff
+//       // $('.calendar').fullCalendar('addEventSource', missingPassengersEvents);
+
+//     }).catch((error) => {
+//       spinner.stop();
+//       console.log('there was an error sending the query', error);
+//     });
+// }
+
 // ________________________________ QUERIES ____________________________________________
 
 const fcEventSourcesRoutesQuery = gql`
@@ -770,9 +795,15 @@ const fcEventSourcesRoutesQuery = gql`
   }
 `;
 
-const MISSING_PASSENGERS_QUERY = gql`
+const missingPassengersQuery = gql`
   query missingPassengersQuery ($startDate: String!){
     missingPassengers(startDate: $startDate)
+  }
+`;
+
+const newRouteFeedDataQuery = gql`
+  query newRouteFeedDataQuery {
+    newRouteFeedData 
   }
 `;
 
@@ -817,15 +848,12 @@ export default compose(
   graphql(duplicateFcEventMutation, { name: 'duplicateFcEventMutation' }),
   graphql(revertToTemplateMutation, { name: 'revertToTemplateMutation' }),
   // graphql(createFcEventMutation, { name: 'createFcEventMutation' }),
-
-  graphql(fcEventSourcesRoutesQuery, { 
-    name: 'data' 
-  }),
-  graphql(MISSING_PASSENGERS_QUERY, {
+  graphql(newRouteFeedDataQuery, { name: 'data' }),
+  graphql(fcEventSourcesRoutesQuery, { name: 'data' }),
+  graphql(missingPassengersQuery, {
     name: 'missingPassengersQuery',
     options: {
-      variables: { startDate: "" },
-      skip: false
+      variables: { startDate: "" }, skip: false
     }
   }),
 

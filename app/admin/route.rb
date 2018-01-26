@@ -158,11 +158,12 @@ controller do
       current_user: current_user, 
       current_carpool: cp
     }
-    # templates are missing from query I think XXX, originally done just for calendar page
     eventSources = CarPoolSchema.execute("{fcEventSourcesRoutes() {}}", context: context, variables: nil)
+    newRouteFeedData = CarPoolSchema.execute("{newRouteFeedData() {}}", context: context, variables: nil)
     # should snag the error if any
     @calendar_props = {
-      eventSources: eventSources["data"]["fcEventSourcesRoutes"]
+      eventSources: eventSources["data"]["fcEventSourcesRoutes"],
+      newRouteFeedData: newRouteFeedData["data"]["newRouteFeedData"] 
     }
   end
 

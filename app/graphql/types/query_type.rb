@@ -88,10 +88,10 @@ Types::QueryType = GraphQL::ObjectType.define do
     }
   end
 
-# query {
-#   missingPassengers(startDate: "") {
-#   }
-# }
+  # query {
+  #   missingPassengers(startDate: "") {
+  #   }
+  # }
   field :missingPassengers do
       type types.String 
       argument :startDate, !types.String
@@ -130,6 +130,29 @@ Types::QueryType = GraphQL::ObjectType.define do
   
         events.to_json
 
+      }
+    end
+
+    # {
+    #   newRouteFeedData
+    # }
+    field :newRouteFeedData do # use same naming prefix as matching form partial ?
+      type types.String 
+      resolve -> (obj, args, ctx) {
+        if ctx[:current_user].blank?
+          raise GraphQL::ExecutionError.new("Authentication required")
+        end
+        cp = ctx[:current_carpool]
+        # locations_data = cp.locations.all
+        active_drivers_data = cp.active_drivers.inject([]) { |accum, o| accum << {value: o.id, text: o.full_name} }
+        active_passengers_data = cp.active_passengers.inject([]) { |accum, o| accum << {value: o.id, text: o.full_name} }
+
+        response = {
+          activeDrivers: active_drivers_data,
+          activePassengers: active_passengers_data,
+        }.to_json
+        # binding.pry
+        return response
       }
     end
 

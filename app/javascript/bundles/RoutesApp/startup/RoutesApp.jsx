@@ -53,6 +53,7 @@ const client = new ApolloClient({
 export default class RoutesApp extends Component {
   static propTypes = {
     eventSources: PropTypes.string.isRequired, // this is passed from the Rails view
+    newRouteFeedData: PropTypes.string.isRequired
   }
   /**
    * @param props - Comes from your rails view.
@@ -64,7 +65,7 @@ export default class RoutesApp extends Component {
   render() {
     return (
       <ApolloProvider client={client}>
-        <RouteCalendar eventSources={this.props.eventSources}/>
+        <RouteCalendar eventSources={this.props.eventSources} newRouteFeedData={this.props.newRouteFeedData}/>
       </ApolloProvider>
     );
   }

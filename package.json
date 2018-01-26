@@ -33,7 +33,10 @@
     "react-apollo": "^2.0.4",
     "react-dom": "^16.2.0",
     "react-on-rails": "^10.0.2",
+    "react-transition-group": "^2.2.1",
     "redux": "^3.7.2",
+    "semantic-ui-css": "^2.2.12",
+    "semantic-ui-react": "^0.77.2",
     "spin.js": "2.3.2"
   },
   "devDependencies": {
