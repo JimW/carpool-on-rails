@@ -14,7 +14,8 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   # driven_by :selenium, using: :chrome, screen_size: [1400, 1400]
   driven_by :poltergeist, screen_size: [1400, 1400], options:
   { js_errors: true }
-  # now I'm expected to install Phantom JS from some executable that some guy made..fuck
+  # now I'm expected to install Phantom JS from some executable that some guy made..
+  # Need poltergest with it's JS stuff so that it waits around for stuff to load and not weirdly fail
 
   # Capybara.register_driver :headless_chrome do |app|
   #   capabilities = Selenium::WebDriver::Remote::Capabilities.chrome(

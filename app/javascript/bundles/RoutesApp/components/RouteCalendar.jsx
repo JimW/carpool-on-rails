@@ -1,11 +1,13 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react'
-import { graphql } from 'react-apollo';
+import { compose, graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-import { compose } from 'react-apollo';
 import { hasError } from 'apollo-client/core/ObservableQuery';
 import { assignFullCalendarStyle } from '../../../libs/fullcalendar-utils';
 import RouteForm from './forms/RouteForm';
+// import { getNetworkStatus } from '../graphql/networkStatus'
+import { getNewRouteFormState } from '../graphql/newRouteForm'
+import { updateNewRouteFormState } from '../graphql/newRouteForm'
 
 class RouteCalendar extends Component {
 
@@ -22,13 +24,14 @@ class RouteCalendar extends Component {
     this.state = {
       // Need to construct eventSources here from raw route data retrieved and stored in Apollo XXX
       eventSources: this.props.eventSources,
-      newRouteFeedData: this.props.newRouteFeedData,
+      feedData: JSON.parse(this.props.newRouteFeedData),
       // Convert these cookies into state variables that get saved locally, forget the cookies
       // Exhisting Cookies that need to also become state variables:
       // last_calendar_type
       // last_calendar_zoom_level
       // last_viewing_moment
       // last_working_date
+      showRouteForm: false,
       lastRouteIdEdited: -1, // was a session var, not reimplemented yet
       lastCalendarType: 'blah',
       lastCalendarZoomLevel: '00:10:00',
@@ -37,10 +40,12 @@ class RouteCalendar extends Component {
       calendarAllDayMode: "missing", // changes here will initiate a construction of all-day events that represent missingpeople, when in agendaWeek
     };
   }
-
+  
   render() {
     const { loading, error } = this.props.data;
 
+    const { startsAt, endsAt, allDay } = this.props.newRouteForm;
+    const { feedData } = this.state;
     if (loading) {
       return <p>Loading...</p>;
     } else if (error) {
@@ -51,6 +56,15 @@ class RouteCalendar extends Component {
         <div className='calendar'>
         </div>
         <div id="event_desc_dialog" className="dialog" style={{ display: 'none' }}></div>
+        {this.state.showRouteForm ?
+          <RouteForm startsAt={startsAt}
+            endsAt={endsAt}
+            allDay={allDay}
+            feedData={feedData}
+            showRouteForm={this.showRouteForm}
+            addNewEventToFullcalendar={this.addNewEventToFullcalendar}
+          />
+          : null}
       </div>
     );
   }
@@ -62,21 +76,31 @@ class RouteCalendar extends Component {
     this.updateEvents(); // pass self so I can use Setstate and access mutations
   }
 
+  showRouteForm = (status) => {
+    this.setState({ showRouteForm: status })
+  };
+  
+  addNewEventToFullcalendar = (newFcEvent) => {
+    assignFullCalendarStyle(newFcEvent.category, newFcEvent);
+    $('.calendar').fullCalendar('renderEvent', newFcEvent);
+
+  };
+
   updateEvents() {
     var top = this;
     // https://stackoverflow.com/questions/22939130/when-should-i-use-arrow-functions-in-ecmascript-6#23045200
 
     // So fullcalendar callbacks can see
-    const { resizeFcEventMutation,
+    const {
+      resizeFcEventMutation,
       moveFcEventMutation,
       deleteFcEventMutation,
       duplicateFcEventMutation,
       eventSources,
       newRouteFeedData,
-          } = this.props;
+    } = this.props;
 
-    // This works: SAVE for TEST
-    // var newRouteFeedData = "{\"activeDrivers\":[{\"value\":1,\"text\":\"BigGuy\"},{\"value\":2,\"text\":\"JimDriver\"}],\"activePassengers\":[{\"value\":3,\"text\":\"JunkPassenger\"}]}"
+    const { updateNewRouteFormState } = this.props;
 
     var feedData = JSON.parse(newRouteFeedData);
     var eSources = JSON.parse(eventSources);
@@ -313,7 +337,7 @@ class RouteCalendar extends Component {
       // $('.fc-today').siblings().addClass('week-highlight');
     };
 
-    function selectFullcalendar(startDate, endDate, jsEvent, view) { // ,
+    function selectFullcalendar(startDate, endDate, jsEvent, view) { 
 
       switch (view.name) {
         case 'month':
@@ -325,23 +349,28 @@ class RouteCalendar extends Component {
           if (startDate.hasTime()) { // did not click within allday area (template)
             var start = new moment(startDate, "s");
             var end = new moment(endDate, "s");
-            var slotInterval = new moment.duration("00:10:00"); //, "HH:mm:ss");
-
-            if (end.isSame(start.clone().add(slotInterval))) {
-              slotInterval.add(slotInterval);
+            var slotInterval = new moment.duration(this.options.slotDuration); //, "HH:mm:ss");
+            if (end.isSame(start)) {
               end = start.add(slotInterval)
             }
-
-            // https://stackoverflow.com/questions/22939130/when-should-i-use-arrow-functions-in-ecmascript-6#23045200
-            // was having scope issues
-            var component = ReactOnRails.render("RouteForm", { startsAt: start, endsAt: end, allDay: false, feedData: feedData }, 'main_content_wrapper');
-
+            top.props.updateNewRouteFormState({
+              variables: {
+                feedData: JSON.parse(top.props.newRouteFeedData),
+                startsAt: start.format(),
+                endsAt: end.format(),
+                isVisible: true
+              }
+            })
+              .then(({ data }) => {
+                top.showRouteForm(true);
+              }).catch((error) => {
+                console.log('there was an error sending the query', error);
+              });
           } else {
             // do something like create a template? not really necessary as they should define a special first
           }
       }
     }
-
 
     function eventRender(event, element) {
 
@@ -365,7 +394,6 @@ class RouteCalendar extends Component {
       // }
 
       element.addClass('context-class'); // For jquery contextMenu, so we can right-click and delete, etc
-
 
       // XXX template events will not display in fullcalendar > 3.4 because they have end times set, it's a bug I hope..
 
@@ -411,8 +439,7 @@ class RouteCalendar extends Component {
       })
         .then(({ data }) => {
           var updatedEvent = JSON.parse(data.resizeFcEventMutation);
-          // console.log(updatedEvent);
-          $('.calendar').fullCalendar( 'removeEvents', [Number.parseInt(event.id)] )
+          $('.calendar').fullCalendar('removeEvents', [Number.parseInt(event.id)])
           assignFullCalendarStyle(updatedEvent.category, updatedEvent);
           $('.calendar').fullCalendar('renderEvent', updatedEvent);
           spinner.stop();
@@ -437,18 +464,18 @@ class RouteCalendar extends Component {
 
           var updatedEvent = JSON.parse(data.moveFcEventMutation);
 
-          $('.calendar').fullCalendar( 'removeEvents', [Number.parseInt(event.id)] )
+          $('.calendar').fullCalendar('removeEvents', [Number.parseInt(event.id)])
           assignFullCalendarStyle(updatedEvent.category, updatedEvent);
           $('.calendar').fullCalendar('renderEvent', updatedEvent);
 
           if ((updatedEvent.category == "special") && ((event.category == "instance") || (event.category == "modified_instance"))) {
             // update the template to show it has no instances
             var templateId = $(`[data-child-id='${event.id}']`).first().attr('data-event-id');
-            var templatefcEvent = $('.calendar').fullCalendar( 'clientEvents', templateId.toString())[0];
+            var templatefcEvent = $('.calendar').fullCalendar('clientEvents', templateId.toString())[0];
             templatefcEvent.has_children = false;
             templatefcEvent.child_id = '';
             assignFullCalendarStyle("template", templatefcEvent)
-            $('.calendar').fullCalendar( 'updateEvent', templatefcEvent);
+            $('.calendar').fullCalendar('updateEvent', templatefcEvent);
           }
           spinner.stop();
 
@@ -619,13 +646,15 @@ function createSpinner(attachElement = document.getElementsByClassName("calendar
   return spinner;
 }
 
+// ________________________________ Apollo Calls ____________________________________________
+
 // READ XXX
 // https://notes.devlabs.bg/how-to-use-jquery-libraries-in-the-react-ecosystem-7dfeb1aafde0
 // https://swisnl.github.io/jQuery-contextMenu/demo/dynamic-create.html
 function deleteFcEvent(routeId, deleteFcEventMutation, top, $trigger) {
 
   var spinner = createSpinner($trigger.get(0));
-  var origEvent = $('.calendar').fullCalendar( 'clientEvents', routeId.toString())[0];
+  var origEvent = $('.calendar').fullCalendar('clientEvents', routeId.toString())[0];
 
   top.props.deleteFcEventMutation({
     variables: {
@@ -635,12 +664,11 @@ function deleteFcEvent(routeId, deleteFcEventMutation, top, $trigger) {
     .then(({ data }) => {
 
       if ((origEvent.category === "template") && (origEvent.has_children)) {
-        console.log(origEvent);
-        var childInstance = $('.calendar').fullCalendar( 'clientEvents', origEvent.child_id.toString())[0];
+        var childInstance = $('.calendar').fullCalendar('clientEvents', origEvent.child_id.toString())[0];
         // The template's instances are now "special" so needs to be updated to show that visually
         childInstance.category = "special";  // Should not do this redundant logic, will go away once I hook up apollo-client to entities
         assignFullCalendarStyle("special", childInstance);
-        $('.calendar').fullCalendar( 'updateEvent', childInstance );
+        $('.calendar').fullCalendar('updateEvent', childInstance);
       }
 
       if ((origEvent.category === "instance") || (origEvent.category === "modified_instance")) {
@@ -648,12 +676,12 @@ function deleteFcEvent(routeId, deleteFcEventMutation, top, $trigger) {
         // Need reference to parent
         // var templatefcEvent = resetTemplateViaChildId(routeId, ); XXX, actually wrap all the following stuff into this
         var templateId = $(`[data-child-id='${routeId}']`).first().attr('data-event-id');
-        var templatefcEvent = $('.calendar').fullCalendar( 'clientEvents', templateId.toString())[0];
+        var templatefcEvent = $('.calendar').fullCalendar('clientEvents', templateId.toString())[0];
 
         // The template's instances now have no children so need to be updated to show that visually, should probably have a new category for template_fulfilled or ...
         templatefcEvent.has_children = false;
         templatefcEvent.child_id = '';
-        $('.calendar').fullCalendar( 'updateEvent', templatefcEvent); // The event will color correctly during render, should just set it here if I can..
+        $('.calendar').fullCalendar('updateEvent', templatefcEvent); // The event will color correctly during render, should just set it here if I can..
       }
 
       // Remove event representation
@@ -669,7 +697,7 @@ function deleteFcEvent(routeId, deleteFcEventMutation, top, $trigger) {
 // for making duplicating routes as templates, instances, and special
 function duplicateFcEvent(routeId, category, top, $trigger) {
   var spinner = createSpinner($trigger.get(0))
-  var origEvent = $('.calendar').fullCalendar( 'clientEvents', routeId.toString())[0];
+  var origEvent = $('.calendar').fullCalendar('clientEvents', routeId.toString())[0];
 
   top.props.duplicateFcEventMutation({
     variables: {
@@ -685,7 +713,7 @@ function duplicateFcEvent(routeId, category, top, $trigger) {
         newEvent.has_children = true;
         newEvent.child_id = origEvent.id;
         origEvent.category = "instance";  // Should not do this redundant logic, will go away once I hook up apollo-client to entities
-        assignFullCalendarStyle("instance",origEvent);
+        assignFullCalendarStyle("instance", origEvent);
       }
       if (category === "instance") { // creating new instance (original is/was template)
         // The original was an instance so needs to be updated visually to show it has_children
@@ -694,7 +722,7 @@ function duplicateFcEvent(routeId, category, top, $trigger) {
       }
       assignFullCalendarStyle(category, newEvent);
       $('.calendar').fullCalendar('renderEvent', newEvent);
-      $('.calendar').fullCalendar( 'updateEvent', origEvent );
+      $('.calendar').fullCalendar('updateEvent', origEvent);
 
       spinner.stop();
 
@@ -706,7 +734,7 @@ function duplicateFcEvent(routeId, category, top, $trigger) {
 
 function revertToTemplate(eventId, top, $trigger) {
   var spinner = createSpinner($trigger.get(0))
-  var clickedEvent = $('.calendar').fullCalendar( 'clientEvents', eventId.toString())[0];
+  var clickedEvent = $('.calendar').fullCalendar('clientEvents', eventId.toString())[0];
 
   top.props.revertToTemplateMutation({
     variables: {
@@ -720,12 +748,12 @@ function revertToTemplate(eventId, top, $trigger) {
       $('.calendar').fullCalendar('renderEvent', newRevertedRoute); // Same ID?
 
       var templateId = $(`[data-child-id='${eventId}']`).first().attr('data-event-id');
-      var templatefcEvent = $('.calendar').fullCalendar( 'clientEvents', templateId.toString())[0];
+      var templatefcEvent = $('.calendar').fullCalendar('clientEvents', templateId.toString())[0];
 
       templatefcEvent.has_children = true;
       templatefcEvent.child_id = newRevertedRoute.id; // Event/route id same ?? make sure..
       // assignFullCalendarStyle("template_implemented",newRevertedRoute); // wishful thinking
-      $('.calendar').fullCalendar( 'updateEvent', templatefcEvent); // The event will color correctly during render, should just set it here if I can..
+      $('.calendar').fullCalendar('updateEvent', templatefcEvent); // The event will color correctly during render, should just set it here if I can..
       spinner.stop();
 
     }).catch((error) => {
@@ -735,7 +763,7 @@ function revertToTemplate(eventId, top, $trigger) {
 };
 
 function removeAllDayEvents() {
-  $('.calendar').fullCalendar('removeEvents',  function(evt) {return evt.allDay == true;});
+  $('.calendar').fullCalendar('removeEvents', function (evt) { return evt.allDay == true; });
   // $('.calendar').fullCalendar('removeEventSource',  allDayEvents);
   // Not sure if these empty eventSources could pileup, from fullcalendar perspective? 
   // I'm adding via addEventSource, taking away via removeEvents 
@@ -744,7 +772,7 @@ function removeAllDayEvents() {
 function addAllDayEvents(allDayEvents) {
   // $('.calendar').fullCalendar('renderEvents',  allDayEvents.events);
   // Above way will bypass eventRender, where I'm changing color of templates if they have kids, so no..
-  $('.calendar').fullCalendar('addEventSource',  allDayEvents);
+  $('.calendar').fullCalendar('addEventSource', allDayEvents);
 }
 
 function showMissingPassengers(start, top) {
@@ -847,7 +875,6 @@ export default compose(
   graphql(deleteFcEventMutation, { name: 'deleteFcEventMutation' }),
   graphql(duplicateFcEventMutation, { name: 'duplicateFcEventMutation' }),
   graphql(revertToTemplateMutation, { name: 'revertToTemplateMutation' }),
-  // graphql(createFcEventMutation, { name: 'createFcEventMutation' }),
   graphql(newRouteFeedDataQuery, { name: 'data' }),
   graphql(fcEventSourcesRoutesQuery, { name: 'data' }),
   graphql(missingPassengersQuery, {
@@ -856,8 +883,27 @@ export default compose(
       variables: { startDate: "" }, skip: false
     }
   }),
+  graphql(getNewRouteFormState, {
+    props: ({ data: { newRouteForm } }) => ({
+      newRouteForm
+    }),
+  }),
+  graphql(updateNewRouteFormState, { name: 'updateNewRouteFormState' }),
+
+  // graphql(getNetworkStatus, {
+  //   props: ({ data:  { getNetworkStatus }}) => ({
+  //     isConnected
+  //   }),
+  // }),
+  // graphql(updateNetworkStatus, {
+  //   props: ({ mutate, ownProps }) => ({
+  //     networkStatus: isConnected => mutate({ variables: { isConnected } }),
+  //   }),
+  // }),
 
 )(RouteCalendar);
 // Why I (have to ?) declare variables for query above, but not for mutations??
 
 // https://www.apollographql.com/docs/react/basics/queries.html
+
+// https://www.apollographql.com/docs/react/recipes/recompose.html

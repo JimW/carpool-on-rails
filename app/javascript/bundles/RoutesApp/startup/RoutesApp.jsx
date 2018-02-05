@@ -12,8 +12,22 @@ import { createHttpLink } from "apollo-link-http";
 import { setContext } from 'apollo-link-context';
 import { onError } from "apollo-link-error";
 // import RetryLink from "apollo-link-retry"
+// import xyzQuery from '../queries/xyzQuery';
 
+import { routeStates } from './resolvers/routeStates';
+import { networkStates } from './resolvers/networkStates';
 import RouteCalendar from '../components/RouteCalendar';
+
+const cache = new InMemoryCache();
+  // cache: new InMemoryCache().restore({}) // can rehydrate the cache using the initial data passed from the server
+  // https://www.apollographql.com/docs/react/recipes/server-side-rendering.html
+  
+// ________________ Links _______________________________________________
+
+const stateLink = withClientState({
+  cache,
+  ...merge(routeStates, networkStates),
+});
 
 const httpLink = createHttpLink({
   uri: '/graphql',
@@ -44,10 +58,14 @@ const authLink = setContext((_, { headers }) => {
 // });
 // const link = errorLink.concat(authLink.concat(httpLink));
 
+// ____________________________________________________________________________ 
+
 const client = new ApolloClient({
-  link: authLink.concat(httpLink),
-  // cache: new InMemoryCache().restore({})
-  cache: new InMemoryCache()
+  cache: cache,
+  // apollo-link-error, then state (then apollo-link-persisted-queries if used) then http
+  //  https://www.apollographql.com/docs/link/links/state.html#start
+  link: ApolloLink.from([stateLink, authLink.concat(httpLink)]), 
+  // link: ApolloLink.from([stateLink, authLink, httpLink]), 
 });
 
 export default class RoutesApp extends Component {
@@ -65,7 +83,9 @@ export default class RoutesApp extends Component {
   render() {
     return (
       <ApolloProvider client={client}>
-        <RouteCalendar eventSources={this.props.eventSources} newRouteFeedData={this.props.newRouteFeedData}/>
+        <RouteCalendar  eventSources={this.props.eventSources} 
+                        newRouteFeedData={this.props.newRouteFeedData}
+        />
       </ApolloProvider>
     );
   }

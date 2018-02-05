@@ -27,7 +27,7 @@ require "minitest/pride"        # for colorful output
 require 'minitest/reporters'
 require 'test_setups'
 
-
+ActiveJob::Base.queue_adapter = :test # allows the Google related jobs that happen on after_save to not screw up tests
 
 # Minitest::Reporters.use!
 Minitest::Reporters.use! [Minitest::Reporters::SpecReporter.new]
