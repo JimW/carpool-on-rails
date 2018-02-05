@@ -16,12 +16,12 @@ gem 'rails', '5.1.4'
   # TODO: first deal with any before_save change deprectaions warnings from in 5.1
   
 # Use SCSS for stylesheets
-gem 'sass-rails', '~> 5.0'
+gem 'sass-rails'#, '~> 5.0.7'
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 3.2.0'
 # Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
 
-gem 'webpacker', '~> 3.2.0'
+gem 'webpacker', '~> 3.2.1'
 # gem 'webpacker', github: 'rails/webpacker' # Because webpacker is installing binstubs wrong
 # https://github.com/rails/webpacker/issues/995
 
@@ -33,7 +33,7 @@ gem 'graphql' # evolving features with Auth are PRO only for $$$
 # https://github.com/github/graphql-client
 
 # https://www.youtube.com/watch?v=SGkTvKRPYrk
-gem 'react_on_rails', '10.0.2' # prefer exact gem version to match npm version
+gem 'react_on_rails', '10.1.1' # prefer exact gem version to match npm version
 
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
