@@ -84,4 +84,50 @@ class GraphqlQueryTests < ActionController::TestCase
   # // This works: SAVE for TEST
   # // var newRouteFeedData = "{\"activeDrivers\":[{\"value\":1,\"text\":\"BigGuy\"},{\"value\":2,\"text\":\"JimDriver\"}],\"activePassengers\":[{\"value\":3,\"text\":\"JunkPassenger\"}]}"
 
+
+    #   mutation {
+  #   moveFcEventMutation(
+  #     routeId: 3, 
+  #     start_time: "2018-01-03 10:00:00" 
+  #     end_time: "2018-01-03 10:30:00" 
+  #   ){
+  #     id
+  #     title
+  #     passenger_cnt
+  #     category
+  #     starts_at
+  #     ends_at
+  #   }
+  # }
+
+
+    # Wrap this into a real test XXX TTT
+  # mutation {
+  #   resizeFcEventMutation(
+  #     routeId: 3, 
+  #     end_time: "2018-01-03 10:30:00" 
+  #   ){}
+  # }
+
+    # mutation {
+  #   duplicateFcEventMutation(routeId: 49, category: 'special') {
+  #   }
+  # }
+
+    # mutation {
+  # revertToTemplateMutation(eventId: 9)
+  # }
+
+    # mutation {
+    # createRouteMutation(startsAt: "2018-02-26 08:00:00 -0800", endsAt: "2018-02-26 09:00:00 -0800", driver: "", passengers: [""])
+  # }
+  
+  # query {
+  #   missingPassengers(startDate: "") {
+  #   }
+  # }
+
+  # {
+    #   newRouteFeedData
+    # }
 end

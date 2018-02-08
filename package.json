@@ -40,6 +40,7 @@
     "spin.js": "2.3.2"
   },
   "devDependencies": {
+    "babel-plugin-graphql-tag": "^1.3.1",
     "jest": "^22.1.1",
     "webpack-dev-server": "^2.9.7"
   },

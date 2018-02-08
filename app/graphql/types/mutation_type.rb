@@ -1,20 +1,6 @@
 Types::MutationType = GraphQL::ObjectType.define do
   name "Mutation"
 
-  #   mutation {
-  #   moveFcEventMutation(
-  #     routeId: 3, 
-  #     start_time: "2018-01-03 10:00:00" 
-  #     end_time: "2018-01-03 10:30:00" 
-  #   ){
-  #     id
-  #     title
-  #     passenger_cnt
-  #     category
-  #     starts_at
-  #     ends_at
-  #   }
-  # }
   field :moveFcEventMutation, types.String do
     description "Changes start and endtime of event"
     argument :routeId, !types.Int
@@ -36,13 +22,6 @@ Types::MutationType = GraphQL::ObjectType.define do
     }
   end
 
-  # Wrap this into a real test XXX TTT
-  # mutation {
-  #   resizeFcEventMutation(
-  #     routeId: 3, 
-  #     end_time: "2018-01-03 10:30:00" 
-  #   ){}
-  # }
   # field :resizeFcEventMutation, RouteType do
   field :resizeFcEventMutation, types.String do
     description "Changes endtime of event"
@@ -83,10 +62,6 @@ Types::MutationType = GraphQL::ObjectType.define do
     }
   end
 
-  # mutation {
-  #   duplicateFcEventMutation(routeId: 49, category: 'special') {
-  #   }
-  # }
   field :duplicateFcEventMutation, types.String do
     description "duplicates route as templates, instances, or special"
     argument :routeId, !types.Int
@@ -102,9 +77,6 @@ Types::MutationType = GraphQL::ObjectType.define do
     }
   end
   
-  # mutation {
-  # revertToTemplateMutation(eventId: 9)
-  # }
   field :revertToTemplateMutation, types.String do
     description "duplicates route as templates, instances, or special"
     argument :eventId, !types.Int
@@ -141,12 +113,8 @@ Types::MutationType = GraphQL::ObjectType.define do
     }
   end
   
-  # mutation {
-    # createRouteMutation(startsAt: "2018-02-26 08:00:00 -0800", endsAt: "2018-02-26 09:00:00 -0800", driver: "", passengers: [""])
-    # }
   field :createRouteMutation, types.String do
     description "create new route, as 'special' by defualt, right now atleast.. XXX"
-
     argument :startsAt, !types.String
     argument :endsAt, !types.String
     argument :location, types.String
@@ -175,26 +143,58 @@ Types::MutationType = GraphQL::ObjectType.define do
           :endtime => new_route.ends_at #starts_at + 30.minutes # Conifiga !!! default_route_time, later it will auto-calc based on locations
       })
 
-      if !args[:location].blank?
-        location = Location.find(args[:location])
-        new_route.locations << location if location.present?
-      end
-
-      if !args[:driver].blank?
-        driver = User.find(args[:driver])
-        new_route.drivers << driver if driver.present?
-      end
-     
-      if !args[:passengers].blank?
-        passengers = User.find(args[:passengers].split(','))
-        new_route.passengers << passengers if passengers.present?
-      end
+      new_route.location_ids = args[:location] if !args[:location].blank?
+      new_route.driver_ids = args[:driver] if !args[:driver].blank?
+      new_route.passenger_ids = JSON.parse(args[:passengers]) if !args[:passengers].blank?
 
       new_route.save!
       # cookies.permanent[:last_working_date] = @route.starts_at.iso8601
       # session[:last_route_id_edited] = @route.id # used to plant a Class to mark the event in the calendar, so the js can highlight the change and scroll to it.
       
       new_route.as_fullcalendar_event.to_json
+    }
+  end
+
+  field :updateRouteMutation, types.String do
+
+    description "updates route"
+    argument :id, !types.Int
+    argument :startsAt, !types.String
+    argument :endsAt, !types.String
+    argument :location, types.String
+    argument :driver, types.String
+    argument :passengers, types.String
+
+    resolve -> (obj, args, ctx) {
+      if ctx[:current_user].blank?
+        raise GraphQL::ExecutionError.new("Authentication required")
+      end
+      if ctx[:current_carpool].blank? 
+        raise GraphQL::ExecutionError.new("No Carpool specified")
+      end
+
+      current_carpool =ctx[:current_carpool]
+      routeParams = {
+        starts_at: args[:startsAt],
+        ends_at: args[:endsAt]
+      }
+      route = Route.find(args[:id])
+      route._record_changes = route.google_calendar_subscribers.pluck(:id)
+      # obsolete by next line and can take out ??? !!!
+      route.remember_gcal_subscribers
+  
+      # cookies.permanent[:last_working_date] = @route.starts_at.iso8601
+      # #  remove a user as passenger, when they are also the driver
+      route.location_ids = args[:location]
+      route.driver_ids = args[:driver]
+      route.passenger_ids = JSON.parse(args[:passengers])
+      
+      if route.save! 
+        route.as_fullcalendar_event.to_json
+      else
+        { errors: route.errors.to_a } # test and recover from
+      end
+
     }
   end
 

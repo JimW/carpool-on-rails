@@ -584,3 +584,5 @@ https://datatables.net/examples/index
 research:
 http://www.graph.cool/
 http://tachyons.io/
+https://github.com/chenglou/react-motion/wiki/v0.4.0-examples
+https://github.com/acdlite/recompose

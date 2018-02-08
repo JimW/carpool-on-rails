@@ -6,8 +6,7 @@ import { hasError } from 'apollo-client/core/ObservableQuery';
 import { assignFullCalendarStyle } from '../../../libs/fullcalendar-utils';
 import RouteForm from './forms/RouteForm';
 // import { getNetworkStatus } from '../graphql/networkStatus'
-import { getNewRouteFormState } from '../graphql/newRouteForm'
-import { updateNewRouteFormState } from '../graphql/newRouteForm'
+import { getRouteFormState, updateRouteFormState } from '../graphql/routeForm'
 
 class RouteCalendar extends Component {
 
@@ -40,11 +39,14 @@ class RouteCalendar extends Component {
       calendarAllDayMode: "missing", // changes here will initiate a construction of all-day events that represent missingpeople, when in agendaWeek
     };
   }
-  
+
   render() {
     const { loading, error } = this.props.data;
 
-    const { startsAt, endsAt, allDay } = this.props.newRouteForm;
+    // const { startsAt, endsAt, allDay } = this.props.newRouteForm;
+    // const { startsAt, endsAt, allDay, locations, drivers, passengers } = this.props.routeForm;
+    const { routeId, startsAt, endsAt, location, driver, passengers, crudType } = this.props.routeForm;
+
     const { feedData } = this.state;
     if (loading) {
       return <p>Loading...</p>;
@@ -57,12 +59,19 @@ class RouteCalendar extends Component {
         </div>
         <div id="event_desc_dialog" className="dialog" style={{ display: 'none' }}></div>
         {this.state.showRouteForm ?
-          <RouteForm startsAt={startsAt}
+          <RouteForm
+            // localState={routeFormState}
+            crudType={crudType}
+            routeId={routeId}
+            startsAt={startsAt}
             endsAt={endsAt}
-            allDay={allDay}
+            location={location}
+            driver={driver}
+            passengers={passengers}
             feedData={feedData}
             showRouteForm={this.showRouteForm}
             addNewEventToFullcalendar={this.addNewEventToFullcalendar}
+            updateEventInFullcalendar={this.updateEventInFullcalendar}
           />
           : null}
       </div>
@@ -79,12 +88,65 @@ class RouteCalendar extends Component {
   showRouteForm = (status) => {
     this.setState({ showRouteForm: status })
   };
-  
+
+  hightlightCurrentFcEvent = (eventId) => {
+    $('[data-event-id="' + eventId + '"]').addClass("current-event");
+    $('.fc-scroller').scrollTo(".current-event", 1, function () {
+      $(".current-event").effect("highlight", { color: "white" }, 300);
+    });
+  }
+
   addNewEventToFullcalendar = (newFcEvent) => {
+    $(".current-event").removeClass("current-event");
     assignFullCalendarStyle(newFcEvent.category, newFcEvent);
     $('.calendar').fullCalendar('renderEvent', newFcEvent);
-
+    this.hightlightCurrentFcEvent(newFcEvent.id);
   };
+
+  updateEventInFullcalendar = (updatedFcEvent) => {
+    $(".current-event").removeClass("current-event");
+    $('.calendar').fullCalendar('removeEvents', [Number.parseInt(updatedFcEvent.id)]);
+    assignFullCalendarStyle(updatedFcEvent.category, updatedFcEvent);
+    $('.calendar').fullCalendar('renderEvent', updatedFcEvent);
+    this.hightlightCurrentFcEvent(updatedFcEvent.id);
+    // lastRouteIdEdited need to save this like we used too
+  };
+
+  displayEditScreen = (routeId) => {
+
+    this.props.getRouteQuery.refetch({
+      id: routeId
+    })
+      .then(({ data }) => {
+        var route = data.route;
+        // This transformation should be done within apollo within the prop in graphql but not working there...
+        var routeParams = {
+          startsAt: route.starts_at,
+          endsAt: route.ends_at,
+          location: route.locations[0] ? Number(route.locations[0].id) : null,
+          driver: route.drivers[0] ? Number(route.drivers[0].id) : null,
+          passengers: route.passengers ? route.passengers.map(p => Number(p.id)) : null,
+        }
+        this.props.updateRouteFormState({
+          variables: {
+            crudType: "update",
+            routeId: routeId,
+            feedData: JSON.parse(this.props.newRouteFeedData),
+            isVisible: true,
+            ...routeParams
+          }
+        })
+          .then(({ data }) => {
+            this.showRouteForm(true);
+          }).catch((error) => {
+            console.log('there was an error sending the query', error);
+          });
+
+      }).catch((error) => {
+        console.log('there was an error sending the query', error);
+      });
+
+  }
 
   updateEvents() {
     var top = this;
@@ -99,8 +161,6 @@ class RouteCalendar extends Component {
       eventSources,
       newRouteFeedData,
     } = this.props;
-
-    const { updateNewRouteFormState } = this.props;
 
     var feedData = JSON.parse(newRouteFeedData);
     var eSources = JSON.parse(eventSources);
@@ -157,10 +217,7 @@ class RouteCalendar extends Component {
       }
     };
 
-
-
     var eventClickFullcalendar = (event, jsEvent, view) => {
-      // alert(jsEvent.which);
       if (event.category == "template") { //&& event.child_id exhists?
         var class_child_id = '.instance-' + event.child_id;
         $('.fc-scroller').scrollTo(class_child_id, 1, function () {
@@ -168,7 +225,7 @@ class RouteCalendar extends Component {
         });
       }
       if ((event.category != "template") && (event.id > -1)) {
-        FullcalendarEngine.displayEditScreen(event.id);
+        top.displayEditScreen(event.id);
       }
     }
 
@@ -266,7 +323,7 @@ class RouteCalendar extends Component {
       eventDrop: eventDropFullcalendar,
       eventResizeStart: eventResizeStartFullcalendar,
       eventResizeEnd: eventResizeEndFullcalendar,
-      eventAfterAllRender: eventAfterAllRenderFullcalendar,
+      // eventAfterAllRender: eventAfterAllRenderFullcalendar,
       eventResize: eventResizeFullcalendar,
       eventClick: eventClickFullcalendar,
       viewRender: viewRenderFullcalendar,
@@ -327,17 +384,18 @@ class RouteCalendar extends Component {
     };
 
     // Not really needed now that things are being updated clientside without fc reload taking place?
-    var eventAfterAllRenderFullcalendar = (view) => {
+    // No, it's still needed after an add/edit to give some idea of what they just did.  Ideally scale down the form window to this object
+    // var eventAfterAllRenderFullcalendar = (view) => {
 
-      // if(view.name === "agendaWeek" || view.name === "agendaDay"){
-      $('.fc-scroller').scrollTo('.CurrentEvent', 1, function () {
-        $('.CurrentEvent').effect("highlight", { color: "white" }, 300);
-      });
-      // };
-      // $('.fc-today').siblings().addClass('week-highlight');
-    };
+    //   // if(view.name === "agendaWeek" || view.name === "agendaDay"){
+    //   $('.fc-scroller').scrollTo('.currentEvent', 1, function () {
+    //     $('.currentEvent').effect("highlight", { color: "white" }, 300);
+    //   });
+    //   // };
+    //   // $('.fc-today').siblings().addClass('week-highlight');
+    // };
 
-    function selectFullcalendar(startDate, endDate, jsEvent, view) { 
+    function selectFullcalendar(startDate, endDate, jsEvent, view) {
 
       switch (view.name) {
         case 'month':
@@ -353,12 +411,13 @@ class RouteCalendar extends Component {
             if (end.isSame(start)) {
               end = start.add(slotInterval)
             }
-            top.props.updateNewRouteFormState({
+            top.props.updateRouteFormState({
               variables: {
                 feedData: JSON.parse(top.props.newRouteFeedData),
                 startsAt: start.format(),
                 endsAt: end.format(),
-                isVisible: true
+                isVisible: true,
+                crudType: 'create'
               }
             })
               .then(({ data }) => {
@@ -509,7 +568,7 @@ class RouteCalendar extends Component {
           callback: function (key, options) {
 
             var eventId = $trigger.data('event-id'); // grabe the route id instead and ensure that's OK everywhere...makesure routeid is planted in markup
-            var routeId = $trigger.data('route-id');  // use this !!! XXX
+            // var routeId = $trigger.data('route-id');  // use this !!! XXX or the event-id, but not both.  Choose!!
 
             switch (key) {
               case "delete": {
@@ -529,8 +588,7 @@ class RouteCalendar extends Component {
                 break;
               }
               case "edit": {
-                // displayEditScreen(eventId);
-                FullcalendarEngine.displayEditScreen(eventId);
+                top.displayEditScreen(eventId);
                 break;
               }
               case "revert_to_template": {
@@ -539,7 +597,6 @@ class RouteCalendar extends Component {
               }
 
               default: {
-                // FullcalendarEngine.Events[key](eventId); // Think that's it now, just take out
                 break;
               }
             }
@@ -561,21 +618,17 @@ class RouteCalendar extends Component {
           case 'template':
             if (hasChildren)
               eventItems = {
-                // "edit": {name: "Edit", icon: "edit"}, // caused "undefined method `reject' for false:FalseClass"
                 "delete": { name: "Delete", icon: "delete" },
                 // "reset_instance_event": {name: "Overwrite Instance", icon: "paste"},
-
               }
             else
               eventItems = {
-                // "edit": {name: "Edit", icon: "edit"}, // caused "undefined method `reject' for false:FalseClass"
                 "delete": { name: "Delete", icon: "delete" },
                 "make_instance": { name: "Create Instance", icon: "copy" },
               }
             break;
 
           case 'instance':
-            // $event_actions.append($edit_event).append(" | ").append($delete_event).append(" | ").append($make_special_event)
             eventItems = {
               "edit": { name: "Edit", icon: "edit" },
               "delete": { name: "Delete", icon: "delete" },
@@ -584,7 +637,6 @@ class RouteCalendar extends Component {
             break;
 
           case 'modified_instance':
-            // $event_actions.append($edit_event).append(" | ").append($delete_event).append(" | ").append($revert_to_template_event).append(" | ").append($make_special_event)
             eventItems = {
               "edit": { name: "Edit", icon: "edit" },
               "delete": { name: "Delete", icon: "delete" },
@@ -594,7 +646,6 @@ class RouteCalendar extends Component {
             break;
 
           case 'special':
-            // $event_actions.append($edit_event).append(" | ").append($delete_event).append(" | ").append($make_template_event).append(" | ").append($make_special_event)
             eventItems = {
               "edit": { name: "Edit", icon: "edit" },
               "delete": { name: "Delete", icon: "delete" },
@@ -795,26 +846,6 @@ function showMissingPassengers(start, top) {
     });
 }
 
-// Not needed because it's sent in as a param with eventSources now
-// function newRouteFeedData() {
-
-//   var dayRowElement = document.getElementsByClassName("fc-content-skeleton")[0];
-//   var spinner = new Spinner(spinnerOpts).spin(dayRowElement);
-
-//   top.props.newRouteFeedDataQuery.refetch({})
-//     .then(({ data }) => {
-//       spinner.stop();
-//       alert(data.newRouteFeedData);
-//       // var missingPassengersEvents = { events: JSON.parse(data.missingPassengers) };
-//       // addAllDayEvents(missingPassengersEvents) // could replace with this..to help modularize jquery stuff
-//       // $('.calendar').fullCalendar('addEventSource', missingPassengersEvents);
-
-//     }).catch((error) => {
-//       spinner.stop();
-//       console.log('there was an error sending the query', error);
-//     });
-// }
-
 // ________________________________ QUERIES ____________________________________________
 
 const fcEventSourcesRoutesQuery = gql`
@@ -833,6 +864,26 @@ const newRouteFeedDataQuery = gql`
   query newRouteFeedDataQuery {
     newRouteFeedData 
   }
+`;
+
+const getRouteQuery = gql`
+query getRouteQuery ($id: Int!){
+  route(id: $id) {
+    id
+    title
+    starts_at
+    ends_at
+    locations {
+      id
+    }
+    passengers {
+      id
+    }
+    drivers {
+      id
+    }
+  }
+}
 `;
 
 // ________________________________ Mutations ____________________________________________
@@ -883,12 +934,18 @@ export default compose(
       variables: { startDate: "" }, skip: false
     }
   }),
-  graphql(getNewRouteFormState, {
-    props: ({ data: { newRouteForm } }) => ({
-      newRouteForm
+  graphql(getRouteQuery, {
+    name: 'getRouteQuery',
+    options: {
+      variables: { id: '' }, skip: false
+    },
+  }),
+  graphql(getRouteFormState, {
+    props: ({ data: { routeForm } }) => ({
+      routeForm
     }),
   }),
-  graphql(updateNewRouteFormState, { name: 'updateNewRouteFormState' }),
+  graphql(updateRouteFormState, { name: 'updateRouteFormState' }),
 
   // graphql(getNetworkStatus, {
   //   props: ({ data:  { getNetworkStatus }}) => ({

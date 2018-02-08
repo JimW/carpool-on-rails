@@ -36,6 +36,28 @@ Types::QueryType = GraphQL::ObjectType.define do
     }
   end
 
+  field :route do
+    type RouteType
+    argument :id, !types.Int
+    resolve -> (obj, args, ctx) {
+      if ctx[:current_user].blank?
+        raise GraphQL::ExecutionError.new("Authentication required")
+      end
+      Route.find(args[:id])
+    }
+  end
+
+  field :location do
+    type LocationType
+    argument :id, !types.Int
+    resolve -> (obj, args, ctx) {
+      if ctx[:current_user].blank?
+        raise GraphQL::ExecutionError.new("Authentication required")
+      end
+      Location.find(args[:id])
+    }
+  end
+
   field :allUsers, types[UserType] do
     resolve -> (obj, args, ctx) { 
       if ctx[:current_user].blank?
@@ -88,10 +110,7 @@ Types::QueryType = GraphQL::ObjectType.define do
     }
   end
 
-  # query {
-  #   missingPassengers(startDate: "") {
-  #   }
-  # }
+  
   field :missingPassengers do
       type types.String 
       argument :startDate, !types.String
@@ -133,9 +152,7 @@ Types::QueryType = GraphQL::ObjectType.define do
       }
     end
 
-    # {
-    #   newRouteFeedData
-    # }
+    
     field :newRouteFeedData do # use same naming prefix as matching form partial, newRouteFormDataFeeder
       type types.String 
       resolve -> (obj, args, ctx) {
@@ -152,7 +169,7 @@ Types::QueryType = GraphQL::ObjectType.define do
           activePassengers: active_passengers_data,
           locations: locations_data,
         }.to_json
-        # binding.pry
+        
         return response
       }
     end
