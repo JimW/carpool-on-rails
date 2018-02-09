@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react'
 import { compose, graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-import { Grid, Segment, Dimmer, Loader, Button, Checkbox, Form, Input, Radio, Select, TextArea, Message, Modal, Header, Icon, Visibility, TransitionablePortal } from 'semantic-ui-react'
+import { Label, Grid, Segment, Dimmer, Loader, Button, Checkbox, Form, Input, Radio, Select, TextArea, Message, Modal, Header, Icon, Visibility, TransitionablePortal } from 'semantic-ui-react'
 // import { withApollo } from 'react-apollo';
 import { getRouteFormState } from '../../graphql/routeForm'
 import { createRouteMutation, updateRouteMutation } from '../../graphql/routeForm'
@@ -16,10 +16,10 @@ class RouteForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      ...this.props.localState, 
+      ...this.props.localState,
       // !!! mappings specific to the dropdowns, should be done here in this form (or in some sematicUI type class)
-      allLocations: this.props.feedData['locations'].concat([{value: null, text: "No Location"}]),
-      allDrivers: this.props.feedData['activeDrivers'].concat([{value: null, text: "No Driver"}]),
+      allLocations: this.props.feedData['locations'].concat([{ value: null, text: "No Location" }]),
+      allDrivers: this.props.feedData['activeDrivers'].concat([{ value: null, text: "No Driver" }]),
       allPassengers: this.props.feedData['activePassengers'],
       newLocation: '',  // should manage this type of change state in apollo?
       newDriver: '',
@@ -32,35 +32,39 @@ class RouteForm extends Component {
     const { startsAt, endsAt, currentDriver, currentPassengers, currentLocation } = this.state
     const { allLocations, allPassengers, allDrivers } = this.state
     const loading = (this.props.createRouteMutation.loading || this.props.updateRouteMutation.loading);
+    const routeDateInfo = "Assignments for " + moment(startsAt).format('dddd h:mm a');
 
     return (
       <Modal
         open={true}
         onClose={this.handleClose}
         dimmer='inverted'
-        size='large'
+        size='small'
       >
-        <Header icon='users' content='Route Assignments:' />
+        <Header icon='users' content={routeDateInfo} />
         <Modal.Content>
-          { loading ?
+          {loading ?
             <Dimmer enabled inverted>
               <Loader inverted content='Saving' />
             </Dimmer> : null
           }
-          <p>Assign the pickup location, driver, and passengers</p>
-          <Form size='large'>
-            <Form.Group>
-              <Form.Field upward control={Select}
-                label='Location'
-                name='currentLocation'
-                placeholder='Select Location'
-                defaultValue={currentLocation}
-                options={allLocations}
-                onChange={this.handleChange}
-              />
-              <Form.Field control={Select} label='Driver' upward name='currentDriver' defaultValue={currentDriver} options={allDrivers} placeholder='Select Driver' onChange={this.handleChange} />
-              <Form.Field control={Select} multiple upward label='Passengers' name='currentPassengers' defaultValue={currentPassengers} options={allPassengers} placeholder='Select Passengers' onChange={this.handleChange} />
-            </Form.Group>
+          <Form size='tiny'>
+            <Grid columns={2} centered stackable>
+              <Grid.Column>
+                <Segment raised>
+                  <Label color='red' ribbon><Icon name='marker' size='large' />Pickup</Label>
+                  <Form.Field control={Select} upward name='currentLocation' defaultValue={currentLocation} options={allLocations} placeholder='Select Location' onChange={this.handleChange} />
+                  <Label color='blue' ribbon><Icon name='user' size='large' />Driver</Label>
+                  <Form.Field control={Select} upward name='currentDriver' defaultValue={currentDriver} options={allDrivers} placeholder='Select Driver' onChange={this.handleChange} label={{ color: 'black', content: 'Hotel', icon: 'hotel', ribbon: true }} />
+                </Segment>
+              </Grid.Column>
+              <Grid.Column>
+                <Segment raised>
+                  <Label color='orange' ribbon>  <Icon name='users' size='large' />Passengers</Label>
+                  <Form.Field control={Select} upward name='currentPassengers' defaultValue={currentPassengers} options={allPassengers} placeholder='Select Passengers' onChange={this.handleChange} multiple label={{ color: 'black', content: 'Hotel', icon: 'hotel', ribbon: true }} />
+                </Segment>
+              </Grid.Column>
+            </Grid>
           </Form>
         </Modal.Content>
         <Modal.Actions>

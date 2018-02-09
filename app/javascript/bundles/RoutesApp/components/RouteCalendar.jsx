@@ -67,9 +67,6 @@ class RouteCalendar extends Component {
     );
   }
 
-  // componentDidMount() {
-  // }
-
   componentDidUpdate() {
     this.updateEvents(); // pass self so I can use Setstate and access mutations
   }

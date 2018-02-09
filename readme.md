@@ -450,6 +450,8 @@ Batch actions (for Delete) should work on heroku, but not locally for some JSy r
 
 ## TODO
 
+- Convert all these to github issues
+
 - "We're sorry, but something went wrong." when trying to log into app with a google account not in the carpool system
 
 - Add Google Analytics config just for fun
@@ -487,10 +489,8 @@ Batch actions (for Delete) should work on heroku, but not locally for some JSy r
   - Route Templates is only partially implemented. Need to think this through more
     - Have Routine must be associated with day of the week and it's instances behave in a way that makes sense relative to their actual date instance. There can be multiple instances with varying states. get_events
   - Maybe Change the peon role to not even let them update their own info
-  - Try and consolidate the 3 seperate web requests for the calendar into 1, constraint may be with Fullcalendar though.. (3 are related to types of events, was important for template stuff)
   - In User UI, Make Role a radiobox instead of checkbox
   - For Admin role, add access to some GCal Service Utils from Carpool UI
-  - FullCalendarJS 3.x does not work for some reason
   - Show Roles in User index
   - Add configuration option for # days in week (5 vs 7), starting day, etc
   - Want to change text to "Log in with Google". Not sure Why Devise views are not able to be overridden.
