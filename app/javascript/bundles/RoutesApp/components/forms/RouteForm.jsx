@@ -17,16 +17,13 @@ class RouteForm extends Component {
     super(props);
     this.state = {
       ...this.props.localState, 
-  
       // !!! mappings specific to the dropdowns, should be done here in this form (or in some sematicUI type class)
-      allDrivers: this.props.feedData['activeDrivers'],
+      allLocations: this.props.feedData['locations'].concat([{value: null, text: "No Location"}]),
+      allDrivers: this.props.feedData['activeDrivers'].concat([{value: null, text: "No Driver"}]),
       allPassengers: this.props.feedData['activePassengers'],
-      allLocations: this.props.feedData['locations'],
-
       newLocation: '',  // should manage this type of change state in apollo?
       newDriver: '',
       newPassengers: '',
-
     };
   }
 
