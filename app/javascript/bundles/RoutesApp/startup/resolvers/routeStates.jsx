@@ -10,7 +10,6 @@ export const routeStates = {
       crudType: '',
       routeId: null,
       feedData: '',
-      isVisible: false,
       startsAt: '',
       endsAt: '',
       currentLocation: '',
@@ -54,7 +53,7 @@ export const routeStates = {
     //   },
     // },
     Mutation: {
-      updateRouteFormState: (_, { crudType, routeId, startsAt, endsAt, isVisible, feedData, currentLocation, currentDriver, currentPassengers }, { cache }) => {
+      updateRouteFormState: (_, { crudType, routeId, startsAt, endsAt, feedData, currentLocation, currentDriver, currentPassengers }, { cache }) => {
         const query = gql`
           query GetRouteFormState {
             routeFormState @client { 
@@ -63,7 +62,6 @@ export const routeStates = {
               startsAt,
               endsAt,
               allDay,
-              isVisible,
               feedData,
               currentLocation,
               currentDriver,
@@ -79,7 +77,6 @@ export const routeStates = {
             routeId: routeId,
             startsAt: startsAt,
             endsAt: endsAt,
-            isVisible: isVisible,
             feedData: feedData,
             currentLocation: currentLocation,
             currentDriver: currentDriver,

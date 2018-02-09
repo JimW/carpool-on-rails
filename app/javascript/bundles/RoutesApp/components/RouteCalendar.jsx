@@ -109,7 +109,6 @@ class RouteCalendar extends Component {
         feedData: JSON.parse(this.props.newRouteFeedData),
         startsAt: start.format(),
         endsAt: end.format(),
-        isVisible: true,
         currentLocation: null,
         currentDriver: null,
         currentPassengers: null,
@@ -142,7 +141,6 @@ class RouteCalendar extends Component {
             crudType: "update",
             routeId: routeId,
             feedData: JSON.parse(this.props.newRouteFeedData),
-            isVisible: true,
             ...routeParams
           }
         })

@@ -9,7 +9,6 @@ export const getRouteFormState = gql`
       startsAt,
       endsAt,
       allDay,
-      isVisible,
       currentDriver,
       currentLocation,
       currentPassengers,
@@ -26,15 +25,14 @@ export const newRouteFeedDataQuery = gql`
 
 // when crudType = edit, it has to retrieve the route data and set as current State
 export const updateRouteFormState = gql`
-  mutation updateRouteFormState($crudType: String!, $routeId: Int, $startsAt: String!, $endsAt: String!, $isVisible: Boolean, $feedData: feedData, $currentLocation: String, $currentDriver: String, $currentPassengers: String) {
-    updateRouteFormState(crudType: $crudType, routeId: $routeId, startsAt: $startsAt, endsAt: $endsAt, isVisible: $isVisible, feedData: $feedData, crudType: $crudType, currentLocation: $currentLocation, currentDriver: $currentDriver, currentPassengers: $currentPassengers) @client {
+  mutation updateRouteFormState($crudType: String!, $routeId: Int, $startsAt: String!, $endsAt: String!, $feedData: feedData, $currentLocation: String, $currentDriver: String, $currentPassengers: String) {
+    updateRouteFormState(crudType: $crudType, routeId: $routeId, startsAt: $startsAt, endsAt: $endsAt, feedData: $feedData, crudType: $crudType, currentLocation: $currentLocation, currentDriver: $currentDriver, currentPassengers: $currentPassengers) @client {
       crudType,
       routeId,
       feedData,
       startsAt,
       endsAt,
       allDay,
-      isVisible,
       crudType,
       currentDriver,
       currentLocation,
