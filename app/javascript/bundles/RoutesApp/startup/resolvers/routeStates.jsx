@@ -2,8 +2,8 @@ import gql from 'graphql-tag';
 
 export const routeStates = {
   defaults: {
-    routeForm: {
-      __typename: 'routeForm',
+    routeFormState: {
+      __typename: 'routeFormState',
       // feedData: {
         // __typename: 'FeedData', // Anyway to autodetect names from hash? Want to get rid of Apollo warnings for unnamed stuff
       // },
@@ -13,9 +13,9 @@ export const routeStates = {
       isVisible: false,
       startsAt: '',
       endsAt: '',
-      location: '',
-      driver: '',
-      passengers: '',
+      currentLocation: '',
+      currentDriver: '',
+      currentPassengers: '',
       allDay: false,
     },
     networkStatus: {
@@ -54,10 +54,10 @@ export const routeStates = {
     //   },
     // },
     Mutation: {
-      updateRouteFormState: (_, { crudType, routeId, startsAt, endsAt, isVisible, feedData, location, driver, passengers }, { cache }) => {
+      updateRouteFormState: (_, { crudType, routeId, startsAt, endsAt, isVisible, feedData, currentLocation, currentDriver, currentPassengers }, { cache }) => {
         const query = gql`
           query GetRouteFormState {
-            routeForm @client { 
+            routeFormState @client { 
               crudType,
               routeId,
               startsAt,
@@ -65,25 +65,25 @@ export const routeStates = {
               allDay,
               isVisible,
               feedData,
-              location,
-              driver,
-              passengers,
+              currentLocation,
+              currentDriver,
+              currentPassengers,
             }
           }
         `;
         const previousState = cache.readQuery({ query })
         const data = {
           ...previousState,
-          routeForm: {
-            ...previousState.routeForm,
+          routeFormState: {
+            ...previousState.routeFormState,
             routeId: routeId,
             startsAt: startsAt,
             endsAt: endsAt,
             isVisible: isVisible,
             feedData: feedData,
-            location: location,
-            driver: driver,
-            passengers: passengers,
+            currentLocation: currentLocation,
+            currentDriver: currentDriver,
+            currentPassengers: currentPassengers,
             crudType: crudType,
           },
         };

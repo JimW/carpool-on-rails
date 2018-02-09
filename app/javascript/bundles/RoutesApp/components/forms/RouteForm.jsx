@@ -4,74 +4,30 @@ import { compose, graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { Grid, Segment, Dimmer, Loader, Button, Checkbox, Form, Input, Radio, Select, TextArea, Message, Modal, Header, Icon, Visibility, TransitionablePortal } from 'semantic-ui-react'
 // import { withApollo } from 'react-apollo';
-import { getRouteFormState, createRouteMutation, updateRouteMutation } from '../../graphql/routeForm'
+import { getRouteFormState } from '../../graphql/routeForm'
+import { createRouteMutation, updateRouteMutation } from '../../graphql/routeForm'
 
 class RouteForm extends Component {
 
-  handleClose = () => this.props.showRouteForm(false)
   static propTypes = {
-    crudType: PropTypes.string.isRequired,
     feedData: PropTypes.object.isRequired,
-    startsAt: PropTypes.string.isRequired,
-    endsAt: PropTypes.string.isRequired,
   };
 
   constructor(props) {
     super(props);
     this.state = {
-      startsAt: this.props.startsAt,
-      endsAt: this.props.endsAt,
-
+      ...this.props.localState, 
+  
       // !!! mappings specific to the dropdowns, should be done here in this form (or in some sematicUI type class)
       allDrivers: this.props.feedData['activeDrivers'],
       allPassengers: this.props.feedData['activePassengers'],
       allLocations: this.props.feedData['locations'],
 
-      currentLocation: '',
-      currentDriver: '',
-      currentPassengers: '',
-
-      newLocation: '',
+      newLocation: '',  // should manage this type of change state in apollo?
       newDriver: '',
       newPassengers: '',
 
-      createRouteMutation: this.props.createRouteMutation,
-      modalOpen: true
     };
-
-    if (this.props.crudType == "update") {
-      this.state = {
-        ...this.state,
-        routeId: this.props.routeId,
-        currentLocation: this.props.location,
-        currentDriver: this.props.driver,
-        currentPassengers: this.props.passengers,//.join(", "),
-      }
-    }
-  }
-
-  handleChange = (e, { name, value }) => this.setState({ [name]: value })
-
-  handleSubmit = () => {
-    const { routeId, startsAt, endsAt, currentDriver, currentPassengers, currentLocation } = this.state
-    var top = this;
-    this.setState({ newDriver: currentDriver, newPassengers: currentPassengers, newLocation: currentLocation })
-
-    var routeMutationParams = {
-      id: routeId,
-      startsAt: startsAt,
-      endsAt: endsAt,
-      driver: currentDriver ? currentDriver.toString() : null,
-      passengers: currentPassengers ? JSON.stringify(currentPassengers) : null,
-      location: currentLocation ? currentLocation.toString() : null,
-    };
-
-    if (top.props.crudType == "update") {
-      updateRoute(top, routeMutationParams);
-    }
-    else {
-      createRoute(top, routeMutationParams);
-    }
   }
 
   render() {
@@ -82,7 +38,7 @@ class RouteForm extends Component {
 
     return (
       <Modal
-        open={this.state.modalOpen}
+        open={true}
         onClose={this.handleClose}
         dimmer='inverted'
         size='large'
@@ -121,6 +77,32 @@ class RouteForm extends Component {
       </Modal>
 
     )
+  }
+
+  handleClose = () => this.props.showRouteForm(false)
+
+  handleChange = (e, { name, value }) => this.setState({ [name]: value })
+
+  handleSubmit = () => {
+    const { routeId, startsAt, endsAt, currentDriver, currentPassengers, currentLocation } = this.state
+    var top = this;
+    this.setState({ newDriver: currentDriver, newPassengers: currentPassengers, newLocation: currentLocation })
+
+    var routeMutationParams = {
+      id: routeId,
+      startsAt: startsAt,
+      endsAt: endsAt,
+      location: currentLocation ? currentLocation.toString() : null,
+      driver: currentDriver ? currentDriver.toString() : null,
+      passengers: currentPassengers ? JSON.stringify(currentPassengers) : null,
+    };
+
+    if (top.state.crudType == "update") {
+      updateRoute(top, routeMutationParams);
+    }
+    else {
+      createRoute(top, routeMutationParams);
+    }
   }
 
 }

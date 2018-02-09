@@ -2,7 +2,7 @@ import gql from 'graphql-tag';
 
 export const getRouteFormState = gql`
   query {
-    routeForm @client { 
+    routeFormState @client { 
       crudType,
       routeId,
       feedData,
@@ -10,18 +10,24 @@ export const getRouteFormState = gql`
       endsAt,
       allDay,
       isVisible,
-      driver,
-      location,
-      passengers,
+      currentDriver,
+      currentLocation,
+      currentPassengers,
     }
+  }
+`;
+
+export const newRouteFeedDataQuery = gql`
+  query newRouteFeedDataQuery {
+    newRouteFeedData 
   }
 `;
 // ________________________________ Client Mutations ____________________________________________
 
 // when crudType = edit, it has to retrieve the route data and set as current State
 export const updateRouteFormState = gql`
-  mutation updateRouteFormState($crudType: String!, $routeId: Int, $startsAt: String!, $endsAt: String!, $isVisible: Boolean, $feedData: feedData, $location: String, $driver: String, $passengers: String) {
-    updateRouteFormState(crudType: $crudType, routeId: $routeId, startsAt: $startsAt, endsAt: $endsAt, isVisible: $isVisible, feedData: $feedData, crudType: $crudType, location: $location, driver: $driver, passengers: $passengers) @client {
+  mutation updateRouteFormState($crudType: String!, $routeId: Int, $startsAt: String!, $endsAt: String!, $isVisible: Boolean, $feedData: feedData, $currentLocation: String, $currentDriver: String, $currentPassengers: String) {
+    updateRouteFormState(crudType: $crudType, routeId: $routeId, startsAt: $startsAt, endsAt: $endsAt, isVisible: $isVisible, feedData: $feedData, crudType: $crudType, currentLocation: $currentLocation, currentDriver: $currentDriver, currentPassengers: $currentPassengers) @client {
       crudType,
       routeId,
       feedData,
@@ -30,9 +36,9 @@ export const updateRouteFormState = gql`
       allDay,
       isVisible,
       crudType,
-      location,
-      driver,
-      passengers
+      currentDriver,
+      currentLocation,
+      currentPassengers,
     }
   }
 `;

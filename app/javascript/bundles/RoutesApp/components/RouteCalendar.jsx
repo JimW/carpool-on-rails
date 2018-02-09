@@ -6,7 +6,7 @@ import { hasError } from 'apollo-client/core/ObservableQuery';
 import { assignFullCalendarStyle } from '../../../libs/fullcalendar-utils';
 import RouteForm from './forms/RouteForm';
 // import { getNetworkStatus } from '../graphql/networkStatus'
-import { getRouteFormState, updateRouteFormState } from '../graphql/routeForm'
+import { getRouteFormState, updateRouteFormState, newRouteFeedDataQuery } from '../graphql/routeForm'
 
 class RouteCalendar extends Component {
 
@@ -39,15 +39,11 @@ class RouteCalendar extends Component {
       calendarAllDayMode: "missing", // changes here will initiate a construction of all-day events that represent missingpeople, when in agendaWeek
     };
   }
-
+  
   render() {
     const { loading, error } = this.props.data;
-
-    // const { startsAt, endsAt, allDay } = this.props.newRouteForm;
-    // const { startsAt, endsAt, allDay, locations, drivers, passengers } = this.props.routeForm;
-    const { routeId, startsAt, endsAt, location, driver, passengers, crudType } = this.props.routeForm;
-
     const { feedData } = this.state;
+
     if (loading) {
       return <p>Loading...</p>;
     } else if (error) {
@@ -60,14 +56,7 @@ class RouteCalendar extends Component {
         <div id="event_desc_dialog" className="dialog" style={{ display: 'none' }}></div>
         {this.state.showRouteForm ?
           <RouteForm
-            // localState={routeFormState}
-            crudType={crudType}
-            routeId={routeId}
-            startsAt={startsAt}
-            endsAt={endsAt}
-            location={location}
-            driver={driver}
-            passengers={passengers}
+            localState={this.props.routeFormState}
             feedData={feedData}
             showRouteForm={this.showRouteForm}
             addNewEventToFullcalendar={this.addNewEventToFullcalendar}
@@ -112,6 +101,27 @@ class RouteCalendar extends Component {
     // lastRouteIdEdited need to save this like we used too
   };
 
+  displayCreateScreen = (start, end) => {
+
+    this.props.updateRouteFormState({
+      variables: {
+        crudType: 'create',
+        feedData: JSON.parse(this.props.newRouteFeedData),
+        startsAt: start.format(),
+        endsAt: end.format(),
+        isVisible: true,
+        currentLocation: null,
+        currentDriver: null,
+        currentPassengers: null,
+      }
+    })
+      .then(({ data }) => {
+        this.showRouteForm(true);
+      }).catch((error) => {
+        console.log('there was an error sending the query', error);
+      });
+  }
+
   displayEditScreen = (routeId) => {
 
     this.props.getRouteQuery.refetch({
@@ -123,9 +133,9 @@ class RouteCalendar extends Component {
         var routeParams = {
           startsAt: route.starts_at,
           endsAt: route.ends_at,
-          location: route.locations[0] ? Number(route.locations[0].id) : null,
-          driver: route.drivers[0] ? Number(route.drivers[0].id) : null,
-          passengers: route.passengers ? route.passengers.map(p => Number(p.id)) : null,
+          currentLocation: route.locations[0] ? Number(route.locations[0].id) : null,
+          currentDriver: route.drivers[0] ? Number(route.drivers[0].id) : null,
+          currentPassengers: route.passengers ? route.passengers.map(p => Number(p.id)) : null,
         }
         this.props.updateRouteFormState({
           variables: {
@@ -411,20 +421,10 @@ class RouteCalendar extends Component {
             if (end.isSame(start)) {
               end = start.add(slotInterval)
             }
-            top.props.updateRouteFormState({
-              variables: {
-                feedData: JSON.parse(top.props.newRouteFeedData),
-                startsAt: start.format(),
-                endsAt: end.format(),
-                isVisible: true,
-                crudType: 'create'
-              }
-            })
-              .then(({ data }) => {
-                top.showRouteForm(true);
-              }).catch((error) => {
-                console.log('there was an error sending the query', error);
-              });
+
+            top.displayCreateScreen(start, end);
+
+
           } else {
             // do something like create a template? not really necessary as they should define a special first
           }
@@ -860,11 +860,7 @@ const missingPassengersQuery = gql`
   }
 `;
 
-const newRouteFeedDataQuery = gql`
-  query newRouteFeedDataQuery {
-    newRouteFeedData 
-  }
-`;
+
 
 const getRouteQuery = gql`
 query getRouteQuery ($id: Int!){
@@ -941,8 +937,8 @@ export default compose(
     },
   }),
   graphql(getRouteFormState, {
-    props: ({ data: { routeForm } }) => ({
-      routeForm
+    props: ({ data: { routeFormState } }) => ({
+      routeFormState
     }),
   }),
   graphql(updateRouteFormState, { name: 'updateRouteFormState' }),
