@@ -7,6 +7,7 @@ import { assignFullCalendarStyle } from '../../../libs/fullcalendar-utils';
 import RouteForm from './forms/RouteForm';
 // import { getNetworkStatus } from '../graphql/networkStatus'
 import { getRouteFormState, updateRouteFormState, newRouteFeedDataQuery } from '../graphql/routeForm'
+import { Icon, Dimmer, Loader } from 'semantic-ui-react'
 
 class RouteCalendar extends Component {
 
@@ -43,14 +44,17 @@ class RouteCalendar extends Component {
   render() {
     const { loading, error } = this.props.data;
     const { feedData } = this.state;
-
-    if (loading) {
-      return <p>Loading...</p>;
-    } else if (error) {
-      return <p>Error!</p>;
+    if (error) {
+      return (
+        <Icon name="warning sign" size='massive' />
+      )
     }
+
     return (
       <div>
+        <Dimmer inverted active={loading}>
+          <Loader size='big'>Retrieving Data</Loader>
+        </Dimmer>
         <div className='calendar'></div>
         {this.state.showRouteForm ?
           <RouteForm
