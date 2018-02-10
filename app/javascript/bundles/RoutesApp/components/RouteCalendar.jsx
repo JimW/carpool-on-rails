@@ -213,18 +213,6 @@ class RouteCalendar extends Component {
     //   return moment(decodeURIComponent(lastWorkingDate));
     // }
 
-    var loadingFullcalendar = (isLoading, view) => {
-
-      // var spinner;// = createSpinner()
-
-      if (isLoading == true) {
-        // spinner = createSpinner()
-        // spinner = new Spinner(spinnerOpts).spin(calendarElement);
-      } else {
-        // spinner.stop();
-      }
-    };
-
     var eventClickFullcalendar = (event, jsEvent, view) => {
       if (event.category == "template") { //&& event.child_id exhists?
         var class_child_id = '.instance-' + event.child_id;
@@ -323,7 +311,6 @@ class RouteCalendar extends Component {
       editable: true,
       displayEventTime: false,
       eventSources: eSources,
-      loading: loadingFullcalendar,
       eventRender: eventRender,
       customButtons: customButtonsHash,
       eventDragStart: eventDragStartFullcalendar,
@@ -924,15 +911,15 @@ export default compose(
   graphql(fcEventSourcesRoutesQuery, { name: 'data' }),
   graphql(missingPassengersQuery, {
     name: 'missingPassengersQuery',
-    // options: {
-    //   variables: { startDate: "" }, skip: false
-    // }
+    options: {
+      variables: { startDate: "" }, skip: false
+    }
   }),
   graphql(getRouteQuery, {
     name: 'getRouteQuery',
-    // options: {
-    //   variables: { id: null }, 
-    // },
+    options: {
+      variables: { id: null }, 
+    },
   }),
   graphql(getRouteFormState, {
     props: ({ data: { routeFormState } }) => ({
