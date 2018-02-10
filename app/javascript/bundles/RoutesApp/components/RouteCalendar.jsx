@@ -39,7 +39,7 @@ class RouteCalendar extends Component {
       calendarAllDayMode: "missing", // changes here will initiate a construction of all-day events that represent missingpeople, when in agendaWeek
     };
   }
-  
+
   render() {
     const { loading, error } = this.props.data;
     const { feedData } = this.state;
@@ -51,9 +51,7 @@ class RouteCalendar extends Component {
     }
     return (
       <div>
-        <div className='calendar'>
-        </div>
-        <div id="event_desc_dialog" className="dialog" style={{ display: 'none' }}></div>
+        <div className='calendar'></div>
         {this.state.showRouteForm ?
           <RouteForm
             localState={this.props.routeFormState}

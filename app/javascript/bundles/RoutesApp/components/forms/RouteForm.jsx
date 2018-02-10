@@ -30,18 +30,18 @@ class RouteForm extends Component {
   render() {
     // const {currentLocation} = this.state
     const { startsAt, endsAt, currentDriver, currentPassengers, currentLocation } = this.state
-    const { allLocations, allPassengers, allDrivers } = this.state
+    const { allLocations, allPassengers, allDrivers, crudType } = this.state
     const loading = (this.props.createRouteMutation.loading || this.props.updateRouteMutation.loading);
-    const routeDateInfo = "Assignments for " + moment(startsAt).format('dddd h:mm a');
+    const routeTypeTitle = (crudType == "update") ? "Updating" : "Creating New"
+    const routeDateInfo = routeTypeTitle + " Route: " + moment(startsAt).format('dddd h:mm a');
 
     return (
       <Modal
         open={true}
         onClose={this.handleClose}
-        dimmer='inverted'
         size='small'
       >
-        <Header icon='users' content={routeDateInfo} />
+        <Header icon='calendar' content={routeDateInfo} />
         <Modal.Content>
           {loading ?
             <Dimmer enabled inverted>
@@ -52,15 +52,15 @@ class RouteForm extends Component {
             <Grid columns={2} centered stackable>
               <Grid.Column>
                 <Segment raised>
-                  <Label color='red' ribbon><Icon name='marker' size='large' />Pickup</Label>
+                  <Label color='teal' ribbon><Icon name='marker' size='large' />Pickup</Label>
                   <Form.Field control={Select} upward name='currentLocation' defaultValue={currentLocation} options={allLocations} placeholder='Select Location' onChange={this.handleChange} />
-                  <Label color='blue' ribbon><Icon name='user' size='large' />Driver</Label>
+                  <Label color='brown' ribbon><Icon name='user' size='large' />Driver</Label>
                   <Form.Field control={Select} upward name='currentDriver' defaultValue={currentDriver} options={allDrivers} placeholder='Select Driver' onChange={this.handleChange} label={{ color: 'black', content: 'Hotel', icon: 'hotel', ribbon: true }} />
                 </Segment>
               </Grid.Column>
               <Grid.Column>
                 <Segment raised>
-                  <Label color='orange' ribbon>  <Icon name='users' size='large' />Passengers</Label>
+                  <Label color='brown' ribbon>  <Icon name='users' size='large' />Passengers</Label>
                   <Form.Field control={Select} upward name='currentPassengers' defaultValue={currentPassengers} options={allPassengers} placeholder='Select Passengers' onChange={this.handleChange} multiple label={{ color: 'black', content: 'Hotel', icon: 'hotel', ribbon: true }} />
                 </Segment>
               </Grid.Column>
