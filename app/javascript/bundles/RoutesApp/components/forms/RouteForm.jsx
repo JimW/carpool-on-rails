@@ -18,8 +18,8 @@ class RouteForm extends Component {
     this.state = {
       ...this.props.localState,
       // !!! mappings specific to the dropdowns, should be done here in this form (or in some sematicUI type class)
-      allLocations: this.props.feedData['locations'].concat([{ value: null, text: "No Location" }]),
-      allDrivers: this.props.feedData['activeDrivers'].concat([{ value: null, text: "No Driver" }]),
+      allLocations: this.props.feedData['locations'].concat([{ value: null, text: "NONE" }]),
+      allDrivers: this.props.feedData['activeDrivers'].concat([{ value: null, text: "NONE" }]),
       allPassengers: this.props.feedData['activePassengers'],
       newLocation: '',  // should manage this type of change state in apollo?
       newDriver: '',
@@ -52,16 +52,16 @@ class RouteForm extends Component {
             <Grid columns={2} centered stackable>
               <Grid.Column>
                 <Segment raised>
-                  <Label color='teal' ribbon><Icon name='marker' size='large' />Pickup</Label>
-                  <Form.Field control={Select} upward name='currentLocation' defaultValue={currentLocation} options={allLocations} placeholder='Select Location' onChange={this.handleChange} />
                   <Label color='brown' ribbon><Icon name='user' size='large' />Driver</Label>
                   <Form.Field control={Select} upward name='currentDriver' defaultValue={currentDriver} options={allDrivers} placeholder='Select Driver' onChange={this.handleChange} />
+                  <Label color='olive' inverted ribbon>  <Icon name='users' size='large' />Passengers</Label>
+                  <Form.Field control={Select} upward name='currentPassengers' defaultValue={currentPassengers} options={allPassengers} placeholder='Select Passengers' onChange={this.handleChange} multiple />
                 </Segment>
               </Grid.Column>
               <Grid.Column>
                 <Segment raised>
-                  <Label color='brown' ribbon>  <Icon name='users' size='large' />Passengers</Label>
-                  <Form.Field control={Select} upward name='currentPassengers' defaultValue={currentPassengers} options={allPassengers} placeholder='Select Passengers' onChange={this.handleChange} multiple />
+                  <Label color='teal' ribbon><Icon name='marker' size='large' />Pickup</Label>
+                  <Form.Field control={Select} upward name='currentLocation' defaultValue={currentLocation} options={allLocations} placeholder='Select Location' onChange={this.handleChange} />
                 </Segment>
               </Grid.Column>
             </Grid>
@@ -76,7 +76,7 @@ class RouteForm extends Component {
            </Button>
         </Modal.Actions>
       </Modal>
-      
+
     )
   }
 
