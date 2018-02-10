@@ -128,6 +128,7 @@ class RouteCalendar extends Component {
       .then(({ data }) => {
         var route = data.route;
         // This transformation should be done within apollo within the prop in graphql but not working there...
+        // https://www.apollographql.com/docs/react/basics/queries.html#graphql-props-option
         var routeParams = {
           startsAt: route.starts_at,
           endsAt: route.ends_at,
@@ -923,15 +924,15 @@ export default compose(
   graphql(fcEventSourcesRoutesQuery, { name: 'data' }),
   graphql(missingPassengersQuery, {
     name: 'missingPassengersQuery',
-    options: {
-      variables: { startDate: "" }, skip: false
-    }
+    // options: {
+    //   variables: { startDate: "" }, skip: false
+    // }
   }),
   graphql(getRouteQuery, {
     name: 'getRouteQuery',
-    options: {
-      variables: { id: '' }, skip: false
-    },
+    // options: {
+    //   variables: { id: null }, 
+    // },
   }),
   graphql(getRouteFormState, {
     props: ({ data: { routeFormState } }) => ({

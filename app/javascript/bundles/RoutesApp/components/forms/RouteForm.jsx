@@ -55,13 +55,13 @@ class RouteForm extends Component {
                   <Label color='teal' ribbon><Icon name='marker' size='large' />Pickup</Label>
                   <Form.Field control={Select} upward name='currentLocation' defaultValue={currentLocation} options={allLocations} placeholder='Select Location' onChange={this.handleChange} />
                   <Label color='brown' ribbon><Icon name='user' size='large' />Driver</Label>
-                  <Form.Field control={Select} upward name='currentDriver' defaultValue={currentDriver} options={allDrivers} placeholder='Select Driver' onChange={this.handleChange} label={{ color: 'black', content: 'Hotel', icon: 'hotel', ribbon: true }} />
+                  <Form.Field control={Select} upward name='currentDriver' defaultValue={currentDriver} options={allDrivers} placeholder='Select Driver' onChange={this.handleChange} />
                 </Segment>
               </Grid.Column>
               <Grid.Column>
                 <Segment raised>
                   <Label color='brown' ribbon>  <Icon name='users' size='large' />Passengers</Label>
-                  <Form.Field control={Select} upward name='currentPassengers' defaultValue={currentPassengers} options={allPassengers} placeholder='Select Passengers' onChange={this.handleChange} multiple label={{ color: 'black', content: 'Hotel', icon: 'hotel', ribbon: true }} />
+                  <Form.Field control={Select} upward name='currentPassengers' defaultValue={currentPassengers} options={allPassengers} placeholder='Select Passengers' onChange={this.handleChange} multiple />
                 </Segment>
               </Grid.Column>
             </Grid>
@@ -76,7 +76,7 @@ class RouteForm extends Component {
            </Button>
         </Modal.Actions>
       </Modal>
-
+      
     )
   }
 

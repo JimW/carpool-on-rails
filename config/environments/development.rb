@@ -4,6 +4,10 @@ Rails.application.configure do
 
   # Settings specified here will take precedence over those in config/application.rb.
 
+  # added this to stop all the Google jobs from polluting my logs
+  config.active_job.logger = ActiveSupport::TaggedLogging.new(ActiveSupport::Logger.new("log/#{Rails.env}.log"))
+  # https://stackoverflow.com/questions/32045387/how-do-i-filter-or-remove-logging-of-activejob-arguments
+
   # In the development environment your application's code is reloaded on
   # every request. This slows down response time but is perfect for development
   # since you don't have to restart the web server when you make code changes.
