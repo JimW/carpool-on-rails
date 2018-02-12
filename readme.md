@@ -44,7 +44,7 @@ This system helps carpool members stay up to date on their assignments by mainta
 
 
 ## Video Walkthrough
-[Video Video on Vimeo](https://vimeo.com/212628156)
+[Video on Youtube](https://www.youtube.com/watch?v=mV5G1xh5d40&feature=youtu.be)
 
 ## Background
 
