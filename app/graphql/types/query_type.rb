@@ -67,6 +67,15 @@ Types::QueryType = GraphQL::ObjectType.define do
     }
   end
 
+  field :allRoutes, types[RouteType] do
+    resolve -> (obj, args, ctx) { 
+      if ctx[:current_user].blank?
+        raise GraphQL::ExecutionError.new("Authentication required")
+      end
+      Route.all 
+    }
+  end
+
   field :currentUser do
     type UserType 
     resolve -> (obj, args, ctx) {

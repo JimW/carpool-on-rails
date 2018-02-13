@@ -586,3 +586,8 @@ http://www.graph.cool/
 http://tachyons.io/
 https://github.com/chenglou/react-motion/wiki/v0.4.0-examples
 https://github.com/acdlite/recompose
+https://www.sitepen.com/blog/2017/08/08/wrapping-web-components-with-react/
+https://stackoverflow.com/questions/26365545/is-it-possible-to-use-polymer-inside-of-react
+
+https://github.com/heroku/rack-timeout
+https://github.com/ankane/the-ultimate-guide-to-ruby-timeouts

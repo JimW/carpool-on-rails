@@ -5,9 +5,13 @@ import gql from 'graphql-tag';
 import { hasError } from 'apollo-client/core/ObservableQuery';
 import { assignFullCalendarStyle } from '../../../libs/fullcalendar-utils';
 import RouteForm from './forms/RouteForm';
+import RouteTableView from './RouteTableView';
 // import { getNetworkStatus } from '../graphql/networkStatus'
 import { getRouteFormState, updateRouteFormState, newRouteFeedDataQuery } from '../graphql/routeForm'
-import { Icon, Dimmer, Loader } from 'semantic-ui-react'
+
+import { getRouteQuery } from '../graphql/routes'
+
+import { Button, TransitionablePortal, Segment, Header, Menu, Label, Table, Icon, Dimmer, Loader } from 'semantic-ui-react'
 
 class RouteCalendar extends Component {
 
@@ -32,19 +36,36 @@ class RouteCalendar extends Component {
       // last_viewing_moment
       // last_working_date
       showRouteForm: false,
+      showRouteTableView: false,
       lastRouteIdEdited: -1, // was a session var, not reimplemented yet
       lastCalendarType: 'blah',
       lastCalendarZoomLevel: '00:10:00',
       lastViewingMoment: "some date",
       lastWorkingDate: "some date2",
       calendarAllDayMode: "missing", // changes here will initiate a construction of all-day events that represent missingpeople, when in agendaWeek
+
     };
   }
 
+  // handleRouteTableToggleClick = () => {
+  //   this.setState({ showRouteTableView: !this.state.showRouteTableView })
+  //   // event.stopPropagation();
+  //   // event.nativeEvent.stopImmediatePropagation();
+  // }
+
+  // handleClose = () => this.setState({ showRouteTableView: false })
+
   render() {
     const { loading, error } = this.props.data;
-    const { feedData } = this.state;
-    if (error) {
+    const { feedData, showRouteTableView } = this.state;
+
+    if (loading) {
+      return (
+        <Dimmer inverted active={loading}>
+          <Loader size='big'>Retrieving Data</Loader>
+        </Dimmer>
+      )
+    } else if (error) {
       return (
         <Icon name="warning sign" size='massive' />
       )
@@ -52,10 +73,9 @@ class RouteCalendar extends Component {
 
     return (
       <div>
-        <Dimmer inverted active={loading}>
-          <Loader size='big'>Retrieving Data</Loader>
-        </Dimmer>
         <div className='calendar'></div>
+        {/* <FullCalendarRoutes /> */}
+
         {this.state.showRouteForm ?
           <RouteForm
             localState={this.props.routeFormState}
@@ -65,6 +85,12 @@ class RouteCalendar extends Component {
             updateEventInFullcalendar={this.updateEventInFullcalendar}
           />
           : null}
+
+        {/* <TransitionablePortal onClose={this.handleClose} open={showRouteTableView}> */}
+        <Header>All Routes</Header>
+        <RouteTableView />
+        {/* </TransitionablePortal> */}
+
       </div>
     );
   }
@@ -82,6 +108,13 @@ class RouteCalendar extends Component {
     $('.fc-scroller').scrollTo(".current-event", 1, function () {
       $(".current-event").effect("highlight", { color: "white" }, 300);
     });
+  }
+
+  showLoaderOnFcEvent = (eventId) => {
+    // $('[data-event-id="' + eventId + '"]').addClass("current-event");
+    // $('.fc-scroller').scrollTo(".current-event", 1, function () {
+    //   $(".current-event").effect("highlight", { color: "white" }, 300);
+    // });
   }
 
   addNewEventToFullcalendar = (newFcEvent) => {
@@ -120,6 +153,8 @@ class RouteCalendar extends Component {
       });
   }
 
+  // Should move getRouteQuery to routeForm, passing just the id for the route as a param.  Also send crudType as param and don't use that within the routeFormState
+  // XXX NEXT
   displayEditScreen = (routeId) => {
 
     this.props.getRouteQuery.refetch({
@@ -847,25 +882,7 @@ const missingPassengersQuery = gql`
 
 
 
-const getRouteQuery = gql`
-query getRouteQuery ($id: Int!){
-  route(id: $id) {
-    id
-    title
-    starts_at
-    ends_at
-    locations {
-      id
-    }
-    passengers {
-      id
-    }
-    drivers {
-      id
-    }
-  }
-}
-`;
+
 
 // ________________________________ Mutations ____________________________________________
 
@@ -918,7 +935,7 @@ export default compose(
   graphql(getRouteQuery, {
     name: 'getRouteQuery',
     options: {
-      variables: { id: null }, 
+      variables: { id: null },
     },
   }),
   graphql(getRouteFormState, {
