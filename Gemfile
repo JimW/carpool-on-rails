@@ -18,14 +18,16 @@ gem 'rails', '5.1.4'
 # Use SCSS for stylesheets
 gem 'sass-rails'#, '~> 5.0.7'
 # Use Uglifier as compressor for JavaScript assets
-gem 'uglifier', '>= 3.2.0'
+gem 'uglifier'
 # Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
 
-gem 'webpacker', '~> 3.2.1'
+gem 'webpacker'
 # gem 'webpacker', github: 'rails/webpacker' # Because webpacker is installing binstubs wrong
 # https://github.com/rails/webpacker/issues/995
 
-gem 'graphql' # evolving features with Auth are PRO only for $$$
+gem 'graphql', '1.7.9' #1.7.10 broke something # evolving features with Auth are PRO only for $$$, no changelogs.. try and swap out when possible !!!
+# https://github.com/rmosolgo/graphql-ruby/issues/1281
+
 # https://github.com/rmosolgo/graphql-ruby
 
 # so try this instead XXX:
@@ -41,7 +43,7 @@ gem 'react_on_rails', '10.1.1' # prefer exact gem version to match npm version
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.2'
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
-gem 'turbolinks', '~> 5'
+gem 'turbolinks'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.5'
 # Use Redis adapter to run Action Cable in production
@@ -106,7 +108,6 @@ group :test do
   # gem "launchy"
   # gem "capybara-webkit", "1.14.0"
   gem "poltergeist" # have to install some exectuable without source.. holding off testing JS system stuff
-
   gem "database_cleaner"
   gem "rails_best_practices"
 end

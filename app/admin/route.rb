@@ -158,9 +158,13 @@ controller do
       current_user: current_user, 
       current_carpool: cp
     }
+    # https://github.com/rmosolgo/graphql-ruby/commit/812eff74d3d416e7e67fb20652dfdc1cf4a35b00 for when I update the gem..
     eventSources = CarPoolSchema.execute("{fcEventSourcesRoutes() {}}", context: context, variables: nil)
     newRouteFeedData = CarPoolSchema.execute("{newRouteFeedData() {}}", context: context, variables: nil)
-    # should snag the error if any
+    if eventSources["errors"]
+      raise Exception.new(' CarPoolSchema.execute of "fcEventSourcesRoutes()" FAILED! with: ' + eventSources["errors"].to_s)
+    end
+    # binding.pry
     @calendar_props = {
       eventSources: eventSources["data"]["fcEventSourcesRoutes"],
       newRouteFeedData: newRouteFeedData["data"]["newRouteFeedData"] 

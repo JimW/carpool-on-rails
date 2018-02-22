@@ -591,3 +591,11 @@ https://stackoverflow.com/questions/26365545/is-it-possible-to-use-polymer-insid
 
 https://github.com/heroku/rack-timeout
 https://github.com/ankane/the-ultimate-guide-to-ruby-timeouts
+
+https://github.com/fuse-box/fuse-box
+https://github.com/otothea/fuse-box-graphql-plugin
+https://github.com/fuse-box/react-example/blob/master/fuse.js
+
+
+Install Log:
+yarn global add typescript    

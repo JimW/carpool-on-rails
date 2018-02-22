@@ -1,5 +1,6 @@
 # Note: You must restart bin/webpack-dev-server for changes to take effect
-
+# https://github.com/shakacode/react_on_rails/blob/master/docs/additional-reading/hot-reloading-rails-development.md
+# https://webpack.js.org/concepts/hot-module-replacement/
 default: &default
   source_path: app/javascript
   source_entry_path: packs
@@ -40,7 +41,7 @@ development:
     host: localhost
     port: 3035
     public: localhost:3035
-    hmr: false
+    hmr: true
     # Inline should be set to true if using HMR
     inline: true
     overlay: true
@@ -65,7 +66,7 @@ production:
   <<: *default
 
   # Production depends on precompilation of packs prior to booting for performance.
-  compile: true
+  compile: false
 
   # Cache manifest.json for performance
   cache_manifest: true
