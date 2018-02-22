@@ -167,7 +167,7 @@ These OAuth credentials are for server logins via google, which is not really ne
 
 1. Edit db/development/seeds/seed_data.yml. Populate with only a single organization and a single Carpool. Leave the whole file as is if you're just starting off.  Eventually you'll want to prepopulate it with valid google email accounts.  Leave the Lobby entry alone as it needs to be named "Lobby".
 
-1. For bower-rails gem, well we're not using bower anymore now, but why not..:
+1. Install [Node](https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions) :
     ```bash
     sudo apt-get install nodejs
     sudo apt-get install nodejs-legacy
@@ -182,17 +182,17 @@ These OAuth credentials are for server logins via google, which is not really ne
     gem install nokogiri -- --use-system-libraries
     bundle install
     ```
-1.  Install Forman Gem
+1. Install Forman Gem
     ```bash
     gem install foreman
     ```
-1. ~~~Install [node](https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions) so you can use bower (I'm using WSL on Windows for unix)~~~ using yarn now, update Docs TODO
+1. Install [Yarn](https://yarnpkg.com/lang/en/docs/install/) (see instructions for your OS):
     ```bash
-    sudo npm install -g bower
+    sudo apt-get update && sudo apt-get install yarn
     ```
-1. ~~Deal with all the javascript~~ using yarn now, update Docs TODO
+1. Installing all the js dependencies
     ```bash
-    bundle exec rake bower:install
+    yarn
     ```
 1. Reset DB and Delete all Google Calendars previously created by Service Account,  *Caution...*  Take a look inside this rake task.  Within it, it calls aws:plant_seeds for storing the seed data on AWS S3 for use by Heroku, if it finds an AWS_S3_SEED_DIR_PATH path set within your ENV. Otherwise, the seeds.rb will just seed using data from db/seeds/development/seed_data.yml
     ```bash
@@ -320,10 +320,12 @@ You'll need to set the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY for this user
     heroku config:set MIN_THREADS=1 RAILS_MAX_THREADS=1 --remote staging 
     ```
 
-1. Push the project to Heroku
+1. Push the project to Heroku 
     ```bash
     git push staging master
-    ```
+    ```  
+    Note: use this when pushing dev branch to heroku: 
+    ```alias pushdev='git push -f staging Dev:master'``` because heroku wants that branch named master
 1. Reset Production Database (be careful..)
     ```bash
     heroku pg:reset DATABASE --remote staging
