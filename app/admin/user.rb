@@ -91,11 +91,11 @@ ActiveAdmin.register User do
     column "Name", sortable: :last_name do |user|
       link_to user.full_name, admin_user_path(user)
     end
-    column :email, sortable: false if (ENV['DEMO_MODE'].nil?)
+    column :email, sortable: false if not ENV['DEMO_MODE']
 
     column "Mobile #" do |user|
       user.mobile_phone.phony_formatted
-    end if (ENV['DEMO_MODE'].nil?)
+    end if not ENV['DEMO_MODE']
 
     column "gCal", sortable: :subscribe_to_gcal do |user|
         user.subscribe_to_gcal? ? status_tag( "Yes", class: "ok" ) : status_tag( "No" )
@@ -135,7 +135,7 @@ ActiveAdmin.register User do
   show do
     attributes_table do
       row :email do |user|
-        best_in_place user, :email, :as => :input,:url =>[:admin,user] if (ENV['DEMO_MODE'].nil?)
+        best_in_place user, :email, :as => :input,:url =>[:admin,user] if not ENV['DEMO_MODE']
       end
       row :first_name do |user|
         best_in_place user, :first_name, :as => :input,:url =>[:admin,user]
@@ -144,10 +144,10 @@ ActiveAdmin.register User do
         best_in_place user, :last_name, :as => :input,:url =>[:admin,user]
       end
       row :home_phone do |user|
-        best_in_place user, :home_phone, :as => :input,:url =>[:admin,user], :display_with => lambda { |v| v.phony_formatted } if (ENV['DEMO_MODE'].nil?)
+        best_in_place user, :home_phone, :as => :input,:url =>[:admin,user], :display_with => lambda { |v| v.phony_formatted } if not ENV['DEMO_MODE']
       end
       row :mobile_phone do |user|
-        best_in_place user, :mobile_phone, :as => :input,:url =>[:admin,user], :display_with => lambda { |v| v.phony_formatted } if (ENV['DEMO_MODE'].nil?)
+        best_in_place user, :mobile_phone, :as => :input,:url =>[:admin,user], :display_with => lambda { |v| v.phony_formatted } if not ENV['DEMO_MODE']
       end
       # row :mobile_phone_messaging do |user|
       #   best_in_place user, :mobile_phone_messaging, :as => :checkbox,:url =>[:admin,user]
@@ -245,11 +245,11 @@ ActiveAdmin.register User do
     f.inputs "Details" do
       f.input :subscribe_to_gcal, :value => false, :as => :boolean,
           :hint => "disabling will delete all of " + user.first_name+ "'s carpool calendars" if ((current_user.is_admin? || resource == current_user) && !user.first_name.nil?)          
-      f.input :email if (ENV['DEMO_MODE'].nil?)
+      f.input :email if not ENV['DEMO_MODE']
       f.input :first_name
       f.input :last_name
-      f.input :home_phone, :display_with => lambda { |v| v.phony_formatted }  if (ENV['DEMO_MODE'].nil?)
-      f.input :mobile_phone, :display_with => lambda { |v| v.phony_formatted }  if (ENV['DEMO_MODE'].nil?)
+      f.input :home_phone, :display_with => lambda { |v| v.phony_formatted }  if not ENV['DEMO_MODE']
+      f.input :mobile_phone, :display_with => lambda { |v| v.phony_formatted }  if not ENV['DEMO_MODE']
       # f.input :mobile_phone_messaging, :value => true
       f.input :password
       f.input :password_confirmation

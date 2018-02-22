@@ -222,11 +222,19 @@ class User < ApplicationRecord
   end
 
   def short_name_with_mobile_phone
-     "#{short_name} #{mobile_phone.phony_formatted}"
+    if not ENV['DEMO_MODE']
+    "#{short_name} #{mobile_phone.phony_formatted}" 
+    else
+    "#{full_name} (xxx) xxx-xxxx"
+    end
   end
 
   def full_name_with_mobile_phone
-     "#{full_name} #{mobile_phone.phony_formatted}"
+    if not ENV['DEMO_MODE']
+    "#{full_name} #{mobile_phone.phony_formatted}" 
+    else
+    "#{full_name} (xxx) xxx-xxxx" 
+    end
   end
 
   def is_admin?
