@@ -125,7 +125,7 @@ group :development do
   # gem 'debase', '0.2.2.beta14'
 end
 
-# Use jquery as the JavaScript library, it's managed by rails so just use this vs bower
+# Use jquery as the JavaScript library, it's managed by rails so just use this
 gem 'jquery-ui-rails', '6.0.1'
 
 # bundle exec rake doc:rails generates the API under doc/api.

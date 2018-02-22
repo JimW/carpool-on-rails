@@ -65,8 +65,7 @@ module CarPool
         # If you need to supress output for other paths you can do so by specifying:
         # config.quiet_assets_paths << '/silent/'
     
-        # Fine Tuning !!! Still not getting right-click icons for each option to show up in production, thought precompile would help..
-        # https://coderwall.com/p/6bmygq/heroku-rails-bower
+        # Fine Tuning !!! Still not getting right-click icons for each option to show up in production
         # Explicitly register the extensions we are interested in compiling
         config.assets.precompile.push(Proc.new do |path|
           File.extname(path).in? [
@@ -76,7 +75,5 @@ module CarPool
           ]
         end)
         # config.assets.precompile += %w( .svg .eot .woff .ttf )
-        config.assets.paths << Rails.root.join('vendor', 'assets', 'bower_components')
-
         end
 end

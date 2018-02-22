@@ -167,7 +167,7 @@ These OAuth credentials are for server logins via google, which is not really ne
 
 1. Edit db/development/seeds/seed_data.yml. Populate with only a single organization and a single Carpool. Leave the whole file as is if you're just starting off.  Eventually you'll want to prepopulate it with valid google email accounts.  Leave the Lobby entry alone as it needs to be named "Lobby".
 
-1. For bower-rails gem:
+1. For bower-rails gem, well we're not using bower anymore now, but why not..:
     ```bash
     sudo apt-get install nodejs
     sudo apt-get install nodejs-legacy
@@ -186,11 +186,11 @@ These OAuth credentials are for server logins via google, which is not really ne
     ```bash
     gem install foreman
     ```
-1. Install [node](https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions) so you can use bower (I'm using WSL on Windows for unix)
+1. ~~~Install [node](https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions) so you can use bower (I'm using WSL on Windows for unix)~~~ using yarn now, update Docs TODO
     ```bash
     sudo npm install -g bower
     ```
-1. Deal with all the javascript
+1. ~~Deal with all the javascript~~ using yarn now, update Docs TODO
     ```bash
     bundle exec rake bower:install
     ```
@@ -571,8 +571,6 @@ FullCalendar (Standard Edition) - © 2017  FullCalendar LLC
 Fullcalendar-Rails_Engine - Copyright (c) 2014 vinsol.com, released under the New MIT License
 
 
-foreman start -f Procfile.dev
-
 ReactTable instead of Activeadmin
 https://react-table.js.org/#/story/cell-renderers-custom-components
 
@@ -596,6 +594,3 @@ https://github.com/fuse-box/fuse-box
 https://github.com/otothea/fuse-box-graphql-plugin
 https://github.com/fuse-box/react-example/blob/master/fuse.js
 
-
-Install Log:
-yarn global add typescript    
