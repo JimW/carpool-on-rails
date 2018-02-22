@@ -335,7 +335,7 @@ class RouteCalendar extends Component {
         right: 'month,agendaWeek,agendaDay'
       },
       weekends: false,
-      height: 800,
+      height: 'auto',
       minTime: "06:30:00",
       maxTime: "23:00:00",
       timezone: "local",

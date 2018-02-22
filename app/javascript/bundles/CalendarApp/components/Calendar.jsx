@@ -46,7 +46,7 @@ class Calendar extends Component {
       editable: false,
       slotDuration: '00:10:00',
       scrollTime: '07:00:00',
-      height: 650,
+      height: 'auto',
       // width: 400,
       minTime: "06:30:00",
       maxTime: "23:00:00",
